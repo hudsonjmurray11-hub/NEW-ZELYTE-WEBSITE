@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.className+=' js'</script>
+<title>Shop — ZELYTE</title>
+<meta name="description" content="Shop ZELYTE active hydration pouches. Crispy Mint and Black Cherry. Single tin $11, Pro Pack 3 tins $30, Elite Pack 5 tins $45. 15 pouches per tin.">
+<meta name="theme-color" content="#0C0E10">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="strike" viewBox="0 0 552 754">
+    <path d="M207.5,754.0 L35.0,753.5 L139.0,632.5 L248.0,508.5 L263.0,489.5 L0.5,489.0 L0.0,487.5 L214.0,267.5 L323.0,152.5 L342.0,130.5 L129.5,130.0 L1.0,0.5 L495.5,0.0 L509.5,3.0 L519.5,8.0 L530.5,16.0 L542.0,29.5 L548.0,40.5 L550.0,51.5 L552.0,54.5 L552.0,75.5 L550.0,79.5 L548.0,90.5 L543.0,100.5 L527.0,122.5 L484.0,171.5 L371.0,292.5 L308.0,357.5 L320.5,359.0 L546.5,358.0 L550.0,359.5 Z"/>
+  </symbol>
+</svg>
+
+<div class="split split--progress" id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="split__rule"><span class="split__fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="lockup lockup--word" href="index.html" aria-label="ZELYTE home"><span class="lockup__word">ZELYTE</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="science.html">Science</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+    <a class="btn nav__cta" href="#bundles">Bundles</a>
+    <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="menu" id="menu" hidden>
+  <nav class="menu__links" aria-label="Mobile">
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="science.html">Science</a><a href="about.html">About</a><a href="faq.html">FAQ</a>
+  </nav>
+  <div class="split split--dark" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+  </div>
+</div>
+
+<main id="main">
+<div class="stack">
+
+  <!-- ============ SHOP HERO ============ -->
+  <div class="stack__item">
+    <section class="stack__card" aria-labelledby="shop-h">
+      <div class="wrap">
+        <div class="hero__grid">
+          <div>
+            <p class="eyebrow scramble reveal">Shop</p>
+            <h1 class="display reveal" id="shop-h">Pick your window.</h1>
+            <p class="lede reveal">Two flavors, one formula. 15 pouches per tin, a 25-minute active window per pouch, 50mg of caffeine. First batch ships fall 2026.</p>
+            <div class="hero__actions reveal">
+              <a class="btn" href="#bundles">See bundles</a>
+              <a class="btn btn--ghost" href="science.html">The science</a>
+            </div>
+            <div class="split hero__split reveal" aria-hidden="true">
+              <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
+            </div>
+          </div>
+          <div class="orbit" id="orbit">
+            <img class="orbit__tin" src="assets/img/tin.webp" width="900" height="898" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ FLAVORS ============ -->
+  <div class="stack__item">
+    <section class="stack__card" id="flavors" aria-labelledby="flav-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Flavors</p>
+        <h2 class="display" id="flav-h">Just two for now.</h2>
+        <div class="flavors__grid" style="margin-top:clamp(28px,3.4vw,44px)">
+          <article class="sku sku--mint reveal">
+            <span class="sku__ring" aria-hidden="true"></span>
+            <h3 class="sku__name">Crispy Mint</h3>
+            <p class="sku__desc">Cool, crisp and clean. Reads sharp through a hard effort when everything else tastes like too much.</p>
+            <dl class="sku__spec">
+              <div><dt>Price</dt><dd>$11.00</dd></div>
+              <div><dt>Per tin</dt><dd>15</dd></div>
+              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+            </dl>
+            <a class="btn sku__btn" href="#capture">Notify me</a>
+          </article>
+          <article class="sku sku--cherry reveal">
+            <span class="sku__ring" aria-hidden="true"></span>
+            <h3 class="sku__name">Black Cherry</h3>
+            <p class="sku__desc">Bold, ripe and dry rather than sweet. For longer sessions where mint gets tiring after the first hour.</p>
+            <dl class="sku__spec">
+              <div><dt>Price</dt><dd>$11.00</dd></div>
+              <div><dt>Per tin</dt><dd>15</dd></div>
+              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+            </dl>
+            <a class="btn sku__btn" href="#capture">Notify me</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ BUNDLES ============ -->
+  <div class="stack__item">
+    <section class="stack__card" id="bundles" aria-labelledby="bundle-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Bundle &amp; save</p>
+        <h2 class="display" id="bundle-h">Load up. Lock in.</h2>
+        <div class="buy">
+          <article class="buy__card reveal">
+            <h3 class="buy__n">Single tin</h3>
+            <div class="buy__price">$11</div>
+            <p class="buy__unit">$11.00 per tin</p>
+            <ul class="buy__list"><li>15 pouches</li><li>One flavor</li><li>Standard shipping</li></ul>
+            <a class="btn btn--ghost buy__btn" href="#capture">Notify me</a>
+          </article>
+          <article class="buy__card buy__card--best reveal">
+            <span class="buy__tag">Most popular</span>
+            <h3 class="buy__n">Pro Pack — 3 tins</h3>
+            <div class="buy__price">$30</div>
+            <p class="buy__unit">$10.00 per tin · save $3</p>
+            <ul class="buy__list"><li>45 pouches</li><li>Mix &amp; match flavors</li><li>Free shipping</li></ul>
+            <a class="btn buy__btn" href="#capture">Notify me</a>
+          </article>
+          <article class="buy__card reveal">
+            <h3 class="buy__n">Elite Pack — 5 tins</h3>
+            <div class="buy__price">$45</div>
+            <p class="buy__unit">$9.00 per tin · save $10</p>
+            <ul class="buy__list"><li>75 pouches</li><li>Mix &amp; match flavors</li><li>Free shipping</li></ul>
+            <a class="btn btn--ghost buy__btn" href="#capture">Notify me</a>
+          </article>
+        </div>
+        <p class="capture__micro reveal" style="margin-top:clamp(22px,3vw,32px)">Checkout opens with the first batch. Join the list and you will get the window before it goes live.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ WHAT'S IN THE TIN ============ -->
+  <div class="stack__item">
+    <section class="stack__card is-dark" id="whats-in" aria-labelledby="tin-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">What's in the tin</p>
+        <h2 class="display" id="tin-h">
+          <span class="line reveal">Four ingredients.</span>
+          <span class="line reveal">Nothing hidden.</span>
+        </h2>
+        <div class="table-wrap reveal" style="margin-top:clamp(26px,3.2vw,40px)">
+          <table class="spec">
+            <caption class="visually-hidden">ZELYTE formula, per pouch</caption>
+            <thead><tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td></tr>
+              <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td></tr>
+              <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td></tr>
+              <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <ul class="stats reveal">
+          <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
+          <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
+          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ LAUNCH LIST ============ -->
+  <div class="stack__item">
+    <section class="stack__card" id="capture" aria-labelledby="cap-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Launch list</p>
+        <h2 class="display" id="cap-h">
+          <span class="line reveal">First batch,</span>
+          <span class="line reveal">fall 2026.</span>
+        </h2>
+        <p class="lede reveal">Early access, new flavors and launch details. One email when the first batch ships.</p>
+        <form class="capture__form reveal" data-signup="signup-status" novalidate style="margin-top:clamp(24px,3vw,34px)">
+          <label class="visually-hidden" for="email">Email address</label>
+          <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+          <button class="btn" type="submit">Get early access</button>
+        </form>
+        <p class="capture__micro" id="signup-status" role="status" aria-live="polite">No spam. One email when the first batch ships.</p>
+      </div>
+    </section>
+  </div>
+
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <a class="lockup lockup--dark footer__lockup" href="index.html" aria-label="ZELYTE home">
+        <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+        <span class="lockup__word">ZELYTE</span>
+      </a>
+      <nav class="footer__cols" aria-label="Footer">
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="shop.html#flavors">Flavors</a><a href="shop.html#bundles">Bundles</a></div>
+        <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
+      </nav>
+    </div>
+    <div class="split split--dark" aria-hidden="true">
+      <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+    </div>
+    <div class="footer__legal">
+      <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
+      <p>ZELYTE supports hydration and provides caffeine. Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not recommended for children, or those pregnant or nursing.</p>
+      <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js" defer></script>
+</body>
+</html>

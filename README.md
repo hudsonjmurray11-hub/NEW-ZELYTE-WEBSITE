@@ -1,7 +1,6 @@
 # ZELYTE — marketing site
 
-Static, single page. No framework, no build step, no dependencies.
-Open `index.html`, or serve the folder:
+Five static pages. No framework, no build step, no dependencies.
 
 ```bash
 python3 -m http.server 8080
@@ -10,52 +9,65 @@ python3 -m http.server 8080
 ## Files
 
 ```
-index.html                 all 10 sections; the Strike <symbol> is defined once here
-styles.css                 commented by section, in page order
-main.js                    reveals, scroll progress, timeline, mark, menu, form
-assets/fonts/*.woff2       6 faces, subsetted locally (925KB TTF -> 58KB)
-assets/img/mint-tin.webp   Crispy Mint tin, background removed
-sql/launch_signups.sql     run this before wiring the email form
+index.html    Home — hero + orbit, new category, 25:00 timeline, formula,
+              flavors, built for, bundles, launch list
+shop.html     Flavors, pricing, what's in the tin
+science.html  Buccal delivery, the 25:00 window, full formula, safety
+about.html    Founder story, milestones, competitor comparison
+faq.html      12 questions in three groups
+
+styles.css    shared, commented by section
+main.js       shared; every page-specific block is gated on its elements
+assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
+assets/img/   tin, pouch, two athlete photos
+sql/          run before wiring the email form
 ```
+
+Nav and footer are duplicated into each page rather than injected by JS — no
+build step, and LCP and SEO stay intact without JavaScript.
+
+## Lighthouse
+
+All five pages, desktop: **performance 100, accessibility 100, best practices
+100, SEO 100.** CLS ≤ 0.006, LCP 0.4–0.5s.
+
+One trap worth knowing: the loader must **not** set `opacity: 0` on the body's
+children. Elements at zero opacity are never LCP candidates, and doing so
+produced `NO_LCP` and an unscoreable page. The overlay alone hides the page;
+content paints behind it and is revealed when the overlay fades.
 
 ## The email form is stubbed
 
-`main.js` section 8. The previous app wrote to a Supabase table called
-`launch_signups`, but that repo's `.env` holds literal placeholders
-(`https://placeholder.supabase.co` / `placeholder-anon-key`) and no
+`main.js` section 13. The previous app wrote to a Supabase table called
+`launch_signups`, but that repo's `.env` holds literal placeholders and no
 `CREATE TABLE` for it exists in any of its `.sql` files.
 
-To go live:
+1. Run `sql/launch_signups.sql`. It includes an **insert-only RLS policy** —
+   required, not optional. The anon key ships in `main.js` and is public by
+   design; without that policy it would expose the whole signup list.
+2. Fill in `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
 
-1. Run `sql/launch_signups.sql` in the Supabase SQL editor. It includes an
-   **insert-only RLS policy** — this is required, not optional. The anon key
-   ships in `main.js` and is public by design, so without that policy the key
-   would expose the whole signup list.
-2. Fill in `SUPABASE_URL` and `SUPABASE_ANON_KEY` at the top of section 8.
-
-Nothing else changes. Until then the form validates, shows its success state,
-and logs the captured address to the console.
-
+Until then the form validates, shows its success state, and logs to the console.
 No existing Stripe, Supabase, or checkout code was modified.
 
 ## Brand system
 
-Eight colors, defined in `:root`, and nothing else. Two derived hairline
-tokens carry `--iron` and `--frost` at alpha — same colors, not new ones.
-No gradients, shadows, glows, or blur anywhere.
+Eight colors in `:root` and nothing else — verified by grep. Two derived
+hairline tokens carry `--iron` and `--frost` at alpha; same colors, not new
+ones. No gradients, shadows, glows, or blur anywhere.
 
 - **Display** — Archivo Black, headlines only, all caps, `-0.03em`, `0.95`
 - **Body** — Barlow 400/500/600, sentence case, `1.5`, max `68ch`
-- **Data** — JetBrains Mono, uppercase, `+0.05em` — labels, doses, nav, buttons
+- **Data** — JetBrains Mono, uppercase, `+0.05em`
 
 ### The Strike
 
 Traced from `NEWZELYTEICON-1.png` to a 31-point path, verified at **IoU 0.992**
 against the source. `viewBox="0 0 552 754"`, aspect `0.7321`.
 
-Note: `ZELYTE INC./Z LOGO/zelyte-3d-logo.html` describes the mark as four
-separate pieces with gaps between them. That is an **older stylization** — the
-current PNG is one solid connected shape. The traced path is the correct one.
+`ZELYTE INC./Z LOGO/zelyte-3d-logo.html` describes the mark as four separate
+pieces with gaps. That is an **older stylization** — the current PNG is one
+solid connected shape. The traced path is the correct one.
 
 ### The lockup
 
@@ -69,44 +81,59 @@ One custom property, `--cap`, drives everything:
 | wordmark size | `cap / 0.688` |
 
 `0.688` is Archivo Black's real `sCapHeight/unitsPerEm`, read from the font.
-
 The icon overshoots the caps by `0.186` above and `0.571` below. **That
-overshoot is the brand — do not "fix" it.** Never letter-space the wordmark
-apart; it is set at `-0.035em`.
+overshoot is the brand — do not "fix" it.** Never letter-space the wordmark.
 
-To resize a lockup, change `--cap` and nothing else.
+The **nav** uses `.lockup--word` (wordmark alone). The **footer** keeps the
+full icon + wordmark, so the measured geometry still ships.
 
 ### The Split
 
-`.split` is instrumentation, not decoration. Built from elements only — no
-gradient functions, so the no-gradients rule stays unambiguous.
+Instrumentation, not decoration. Elements only, no gradient functions.
+`.split` (dividers) · `.split--dark` · `.split--progress` (pinned page
+progress) · `.split--track` (the 25:00 fill).
 
-- `.split` — every section divider (there are no `<hr>` elements)
-- `.split--dark` — on asphalt
-- `.split--progress` — pinned scroll progress at the top of the viewport
-- `.split--track` — the fill in "how it works"
+## Layout and motion
 
-## Motion
+**Card stack.** Every section is a rounded card on black. `.stack__item`
+supplies the scroll distance; `.stack__card` pins to the top for that
+distance, so consecutive cards rise over one another. Depth is scale + the
+black showing through — no shadows. Cards whose content cannot fit one screen
+(the FAQ list, the wide tables) take `.stack__item--flow` and simply scroll.
 
-`IntersectionObserver` for reveals (16px + opacity, 240ms, 60ms sibling
-stagger, each element once). One shared `requestAnimationFrame` loop drives the
-scroll progress, the timeline, the parallax, and the mark. Transform and
-opacity only.
+`body` uses `overflow-x: clip`, **not** `hidden` — `hidden` establishes a
+scroll container and breaks every `position: sticky` in the stack.
 
-The hero mark is a dependency-free port of the old Three.js logo: same spin
-(`0.012` rad/frame), same drag sensitivity (`0.005`), same inertia decay
-(`0.95`), same 2s auto-spin resume. WebGL is replaced by stacked SVG layers in
-a `preserve-3d` scene, so there is no CDN dependency and no surface shading.
-It is draggable.
+**The orbit.** Three rings around the tin, alternating direction, pouches
+shrinking outward, 36 in total. Radius and pouch width are written in pixels
+by `main.js`, because a percentage inside `translateY()` would resolve against
+the zero-height slot. Four nested levels keep each pouch upright while it
+travels — a single element cannot hold both a static placement transform and a
+spin animation, since the animation wins.
 
-Under `prefers-reduced-motion` the rAF loop never starts, the scroll listener
-is never registered, the mark layers are never built, and everything renders
-in its resting state.
+**Loader.** The Strike turns exactly one revolution, lands where it started,
+and the overlay fades. Shown once per session so it is not a toll booth on
+every page.
+
+Under `prefers-reduced-motion`: no loader, cards un-stick, the orbit and
+marquee pause into a still arrangement, the timeline sits resolved at 25:00,
+and neither the rAF loop nor the scroll listener is ever registered.
+
+## Content notes
+
+Two figures differ from takezelyte.com and were resolved toward the packaging:
+
+| | Live site | Here | Why |
+|---|---|---|---|
+| Duration | 20–40 min | **25:00** | printed on the tin; drives The Split |
+| Launch | Summer 2026 | **Fall 2026** | brand board says Fall; Summer has passed |
+
+The live comparison table lists *Nicotine Pouches* as a competitor column.
+**That column is deliberately not ported** — competitors are Energy Drinks,
+Sports Drinks and Electrolyte Powders.
 
 ## Still to do
 
-- `/shop` — a separate page, not built. All SHOP links point at `#flavors`.
-- Real photography for the two `BUILT FOR` slots (`index.html`, marked with
-  shot descriptions). Space is already reserved so there is no layout shift.
-- Real social and legal URLs in the footer (currently `#`).
-- A Black Cherry tin render — only Crispy Mint exists today.
+- Checkout. All buy buttons route to the launch-list form; no payment is wired.
+- Real social and legal URLs (currently `#`).
+- A Black Cherry tin render — only Crispy Mint exists.
