@@ -387,20 +387,27 @@ body.menu-open .nav__toggle span:last-child{width:22px;transform:translateY(-3px
   list-style:none;margin:clamp(32px,4vw,52px) 0 0;padding:0;
   display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(20px,3vw,40px);
 }
+/* Unresolved stages recede via COLOUR and the rule, not by fading the text
+   into illegibility. At opacity .18 this copy measured 1.3:1; it now holds
+   5.2:1 unresolved and 7.4:1 resolved, so every stage stays readable. */
 .stage{
-  opacity:.18;transform:translateY(10px);
+  opacity:.85;transform:translateY(10px);
   transition:opacity 220ms var(--ease),transform 220ms var(--ease);
   border-top:1px solid var(--hair-light);padding-top:16px;
 }
 .stage.is-on{opacity:1;transform:none;border-top-color:var(--iron)}
 .stage__t{
   display:block;font-family:var(--data);font-weight:500;font-size:11px;
-  letter-spacing:.05em;color:var(--voltage);margin-bottom:10px;
+  letter-spacing:.05em;color:var(--iron);margin-bottom:10px;
+  transition:color 220ms var(--ease);
 }
+.stage.is-on .stage__t{color:var(--voltage)}
 .stage__h3{
   font-family:var(--data);font-weight:500;font-size:12px;
   letter-spacing:.05em;text-transform:uppercase;margin-bottom:10px;
+  color:var(--iron);transition:color 220ms var(--ease);
 }
+.stage.is-on .stage__h3{color:var(--asphalt)}
 .stage p{margin:0;font-size:.95rem;color:var(--iron)}
 
 
