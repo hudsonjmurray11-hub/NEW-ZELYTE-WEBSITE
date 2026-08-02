@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZELYTE — Hydration you don't have to drink</title>
+<meta name="description" content="ZELYTE performance pouches. Electrolytes and 50mg of caffeine, released over a 25-minute window, while you keep moving. 15 pouches per tin.">
+<meta name="theme-color" content="#E9EBEA">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="ZELYTE — Hydration you don't have to drink">
+<meta property="og:description" content="Electrolytes and 50mg of caffeine, released over a 25-minute window, while you keep moving.">
+<meta property="og:site_name" content="ZELYTE">
+
+<link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<!-- ============================================================
+     THE STRIKE — traced from NEWZELYTEICON-1.png (IoU 0.992).
+     One solid closed contour, one rounded corner top-right.
+     Defined once, reused everywhere via <use href="#strike">.
+     ============================================================ -->
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="strike" viewBox="0 0 552 754">
+    <path d="M207.5,754.0 L35.0,753.5 L139.0,632.5 L248.0,508.5 L263.0,489.5 L0.5,489.0 L0.0,487.5 L214.0,267.5 L323.0,152.5 L342.0,130.5 L129.5,130.0 L1.0,0.5 L495.5,0.0 L509.5,3.0 L519.5,8.0 L530.5,16.0 L542.0,29.5 L548.0,40.5 L550.0,51.5 L552.0,54.5 L552.0,75.5 L550.0,79.5 L548.0,90.5 L543.0,100.5 L527.0,122.5 L484.0,171.5 L371.0,292.5 L308.0,357.5 L320.5,359.0 L546.5,358.0 L550.0,359.5 Z"/>
+  </symbol>
+</svg>
+
+<!-- THE SPLIT as scroll progress, pinned to the top of the viewport -->
+<div class="split split--progress" id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="split__rule">
+    <span class="split__fill"></span>
+    <i></i><i></i><i></i><i></i><i></i><i></i>
+  </div>
+</div>
+
+<!-- ============================================================
+     1. NAV
+     ============================================================ -->
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="lockup" href="#hero" aria-label="ZELYTE home">
+      <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+      <span class="lockup__word">ZELYTE</span>
+    </a>
+
+    <nav class="nav__links" aria-label="Primary">
+      <!-- TODO: /shop is a separate page, built later. Pointing at #flavors for now. -->
+      <a href="#flavors">Shop</a>
+      <a href="#how-it-works">How it works</a>
+      <a href="#science">Science</a>
+      <a href="#athletes">Athletes</a>
+    </nav>
+
+    <a class="btn nav__cta" href="#flavors">Shop</a>
+
+    <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu">
+      <span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile overlay menu -->
+<div class="menu" id="menu" hidden>
+  <nav class="menu__links" aria-label="Mobile">
+    <a href="#flavors">Shop</a>
+    <a href="#how-it-works">How it works</a>
+    <a href="#science">Science</a>
+    <a href="#athletes">Athletes</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="split split--dark menu__split" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+  </div>
+</div>
+
+<main id="main">
+
+<!-- ============================================================
+     2. HERO
+     ============================================================ -->
+<section class="hero" id="hero">
+  <div class="hero__inner">
+    <div class="hero__copy">
+      <p class="eyebrow reveal">Performance pouches</p>
+      <h1 class="display hero__h1">
+        <span class="line reveal">Hydration</span>
+        <span class="line reveal">you don't</span>
+        <span class="line reveal">have to drink.</span>
+      </h1>
+      <p class="lede reveal">Electrolytes and 50mg of caffeine, released over a 25-minute window — while you keep moving. 15 pouches per tin.</p>
+      <div class="hero__actions reveal">
+        <a class="btn" href="#flavors">Shop ZELYTE</a>
+        <a class="btn btn--ghost" href="#how-it-works">How it works</a>
+      </div>
+    </div>
+
+    <!-- The mark. Space reserved via aspect-ratio so nothing shifts.
+         Layers are stacked in 3D to fake the extrusion without WebGL. -->
+    <div class="hero__mark" id="hero-mark">
+      <div class="mark3d" id="mark3d" aria-hidden="true"></div>
+      <span class="visually-hidden">The ZELYTE Strike mark, slowly rotating.</span>
+    </div>
+  </div>
+
+  <div class="split hero__split" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
+  </div>
+</section>
+
+<!-- ============================================================
+     3. THE PROBLEM — asphalt full bleed
+     ============================================================ -->
+<section class="problem" id="problem">
+  <div class="wrap">
+    <p class="eyebrow eyebrow--dark reveal">The problem</p>
+    <h2 class="display problem__h2">
+      <span class="line reveal">Mid-session,</span>
+      <span class="line reveal">everything else</span>
+      <span class="line reveal">gets in the way.</span>
+    </h2>
+
+    <ol class="problem__grid">
+      <li class="prob reveal">
+        <span class="prob__num" aria-hidden="true">01</span>
+        <h3 class="prob__h3">Bottles interrupt</h3>
+        <p>A bottle means stopping, carrying, and finding somewhere to put it down. Every sip is a break in the session.</p>
+      </li>
+      <li class="prob reveal">
+        <span class="prob__num" aria-hidden="true">02</span>
+        <h3 class="prob__h3">Energy drinks crash</h3>
+        <p>Sugar and a heavy caffeine load arrive all at once, then leave all at once. The timing rarely matches the work.</p>
+      </li>
+      <li class="prob reveal">
+        <span class="prob__num" aria-hidden="true">03</span>
+        <h3 class="prob__h3">Nothing works mid-set</h3>
+        <p>Powders need water. Gels need a free hand. Neither fits between rounds, intervals, or the back half of a long effort.</p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. HOW IT WORKS — scroll-linked timeline (the centerpiece)
+     ============================================================ -->
+<section class="how" id="how-it-works">
+  <div class="how__sticky">
+    <div class="wrap">
+      <p class="eyebrow">How it works</p>
+      <h2 class="display how__h2">One pouch. 25 minutes.</h2>
+
+      <div class="how__clock"><span id="how-clock">00:00</span></div>
+
+      <div class="split split--track" aria-hidden="true">
+        <div class="split__rule">
+          <span class="split__fill" id="how-fill"></span>
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+        <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
+      </div>
+
+      <ol class="how__stages" id="how-stages">
+        <li class="stage" data-at="0.02">
+          <span class="stage__t">00:00</span>
+          <h3 class="stage__h3">Pouch in</h3>
+          <p>Tuck it under your lip and keep going. No bottle, no bag, no pause in the session.</p>
+        </li>
+        <li class="stage" data-at="0.28">
+          <span class="stage__t">00:04</span>
+          <h3 class="stage__h3">Electrolytes releasing</h3>
+          <p>Sodium, potassium and magnesium begin dissolving and absorbing steadily rather than all at once.</p>
+        </li>
+        <li class="stage" data-at="0.55">
+          <span class="stage__t">00:12</span>
+          <h3 class="stage__h3">Caffeine peak</h3>
+          <p>50mg of caffeine anhydrous comes through around the middle of the window — roughly half a cup of coffee.</p>
+        </li>
+        <li class="stage" data-at="0.82">
+          <span class="stage__t">00:25</span>
+          <h3 class="stage__h3">Still going</h3>
+          <p>The window closes. Take the pouch out and carry on, or start the next one.</p>
+        </li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     5. THE FORMULA — equipment markings, no icons
+     ============================================================ -->
+<section class="formula" id="science">
+  <div class="wrap">
+    <p class="eyebrow reveal">The formula</p>
+    <h2 class="display formula__h2">
+      <span class="line reveal">Four ingredients.</span>
+      <span class="line reveal">Nothing hidden.</span>
+    </h2>
+
+    <div class="formula__table-wrap reveal">
+      <table class="spec">
+        <caption class="visually-hidden">ZELYTE formula, per pouch</caption>
+        <thead>
+          <tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td></tr>
+          <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td></tr>
+          <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td></tr>
+          <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <dl class="formula__meta reveal">
+      <div><dt>Per tin</dt><dd>15 pouches</dd></div>
+      <div><dt>Window</dt><dd>25:00</dd></div>
+      <div><dt>Format</dt><dd>Oral pouch</dd></div>
+    </dl>
+    <p class="formula__note reveal">ZELYTE supports hydration and provides caffeine. It is not intended to diagnose, treat, cure, or prevent any disease.</p>
+  </div>
+</section>
+
+<!-- ============================================================
+     6. FLAVORS — identical cards, only ring + name change color
+     ============================================================ -->
+<section class="flavors" id="flavors">
+  <div class="wrap">
+    <p class="eyebrow reveal">Flavors</p>
+    <h2 class="display flavors__h2">Two ways to run it.</h2>
+
+    <!-- Single product anchor. There is only a CRISPY MINT render available,
+         so it sits above the SKU cards rather than inside one of them —
+         that keeps the two cards strictly identical, per the brand rule. -->
+    <figure class="flavors__shot reveal">
+      <img src="assets/img/mint-tin.webp" width="900" height="880" alt="A ZELYTE tin, lid facing up, showing the Strike mark, the Crispy Mint name, the per-pouch formula and the 25-minute Split." loading="lazy" decoding="async">
+    </figure>
+
+    <div class="flavors__grid">
+      <article class="sku sku--mint reveal">
+        <span class="sku__ring" aria-hidden="true"></span>
+        <h3 class="sku__name">Crispy Mint</h3>
+        <p class="sku__desc">Cold and sharp. Reads clean through a hard effort when everything else tastes like too much.</p>
+        <dl class="sku__spec">
+          <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+          <div><dt>Per tin</dt><dd>15 pouches</dd></div>
+          <div><dt>Window</dt><dd>25:00</dd></div>
+        </dl>
+        <a class="btn sku__btn" href="#capture">Notify me</a>
+      </article>
+
+      <article class="sku sku--cherry reveal">
+        <span class="sku__ring" aria-hidden="true"></span>
+        <h3 class="sku__name">Black Cherry</h3>
+        <p class="sku__desc">Dark and dry, not sweet. For longer sessions where mint gets tiring after the first hour.</p>
+        <dl class="sku__spec">
+          <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+          <div><dt>Per tin</dt><dd>15 pouches</dd></div>
+          <div><dt>Window</dt><dd>25:00</dd></div>
+        </dl>
+        <a class="btn sku__btn" href="#capture">Notify me</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     7. BUILT FOR — text led, image slots reserved
+     ============================================================ -->
+<section class="built" id="athletes">
+  <div class="wrap">
+    <p class="eyebrow eyebrow--dark reveal">Built for</p>
+    <h2 class="display built__h2">
+      <span class="line reveal">The back half</span>
+      <span class="line reveal">of the session.</span>
+    </h2>
+
+    <div class="built__lead reveal">
+      <p>ZELYTE is made for the part of the work where stopping costs the most — the last intervals, the second hour, the third station. One pouch, in, and you keep going.</p>
+    </div>
+
+    <ul class="built__list">
+      <li class="reveal"><span class="built__k">Endurance</span><p>Long runs and rides where carrying a bottle is the compromise.</p></li>
+      <li class="reveal"><span class="built__k">HYROX</span><p>Between stations, when there is no time to drink anything.</p></li>
+      <li class="reveal"><span class="built__k">Lifting</span><p>Across long sessions where the set matters more than the break.</p></li>
+      <li class="reveal"><span class="built__k">Rowing</span><p>On the erg, hands occupied, pieces back to back.</p></li>
+      <li class="reveal"><span class="built__k">Long sessions</span><p>Anything past ninety minutes, where the plan is to not stop.</p></li>
+    </ul>
+
+    <!-- ============================================================
+         IMAGE SLOTS — deliberately empty. Real photography only.
+         No stock, no AI. Space is reserved so nothing shifts on load.
+
+         SLOT A (wide, 16:9): athlete mid-session, hard natural light,
+           side or three-quarter, sweat visible, motion real not posed.
+           Framing 80% athlete / 20% product. Product incidental —
+           in hand or in a pocket, never held up to camera.
+
+         SLOT B (portrait, 3:4): close, shoulders and jaw, between
+           efforts. Same hard light. Pouch already in — not being
+           inserted. No eye contact with camera.
+
+         To use: delete the placeholder <div> and uncomment the <img>,
+         keeping the width/height attributes so the reserved box matches.
+         ============================================================ -->
+    <div class="built__shots">
+      <figure class="shot shot--wide reveal">
+        <div class="shot__ph" role="img" aria-label="Placeholder for a photograph of an athlete mid-session."><span>Slot A — 16:9 — athlete mid-session</span></div>
+        <!-- <img src="assets/img/athlete-wide.webp" width="1600" height="900" alt="An athlete mid-session in hard natural light." loading="lazy" decoding="async"> -->
+      </figure>
+      <figure class="shot shot--tall reveal">
+        <div class="shot__ph" role="img" aria-label="Placeholder for a portrait photograph between efforts."><span>Slot B — 3:4 — between efforts</span></div>
+        <!-- <img src="assets/img/athlete-tall.webp" width="900" height="1200" alt="An athlete between efforts in hard natural light." loading="lazy" decoding="async"> -->
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     8. FAQ
+     ============================================================ -->
+<section class="faq" id="faq">
+  <div class="wrap">
+    <p class="eyebrow reveal">FAQ</p>
+    <h2 class="display faq__h2">Questions.</h2>
+
+    <div class="faq__list">
+      <details class="qa reveal">
+        <summary><span class="qa__k">01</span><span class="qa__q">How long does it last?</span><span class="qa__i" aria-hidden="true"></span></summary>
+        <div class="qa__a"><p>The pouch is built around a 25-minute active window. Most of the electrolyte and caffeine content has been released by the end of it. After that, take it out.</p></div>
+      </details>
+      <details class="qa reveal">
+        <summary><span class="qa__k">02</span><span class="qa__q">What does it feel like?</span><span class="qa__i" aria-hidden="true"></span></summary>
+        <div class="qa__a"><p>A light tingle and a clear flavor at the start, easing off as the window runs down. The caffeine comes through gradually rather than in one hit, because it is released across the 25 minutes rather than swallowed at once.</p></div>
+      </details>
+      <details class="qa reveal">
+        <summary><span class="qa__k">03</span><span class="qa__q">When should I use it?</span><span class="qa__i" aria-hidden="true"></span></summary>
+        <div class="qa__a"><p>Most people put one in a few minutes before the hard part of a session, or partway through a long one. It is designed for use while moving, so you do not need to stop or carry anything.</p></div>
+      </details>
+      <details class="qa reveal">
+        <summary><span class="qa__k">04</span><span class="qa__q">How much caffeine is in it?</span><span class="qa__i" aria-hidden="true"></span></summary>
+        <div class="qa__a"><p>50mg of caffeine anhydrous per pouch — roughly half a cup of coffee. If you are sensitive to caffeine, pregnant, nursing, under 18, or taking medication, check with a clinician first.</p></div>
+      </details>
+      <details class="qa reveal">
+        <summary><span class="qa__k">05</span><span class="qa__q">How does shipping work?</span><span class="qa__i" aria-hidden="true"></span></summary>
+        <div class="qa__a"><p>ZELYTE ships within the United States. First batch is limited — join the list below and you will get the launch window and tracking details by email.</p></div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     9. EMAIL CAPTURE
+     ============================================================ -->
+<section class="capture" id="capture">
+  <div class="wrap capture__inner">
+    <p class="eyebrow reveal">Launch list</p>
+    <h2 class="display capture__h2">
+      <span class="line reveal">First batch,</span>
+      <span class="line reveal">fall 2026.</span>
+    </h2>
+
+    <form class="capture__form reveal" id="signup-form" novalidate>
+      <label class="visually-hidden" for="email">Email address</label>
+      <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+      <button class="btn capture__btn" type="submit" id="signup-btn">Join the list</button>
+    </form>
+
+    <p class="capture__micro" id="signup-status" role="status" aria-live="polite">No spam. One email when the first batch ships.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     10. FOOTER
+     ============================================================ -->
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <a class="lockup lockup--dark footer__lockup" href="#hero" aria-label="ZELYTE home">
+        <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+        <span class="lockup__word">ZELYTE</span>
+      </a>
+
+      <nav class="footer__cols" aria-label="Footer">
+        <div>
+          <h2 class="footer__h">Product</h2>
+          <a href="#flavors">Shop</a>
+          <a href="#science">Formula</a>
+          <a href="#how-it-works">How it works</a>
+        </div>
+        <div>
+          <h2 class="footer__h">Company</h2>
+          <a href="#athletes">Athletes</a>
+          <a href="#faq">FAQ</a>
+          <a href="#capture">Launch list</a>
+        </div>
+        <div>
+          <h2 class="footer__h">Social</h2>
+          <!-- TODO: replace with real ZELYTE handles -->
+          <a href="#" rel="noopener">Instagram</a>
+          <a href="#" rel="noopener">TikTok</a>
+          <a href="#" rel="noopener">YouTube</a>
+        </div>
+      </nav>
+    </div>
+
+    <div class="split split--dark" aria-hidden="true">
+      <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+    </div>
+
+    <div class="footer__legal">
+      <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
+      <p>ZELYTE supports hydration and provides caffeine. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not recommended for children, or those pregnant or nursing.</p>
+      <nav aria-label="Legal">
+        <a href="#">Terms</a>
+        <a href="#">Privacy</a>
+        <a href="#">Contact</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script src="main.js" defer></script>
+</body>
+</html>
