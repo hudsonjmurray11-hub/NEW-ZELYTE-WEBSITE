@@ -48,8 +48,7 @@
 
   /* 3. LOADER -------------------------------------------------------------
      Blank asphalt, the Strike turns exactly one revolution and lands where
-     it started, then the page fades up. Shown once per session so it does
-     not become a toll booth on every one of the five pages.
+     it started, then the page fades up. Plays on EVERY page load.
      ---------------------------------------------------------------------- */
   var loader = $('#loader');
   var loaderMark = $('#loader-mark');
@@ -71,10 +70,7 @@
     }
   }
 
-  var seenLoader = false;
-  try { seenLoader = sessionStorage.getItem('zelyte-loaded') === '1'; } catch (e) {}
-
-  if (!loader || reduced || seenLoader) {
+  if (!loader || reduced) {
     if (loader) loader.parentNode.removeChild(loader);
     revealPage();
   } else {
@@ -89,7 +85,6 @@
       loaderMark.style.setProperty('--ry', (ease(t) * 360).toFixed(2) + 'deg');
       if (t < 1) { requestAnimationFrame(spin); return; }
       loaderMark.style.setProperty('--ry', '0deg');   // land exactly where it began
-      try { sessionStorage.setItem('zelyte-loaded', '1'); } catch (e) {}
       revealPage();
       setTimeout(function () {
         if (loader && loader.parentNode) loader.parentNode.removeChild(loader);
@@ -160,22 +155,63 @@
   }
 
 
-  /* 6. THE ORBIT ----------------------------------------------------------
-     Three rings around the tin, alternating direction, pouches shrinking
-     outward. Radius and pouch width are written in PIXELS because a
-     percentage inside translateY() would resolve against the zero-height
-     slot, not the container.
+  /* 5b. MARQUEE -----------------------------------------------------------
+     The authored markup held two groups of six and the animation shifted by
+     -50%, i.e. exactly one group. One group measures ~982px but the card is
+     ~1412px at 1440, so ~430px of empty track was on screen at the end of
+     every cycle — the words visibly ran out. That was the "stopping".
 
-     Nesting keeps every pouch upright while it travels:
-       ring (spins) > slot (static placement) > pouch (counter-spins)
-         > img (cancels the slot's placement rotation)
+     Clone the authored group until the track is wider than two viewports and
+     translate by one group's MEASURED width instead of a percentage, so the
+     loop is seamless at any window size and the speed no longer depends on it.
      ---------------------------------------------------------------------- */
-  // Radii spread so the three rings read as separate orbits rather than one
-  // cloud; pouches shrink outward so the whole thing has depth.
+  var SPEED = 60;   // px per second, viewport-independent
+  $$('.marquee').forEach(function (wrap) {
+    var track = $('.marquee__track', wrap);
+    if (!track) return;
+    var group = track.dataset.group || track.innerHTML;
+    track.dataset.group = group;
+
+    function build() {
+      track.innerHTML = group;
+      var gw = track.scrollWidth;                 // one group, measured
+      if (!gw) return;
+      var copies = Math.ceil((wrap.clientWidth * 2) / gw) + 1;
+      track.innerHTML = new Array(copies + 1).join(group);
+      track.style.setProperty('--group', gw + 'px');
+      track.style.animationDuration = (gw / SPEED).toFixed(2) + 's';
+    }
+    build();
+
+    var t;
+    window.addEventListener('resize', function () {
+      clearTimeout(t);
+      t = setTimeout(build, 220);
+    }, { passive: true });
+  });
+
+
+  /* 6. THE ORBIT ----------------------------------------------------------
+     Five rings around the tin, alternating direction, pouches shrinking and
+     fading the farther out they travel.
+
+     Radius and pouch width are written in PIXELS because a percentage inside
+     translateY() resolves against the zero-height slot, not the container.
+
+     Pouches are TANGENTIAL: the slot's rotate(--a) already turns its local
+     frame to the tangent, so an image with no counter-rotation lies flat at
+     the top of the circle and stands on its side at the left and right, its
+     angle changing continuously as it travels. Dropping the old counter-spin
+     wrapper also cut the animation count from ~41 to one per ring.
+
+       ring (spins) > slot (rotate + push out) > img
+     ---------------------------------------------------------------------- */
   var RINGS = [
-    { r: 0.365, n: 8,  w: 0.115, dur: 42, rev: false },
-    { r: 0.445, n: 12, w: 0.090, dur: 58, rev: true  },
-    { r: 0.520, n: 16, w: 0.070, dur: 76, rev: false }
+    { r: 0.200, n: 6,  w: 0.062, dur: 44,  rev: false, o: 1    },
+    { r: 0.275, n: 9,  w: 0.052, dur: 62,  rev: true,  o: 0.62 },
+    { r: 0.350, n: 12, w: 0.044, dur: 84,  rev: false, o: 0.40 },
+    { r: 0.425, n: 15, w: 0.037, dur: 110, rev: true,  o: 0.26 },
+    { r: 0.495, n: 18, w: 0.031, dur: 140, rev: false, o: 0.16 }
   ];
   var orbit = $('#orbit');
 
@@ -186,33 +222,34 @@
     $$('.orbit__ring', orbit).forEach(function (n) { n.parentNode.removeChild(n); });
     var tin = $('.orbit__tin', orbit);
 
-    RINGS.forEach(function (cfg) {
+    // The two outermost rings are illegible on a phone and would cost 33
+    // nodes for nothing, so they are simply not built there.
+    var rings = window.innerWidth < 640 ? RINGS.slice(0, 3) : RINGS;
+
+    rings.forEach(function (cfg) {
       var ring = document.createElement('div');
       ring.className = 'orbit__ring' + (cfg.rev ? ' orbit__ring--rev' : '');
       ring.setAttribute('aria-hidden', 'true');
       ring.style.setProperty('--dur', cfg.dur + 's');
+      ring.style.opacity = cfg.o;
+
+      var w = (W * cfg.w).toFixed(1) + 'px';
+      var r = (W * cfg.r).toFixed(1) + 'px';
 
       for (var i = 0; i < cfg.n; i++) {
-        var a = (360 / cfg.n) * i;
         var slot = document.createElement('div');
         slot.className = 'orbit__slot';
-        slot.style.setProperty('--a', a + 'deg');
-        slot.style.setProperty('--r', (W * cfg.r).toFixed(1) + 'px');
-
-        var pouch = document.createElement('div');
-        pouch.className = 'orbit__pouch';
-        pouch.style.setProperty('--dur', cfg.dur + 's');
+        slot.style.setProperty('--a', ((360 / cfg.n) * i).toFixed(2) + 'deg');
+        slot.style.setProperty('--r', r);
 
         var img = document.createElement('img');
         img.src = 'assets/img/pouch.webp';
         img.alt = '';
         img.width = 260; img.height = 100;
         img.decoding = 'async';
-        img.style.setProperty('--w', (W * cfg.w).toFixed(1) + 'px');
-        img.style.setProperty('--a', a + 'deg');
+        img.style.setProperty('--w', w);
 
-        pouch.appendChild(img);
-        slot.appendChild(pouch);
+        slot.appendChild(img);
         ring.appendChild(slot);
       }
       orbit.insertBefore(ring, tin);

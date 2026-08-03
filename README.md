@@ -104,16 +104,32 @@ black showing through — no shadows. Cards whose content cannot fit one screen
 `body` uses `overflow-x: clip`, **not** `hidden` — `hidden` establishes a
 scroll container and breaks every `position: sticky` in the stack.
 
-**The orbit.** Three rings around the tin, alternating direction, pouches
-shrinking outward, 36 in total. Radius and pouch width are written in pixels
-by `main.js`, because a percentage inside `translateY()` would resolve against
-the zero-height slot. Four nested levels keep each pouch upright while it
-travels — a single element cannot hold both a static placement transform and a
-spin animation, since the animation wins.
+**The orbit.** An absolutely-positioned background layer inside the hero card:
+five rings around the tin, alternating direction, pouches shrinking and fading
+the farther out they go (opacity 1 → 0.16), 60 in total. The outer rings drift
+behind the headline and are clipped by the card's rounded edge. Radius and
+pouch width are written in pixels by `main.js`, because a percentage inside
+`translateY()` resolves against the zero-height slot.
+
+Pouches are **tangential**: `.orbit__slot`'s `rotate(--a)` already turns its
+local frame to the tangent, so the image adds no rotation of its own — flat at
+the top of the circle, on its side at the left and right, angle changing
+continuously as it travels. This is also why there are only three nesting
+levels and **one animation per ring instead of one per pouch** (5 rather than
+~41), which is what buys the headroom for 60 pouches at Lighthouse 100.
+
+Below 640px only the inner three rings are built; the outer two are illegible
+at that size and would cost 33 nodes for nothing.
+
+**Marquee.** The authored markup is one group of words; `main.js` measures it
+and clones it until the track is wider than two viewports, then the keyframe
+translates by that measured `--group` width. Translating by `-50%` instead left
+a **~430px empty run** on screen at the end of every cycle at 1440 (one group
+is ~1965px, the card ~1412px) — the words visibly ran out. Duration is derived
+from the width, so the speed is the same at any viewport.
 
 **Loader.** The Strike turns exactly one revolution, lands where it started,
-and the overlay fades. Shown once per session so it is not a toll booth on
-every page.
+and the overlay fades. Plays on **every** page load.
 
 Under `prefers-reduced-motion`: no loader, cards un-stick, the orbit and
 marquee pause into a still arrangement, the timeline sits resolved at 25:00,

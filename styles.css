@@ -323,20 +323,24 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   border-block:1px solid var(--hair-dark);
   margin-inline:var(--frame);
 }
+/* --group is one authored group's measured width, set by main.js. Translating
+   by a percentage instead left a visible empty run at the end of each cycle. */
 .marquee__track{display:flex;width:max-content;animation:marquee 34s linear infinite}
 .marquee__track span{
   font-family:var(--data);font-size:11px;letter-spacing:.05em;
   text-transform:uppercase;padding-inline:22px;white-space:nowrap;
 }
 .marquee__track span::after{content:"·";margin-left:22px;color:var(--voltage)}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--group,50%)))}}
 
 
 /* 10 HERO + ORBIT ========================================================= */
-.hero__grid{
-  display:grid;grid-template-columns:1.05fr .95fr;
-  gap:clamp(24px,4vw,56px);align-items:center;width:100%;
-}
+/* The orbit is an absolute background layer now, so the hero is a single
+   constrained column of copy sitting on top of it. */
+/* Deliberately NOT positioned: the orbit should anchor to the sticky card so
+   it centres in the full hero height, not in the copy block's height. */
+.hero__grid{width:100%}
+.hero__copy{position:relative;z-index:2;max-width:min(56%,640px)}
 .hero__fuel{
   display:block;                 /* inline spans ran onto one line at 375 */
   font-family:var(--display);text-transform:uppercase;
@@ -353,32 +357,31 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 .hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(22px,3vw,34px)}
 .hero__split{margin-top:clamp(22px,3vw,34px)}
 
-/* The solar system. Square box; tin centred; three counter-rotating rings. */
+/* The solar system. A background layer inside the hero card, centred on the
+   right, wide enough that the outer rings drift behind the headline. The
+   card's own overflow:hidden clips them at the rounded edge — intended. */
 .orbit{
-  position:relative;width:min(100%,540px);aspect-ratio:1;margin-inline:auto;
+  position:absolute;z-index:0;pointer-events:none;
+  top:50%;left:74%;transform:translate(-50%,-50%);
+  width:clamp(620px,96vw,1560px);aspect-ratio:1;
 }
 .orbit__tin{
-  position:absolute;left:50%;top:50%;width:54%;
+  position:absolute;left:50%;top:50%;
+  width:clamp(190px,24vw,380px);   /* absolute, so it is independent of the
+                                      now-much-larger orbit box */
   transform:translate(-50%,-50%) rotate(var(--tin-rot,0deg));
-  z-index:2;
+  z-index:1;
 }
 .orbit__ring{position:absolute;inset:0;animation:orbit var(--dur) linear infinite}
 .orbit__ring--rev{animation-direction:reverse}
+/* rotate(--a) turns this slot's local frame to the tangent, which is exactly
+   the orientation the pouch should inherit — so the image adds no rotation of
+   its own. Flat at the top of the circle, on its side at the left and right. */
 .orbit__slot{
   position:absolute;left:50%;top:50%;width:0;height:0;
   transform:rotate(var(--a)) translateY(calc(-1 * var(--r)));
 }
-/* Counter-spins the ring so the pouch never tumbles. */
-.orbit__pouch{
-  position:absolute;left:0;top:0;
-  animation:orbit var(--dur) linear infinite reverse;
-}
-.orbit__ring--rev .orbit__pouch{animation-direction:normal}
-.orbit__pouch img{
-  width:var(--w);max-width:none;
-  /* Cancels the slot's static placement rotation. */
-  transform:translate(-50%,-50%) rotate(calc(-1 * var(--a)));
-}
+.orbit__slot img{width:var(--w);max-width:none;transform:translate(-50%,-50%)}
 @keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 
@@ -585,8 +588,10 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 
 /* 21 RESPONSIVE =========================================================== */
 @media (max-width:1024px){
-  .hero__grid{grid-template-columns:1fr;gap:clamp(20px,4vw,40px)}
-  .orbit{width:min(78%,400px);order:-1}
+  /* Orbit re-centres above the copy; the copy takes top padding so the
+     headline clears the tin instead of sitting on top of it. */
+  .orbit{top:0;left:50%;transform:translate(-50%,-14%);width:min(150%,720px)}
+  .hero__copy{max-width:none;padding-top:min(52vw,300px)}
   .feats,.buy{grid-template-columns:1fr}
   .how__stages{grid-template-columns:repeat(2,1fr)}
   .story{grid-template-columns:1fr}
@@ -631,7 +636,7 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   .stack__item{height:auto}
   .stack__card{position:static;min-height:0;transform:none!important;opacity:1!important;margin-bottom:var(--frame)}
   /* Orbit holds a still, deliberate arrangement. */
-  .orbit__ring,.orbit__pouch,.marquee__track{animation-play-state:paused}
+  .orbit__ring,.marquee__track{animation-play-state:paused}
   .loader{display:none}
   html.js body>*:not(.loader){opacity:1}
   html.js.is-ready main{animation:none}

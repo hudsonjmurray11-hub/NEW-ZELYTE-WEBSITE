@@ -68,7 +68,13 @@
     <section class="stack__card" aria-labelledby="hero-h">
       <div class="wrap">
         <div class="hero__grid">
-          <div>
+          <!-- Background layer: the tin, ringed by orbiting pouches. Rings are
+               generated in main.js so radius and pouch size are real pixels. -->
+          <div class="orbit" id="orbit">
+            <img class="orbit__tin" src="assets/img/tin.webp" width="900" height="898" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
+          </div>
+
+          <div class="hero__copy">
             <p class="eyebrow scramble reveal">Active hydration pouches</p>
             <h1 class="hero__h1" id="hero-h">
               <span class="hero__fuel reveal">Fuel</span>
@@ -83,12 +89,6 @@
               <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
               <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
             </div>
-          </div>
-
-          <!-- The orbit. Rings of pouches are generated in main.js so the
-               radius and pouch size can be written in real pixels. -->
-          <div class="orbit" id="orbit">
-            <img class="orbit__tin" src="assets/img/tin.webp" width="900" height="898" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
           </div>
         </div>
       </div>
