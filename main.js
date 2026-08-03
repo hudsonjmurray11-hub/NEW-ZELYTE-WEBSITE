@@ -206,12 +206,15 @@
 
        ring (spins) > slot (rotate + push out) > img
      ---------------------------------------------------------------------- */
+  /* w is a fraction of the orbit box, so the pouches scale with the layout.
+     Radii and counts are unchanged, so shrinking w also widens the visible arc
+     gap between neighbours. */
   var RINGS = [
-    { r: 0.200, n: 6,  w: 0.062, dur: 44,  rev: false, o: 1    },
-    { r: 0.275, n: 9,  w: 0.052, dur: 62,  rev: true,  o: 0.62 },
-    { r: 0.350, n: 12, w: 0.044, dur: 84,  rev: false, o: 0.40 },
-    { r: 0.425, n: 15, w: 0.037, dur: 110, rev: true,  o: 0.26 },
-    { r: 0.495, n: 18, w: 0.031, dur: 140, rev: false, o: 0.16 }
+    { r: 0.200, n: 6,  w: 0.040, dur: 44,  rev: false, o: 1    },
+    { r: 0.275, n: 9,  w: 0.033, dur: 62,  rev: true,  o: 0.62 },
+    { r: 0.350, n: 12, w: 0.028, dur: 84,  rev: false, o: 0.40 },
+    { r: 0.425, n: 15, w: 0.024, dur: 110, rev: true,  o: 0.26 },
+    { r: 0.495, n: 18, w: 0.020, dur: 140, rev: false, o: 0.16 }
   ];
   var orbit = $('#orbit');
 

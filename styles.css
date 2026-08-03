@@ -381,7 +381,9 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   position:absolute;left:50%;top:50%;width:0;height:0;
   transform:rotate(var(--a)) translateY(calc(-1 * var(--r)));
 }
-.orbit__slot img{width:var(--w);max-width:none;transform:translate(-50%,-50%)}
+/* Floor stops the outer rings dissolving into specks on a narrow phone, where
+   --w is a fraction of a much smaller orbit box. */
+.orbit__slot img{width:max(var(--w),16px);max-width:none;transform:translate(-50%,-50%)}
 @keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
 
