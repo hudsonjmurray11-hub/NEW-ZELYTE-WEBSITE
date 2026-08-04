@@ -21,6 +21,6 @@
    Where to find them: Supabase dashboard > Settings > API.
    ========================================================================== */
 window.ZELYTE_CONFIG = {
-  SUPABASE_URL: '',        // e.g. 'https://abcdefghijklm.supabase.co' — no trailing slash
-  SUPABASE_ANON_KEY: ''    // Project API keys > anon / publishable
+  SUPABASE_URL: 'https://yyutliqftvhmkvxgwpxz.supabase.co',
+  SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl5dXRsaXFmdHZobWt2eGd3cHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4NjgzNDgsImV4cCI6MjEwMTQ0NDM0OH0.9ZAxg-CEoR1h9SKeHbyPJY6F9CNil4rdhK3BeHmGETw'
 };
