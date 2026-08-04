@@ -4,15 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
-<title>Shop — ZELYTE</title>
-<meta name="description" content="Shop ZELYTE active hydration pouches. Crispy Mint and Black Cherry. Pro Pack 3 tins from $30, Elite Pack 5 tins from $45 on subscribe. 15 pouches per tin. Every order ships free.">
+<title>Black Cherry — ZELYTE</title>
+<meta name="description" content="ZELYTE Black Cherry. Bold, ripe, and juicy. Electrolytes and 50mg caffeine in a pouch, released over 25 minutes. 15 pouches per tin, zero sugar.">
 <meta name="theme-color" content="#0C0E10">
+<meta property="og:type" content="product">
+<meta property="og:title" content="ZELYTE Black Cherry">
+<meta property="og:description" content="Bold, ripe, and juicy. Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
+<meta property="og:site_name" content="ZELYTE">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body class="pdp pdp--cherry">
 
 <div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
 <a class="skip" href="#main">Skip to content</a>
@@ -31,7 +35,7 @@
   <div class="nav__inner">
     <a class="lockup lockup--word" href="index.html" aria-label="ZELYTE home"><span class="lockup__word">ZELYTE</span></a>
     <nav class="nav__links" aria-label="Primary">
-      <a href="shop.html" aria-current="page">Shop</a>
+      <a href="shop.html">Shop</a>
       <a href="science.html">Science</a>
       <a href="about.html">About</a>
       <a href="faq.html">FAQ</a>
@@ -54,67 +58,119 @@
 <main id="main">
 <div class="stack">
 
-  <!-- ============ SHOP HERO ============ -->
-  <div class="stack__item">
-    <section class="stack__card" aria-labelledby="shop-h">
+  <!-- ============ HERO — the tin turns 90° as the card exits ============ -->
+  <div class="stack__item" id="pdp-hero">
+    <section class="stack__card is-dark" aria-labelledby="pdp-h">
       <div class="wrap">
-        <div class="hero__grid">
-          <div class="orbit" id="orbit">
-            <img class="orbit__tin" src="assets/img/tin-mint.webp" width="900" height="948" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
+        <div class="pdp__hero">
+          <div class="pdp__stage">
+            <img class="pdp__tin" id="pdp-tin" src="assets/img/tin-cherry.webp" width="900" height="948" alt="A ZELYTE tin in Black Cherry, lid facing up." fetchpriority="high" decoding="async">
           </div>
-
-          <div class="hero__copy">
-            <p class="eyebrow scramble reveal">Shop</p>
-            <h1 class="display reveal" id="shop-h">Pick your window.</h1>
-            <p class="lede reveal">Two flavors, one formula. First batch ships fall 2026.</p>
+          <div class="pdp__copy">
+            <p class="pdp__chip reveal">Zero sugar</p>
+            <h1 class="display pdp__h1 reveal" id="pdp-h">
+              <span class="line">Black</span>
+              <span class="line">Cherry</span>
+            </h1>
+            <p class="lede reveal">Bold, ripe, and juicy. Electrolytes and 50mg caffeine, released under your lip over 25 minutes.</p>
             <div class="hero__actions reveal">
               <a class="btn" href="#bundles">See bundles</a>
-              <a class="btn btn--ghost" href="science.html">The science</a>
+              <a class="btn btn--ghost" href="#inside">What's inside</a>
             </div>
-            <div class="split hero__split reveal" aria-hidden="true">
-              <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
-              <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
-            </div>
+            <ul class="stats pdp__spec reveal">
+              <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
+              <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
+              <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
+            </ul>
           </div>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- ============ FLAVORS — --flow, product shots push it past one screen ============ -->
+  <!-- ============ MARQUEE ============ -->
   <div class="stack__item stack__item--flow">
-    <section class="stack__card" id="flavors" aria-labelledby="flav-h">
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Black Cherry</span><span>Zero sugar</span><span>Zero calories</span><span>50mg caffeine</span><span>25:00 window</span><span>15 pouches per tin</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ INSIDE THE POUCH — the pan ==============================
+       --pan supplies 220svh of scroll; main.js converts that travel into a
+       sideways translate on #pan-track. The panel width is what sets the
+       speed — see the ratio note on .pan__panel in styles.css. -->
+  <div class="stack__item stack__item--pan" id="pan-item">
+    <section class="stack__card" id="inside" aria-labelledby="inside-h">
       <div class="wrap">
-        <p class="eyebrow reveal">Flavors</p>
-        <h2 class="display" id="flav-h">Just two for now.</h2>
-        <div class="flavors__grid" style="margin-top:clamp(28px,3.4vw,44px)">
-          <article class="sku sku--mint reveal">
-            <div class="sku__img">
-              <img src="assets/img/tin-mint.webp" width="900" height="948" alt="ZELYTE Crispy Mint tin" loading="lazy" decoding="async">
-            </div>
-            <h3 class="sku__name">Crispy Mint</h3>
-            <p class="sku__desc">Cool, crisp and clean. Sharp through a hard effort.</p>
-            <dl class="sku__spec">
-              <div><dt>From</dt><dd>$9 / tin</dd></div>
-              <div><dt>Per tin</dt><dd>15</dd></div>
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
-            </dl>
-            <a class="btn sku__btn" href="crispy-mint.html">See Crispy Mint</a>
-          </article>
-          <article class="sku sku--cherry reveal">
-            <div class="sku__img">
-              <img src="assets/img/tin-cherry.webp" width="900" height="948" alt="ZELYTE Black Cherry tin" loading="lazy" decoding="async">
-            </div>
-            <h3 class="sku__name">Black Cherry</h3>
-            <p class="sku__desc">Bold, ripe and dry, not sweet. For longer sessions.</p>
-            <dl class="sku__spec">
-              <div><dt>From</dt><dd>$9 / tin</dd></div>
-              <div><dt>Per tin</dt><dd>15</dd></div>
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
-            </dl>
-            <a class="btn sku__btn" href="black-cherry.html">See Black Cherry</a>
-          </article>
+        <p class="eyebrow reveal">Inside the pouch</p>
+        <h2 class="display" id="inside-h">Four compounds. One window.</h2>
+        <div class="pan" id="pan">
+          <ol class="pan__track" id="pan-track">
+            <li class="pan__panel">
+              <span class="pan__n">01</span>
+              <span class="pan__v">115mg</span>
+              <h3 class="pan__k">Sodium chloride</h3>
+              <p>Yields ~45mg sodium. The one you lose most in sweat.</p>
+            </li>
+            <li class="pan__panel">
+              <span class="pan__n">02</span>
+              <span class="pan__v">40mg</span>
+              <h3 class="pan__k">Potassium chloride</h3>
+              <p>Yields ~21mg potassium. Fluid balance.</p>
+            </li>
+            <li class="pan__panel">
+              <span class="pan__n">03</span>
+              <span class="pan__v">25mg</span>
+              <h3 class="pan__k">Magnesium malate</h3>
+              <p>Yields ~3.75mg magnesium. Solubility and taste.</p>
+            </li>
+            <li class="pan__panel">
+              <span class="pan__n">04</span>
+              <span class="pan__v">50mg</span>
+              <h3 class="pan__k">Caffeine anhydrous</h3>
+              <p>Half a coffee, spread across the window.</p>
+            </li>
+            <li class="pan__panel pan__panel--end">
+              <span class="pan__n">05</span>
+              <span class="pan__v">25:00</span>
+              <h3 class="pan__k">The window</h3>
+              <p>One pouch, under the lip. Then it's done.</p>
+            </li>
+          </ol>
         </div>
+        <div class="split split--track pan__foot" aria-hidden="true">
+          <div class="split__rule"><span class="split__fill" id="pan-fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="split__labels"><span id="pan-step">01</span><span class="split__label">Formula</span><span>05</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ THE TASTE ============ -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card is-dark" id="taste" aria-labelledby="taste-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">The taste</p>
+        <h2 class="display" id="taste-h">
+          <span class="line reveal">Dark and ripe.</span>
+          <span class="line reveal">Never candy.</span>
+        </h2>
+        <p class="lede reveal">Cherry with the sugar taken out of it — full up front, dry on the finish, easy to sit with for a long session.</p>
+        <ul class="uses">
+          <li class="reveal"><span class="uses__k">Up front</span><p>Deep and ripe from the first minute.</p></li>
+          <li class="reveal"><span class="uses__k">Mid window</span><p>Dries out into something closer to stone fruit.</p></li>
+          <li class="reveal"><span class="uses__k">Best for</span><p>Long efforts where mint gets tiring.</p></li>
+        </ul>
+        <a class="pdp__swap reveal" href="crispy-mint.html">
+          <img src="assets/img/tin-mint.webp" width="900" height="948" alt="" loading="lazy" decoding="async">
+          <span>
+            <span class="pdp__swap-k">The other flavor</span>
+            <span class="pdp__swap-n">Crispy Mint</span>
+          </span>
+          <span class="pdp__swap-a" aria-hidden="true">&rarr;</span>
+        </a>
       </div>
     </section>
   </div>
@@ -153,36 +209,6 @@
           </article>
         </div>
         <p class="capture__micro reveal" style="margin-top:clamp(22px,3vw,32px)">Every order ships free. Checkout opens with the first batch.</p>
-      </div>
-    </section>
-  </div>
-
-  <!-- ============ WHAT'S IN THE TIN ============ -->
-  <div class="stack__item">
-    <section class="stack__card is-dark" id="whats-in" aria-labelledby="tin-h">
-      <div class="wrap">
-        <p class="eyebrow reveal">What's in the tin</p>
-        <h2 class="display" id="tin-h">
-          <span class="line reveal">Four ingredients.</span>
-          <span class="line reveal">Nothing hidden.</span>
-        </h2>
-        <div class="table-wrap reveal" style="margin-top:clamp(26px,3.2vw,40px)">
-          <table class="spec">
-            <caption class="visually-hidden">ZELYTE formula, per pouch</caption>
-            <thead><tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th></tr></thead>
-            <tbody>
-              <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td></tr>
-              <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td></tr>
-              <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td></tr>
-              <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <ul class="stats reveal">
-          <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
-          <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
-          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
-        </ul>
       </div>
     </section>
   </div>

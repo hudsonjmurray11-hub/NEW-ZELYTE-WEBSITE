@@ -4,13 +4,13 @@
    reveals, one requestAnimationFrame loop for everything scroll-linked.
    Every page-specific block is gated on its elements existing.
 
-     1. Helpers + reduced motion      8. "How it works" timeline
+     1. Helpers + reduced motion      8. Scroll: timeline, the pan, the tin
      2. Nav height                    9. Counters
      3. Loader                       10. Magnetic buttons
      4. Reveals                      11. Mono scramble
      5. Mobile menu                  12. The rAF loop
-     6. The orbit                    13. Email capture (STUBBED)
-     7. Card stack
+     6. The orbit                    12b. One time / Subscribe & save
+     7. Card stack                   13. Email capture (STUBBED)
    ========================================================================== */
 (function () {
   'use strict';
@@ -288,7 +288,7 @@
   }
 
 
-  /* 8. HOW IT WORKS + PAGE PROGRESS ---------------------------------------- */
+  /* 8. SCROLL — PAGE PROGRESS, 25:00 TIMELINE, THE PAN, THE PRODUCT TIN ---- */
   var progressFill = $('#scroll-progress .split__fill');
   var progressEl = $('#scroll-progress');
   var how = $('#how-item') || $('#how-it-works');
@@ -297,6 +297,16 @@
   var stages = $$('#how-stages .stage');
   var tin = $('.orbit__tin');
   var lastPct = -1;
+
+  // Product pages only. Every one of these is null elsewhere, and each block
+  // below is gated on that, so the other five pages run exactly as before.
+  var panItem = $('#pan-item');
+  var panTrack = $('#pan-track');
+  var panFill = $('#pan-fill');
+  var panStep = $('#pan-step');
+  var pdpHero = $('#pdp-hero');
+  var pdpTin = $('#pdp-tin');
+  var lastStep = -1;
 
   function mmss(sec) {
     var m = Math.floor(sec / 60), s = Math.floor(sec % 60);
@@ -326,6 +336,37 @@
 
     // The tin turns slowly with the page — the orbit's only scroll-linked part.
     if (tin) tin.style.setProperty('--tin-rot', (y * 0.02).toFixed(2) + 'deg');
+
+    /* THE PAN — scrolling down drives the panel row sideways. Same progress
+       math as the 25:00 timeline above: how far the pinned item has travelled
+       through its own extra height. Translating by the MEASURED remaining
+       width rather than a percentage is what guarantees the last panel lands
+       flush at p=1 with no dead run — the mistake the marquee used to make. */
+    if (panItem && panTrack) {
+      var pr = panItem.getBoundingClientRect();
+      var pspan = panItem.offsetHeight - window.innerHeight;
+      var pp = pspan > 0 ? clamp(-pr.top / pspan, 0, 1) : 0;
+      var travel = Math.max(panTrack.scrollWidth - panTrack.parentNode.clientWidth, 0);
+      panTrack.style.transform = 'translate3d(' + (-travel * pp).toFixed(1) + 'px,0,0)';
+      if (panFill) panFill.style.setProperty('--p', pp.toFixed(4));
+      if (panStep) {
+        var step = clamp(Math.floor(pp * panTrack.children.length) + 1, 1, panTrack.children.length);
+        if (step !== lastStep) {
+          panStep.textContent = (step < 10 ? '0' : '') + step;
+          lastStep = step;
+        }
+      }
+    }
+
+    /* The product hero's tin, scoped to the hero's OWN exit rather than the
+       whole page, so it reads as one deliberate quarter-turn instead of a
+       drift that never resolves. */
+    if (pdpHero && pdpTin) {
+      var hp = clamp(-pdpHero.getBoundingClientRect().top / window.innerHeight, 0, 1);
+      pdpTin.style.setProperty('--tin-rot', (hp * 90).toFixed(2) + 'deg');
+      pdpTin.style.setProperty('--tin-y', (hp * -60).toFixed(1) + 'px');
+      pdpTin.style.setProperty('--tin-s', (1 - hp * 0.12).toFixed(4));
+    }
 
     updateStack();
   }
@@ -406,8 +447,18 @@
     stages.forEach(function (s) { s.classList.add('is-on'); });
   } else {
     var dirty = true;
-    window.addEventListener('scroll', function () { dirty = true; }, { passive: true });
-    window.addEventListener('resize', function () { dirty = true; }, { passive: true });
+    var soil = function () { dirty = true; };
+    window.addEventListener('scroll', soil, { passive: true });
+    window.addEventListener('resize', soil, { passive: true });
+    // updateScroll only runs while dirty, and the pan's travel distance is
+    // measured inside it — so a measurement taken before layout settled would
+    // stick until the next scroll. Re-dirty on load and whenever the pan's box
+    // changes, the same way buildOrbit re-measures.
+    window.addEventListener('load', soil);
+    if (window.ResizeObserver) {
+      var pan = $('#pan');
+      if (pan) new ResizeObserver(soil).observe(pan);
+    }
     (function frame() {
       requestAnimationFrame(frame);
       if (!dirty) return;
@@ -416,6 +467,30 @@
     })();
     updateScroll();
   }
+
+
+  /* 12b. ONE TIME / SUBSCRIBE & SAVE --------------------------------------
+     Both price sets are in the markup; a class on the owning card decides
+     which one CSS shows. With JS off the authored .is-mode-sub stands and the
+     subscribe prices render, so the page is never priceless.
+     ---------------------------------------------------------------------- */
+  $$('.mode').forEach(function (group) {
+    var card = group.closest('.stack__card');
+    if (!card) return;
+    var btns = $$('.mode__btn', group);
+    group.addEventListener('click', function (e) {
+      var hit = e.target.closest('.mode__btn');
+      if (!hit) return;
+      var sub = hit.dataset.mode === 'sub';
+      card.classList.toggle('is-mode-sub', sub);
+      card.classList.toggle('is-mode-one', !sub);
+      btns.forEach(function (b) {
+        var on = b === hit;
+        b.classList.toggle('is-on', on);
+        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+    });
+  });
 
 
   /* 13. EMAIL CAPTURE — STUBBED ===========================================

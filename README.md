@@ -1,6 +1,6 @@
 # ZELYTE — marketing site
 
-Five static pages. No framework, no build step, no dependencies.
+Seven static pages. No framework, no build step, no dependencies.
 
 ```bash
 python3 -m http.server 8080
@@ -9,22 +9,36 @@ python3 -m http.server 8080
 ## Files
 
 ```
-index.html    Home — hero + orbit, new category, 25:00 timeline, formula,
-              flavors, built for, bundles, launch list
-shop.html     Flavors, pricing, what's in the tin
-science.html  Buccal delivery, the 25:00 window, full formula, safety
-about.html    Founder story, milestones, competitor comparison
-faq.html      12 questions in three groups
+index.html          Home — hero + orbit, new category, 25:00 timeline,
+                    formula, flavors, built for, bundles, launch list
+shop.html           Flavors, pricing, what's in the tin
+crispy-mint.html    Product — hero, the pan, taste, bundles, launch list
+black-cherry.html   Product — same structure, different flavor
+science.html        Buccal delivery, the 25:00 window, full formula, safety
+about.html          Founder story, milestones, competitor comparison
+faq.html            12 questions in three groups
 
 styles.css    shared, commented by section
 main.js       shared; every page-specific block is gated on its elements
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
-assets/img/   tin, pouch, two athlete photos
+assets/img/   two tins, pouch, two athlete photos
 sql/          run before wiring the email form
 ```
 
 Nav and footer are duplicated into each page rather than injected by JS — no
-build step, and LCP and SEO stay intact without JavaScript.
+build step, and LCP and SEO stay intact without JavaScript. A footer change is
+therefore a seven-file change.
+
+### The nav is two boxes, on purpose
+
+`.nav` is a transparent, constant **54px** shell. `.nav__inner` is the chalk
+pill, and it is the only thing that shrinks on scroll (54 → 46, via the
+`.is-stuck` class `main.js` already toggles). They are separate because
+`main.js` measures `nav.offsetHeight` into `--nav-h`, and `--nav-h` drives
+every card's top padding and every `[id]`'s `scroll-margin-top` — so a shell
+that resized would relayout the entire card stack the moment you started
+scrolling. 54 and not 52: the resting pill is 9+9 padding, a 34px CTA, **and
+its own 1px borders**.
 
 ## Lighthouse
 
@@ -128,6 +142,35 @@ a **~430px empty run** on screen at the end of every cycle at 1440 (one group
 is ~1965px, the card ~1412px) — the words visibly ran out. Duration is derived
 from the width, so the speed is the same at any viewport.
 
+**The pan** (product pages). `#pan-item` takes `.stack__item--pan` for 220svh
+of scroll; `main.js` converts that vertical travel into a sideways
+`translate3d` on `#pan-track`, using the same `-rect.top / span` progress the
+25:00 timeline uses. The translate is by the **measured** remaining width
+(`scrollWidth - clientWidth`), not a percentage — that is what makes the last
+panel land flush at p=1 instead of trailing a dead run, the mistake the
+marquee used to make.
+
+**`.pan__panel`'s width is the speed control, and it is the whole ballgame.**
+What decides whether this reads as an animation is *travel ÷ scroll distance*.
+At 340px wide, 3.1 of the 5 panels were already on screen, so the row had only
+656px to cover across 1800px of scroll — **0.36×**, slow enough that it read as
+broken. At 460px only 2.4 fit, travel is 1256px, and the shorter `--pan` span
+brings it to **1.16×**, so the row moves marginally faster than the finger.
+Measured across six viewports: 0.91–1.31×, gap 0 at both ends. Do not shrink
+the panels or lengthen `--pan` without re-checking that ratio.
+
+Note the two tall classes are deliberately separate — `.stack__item--tall`
+(300svh) for the 25:00 clock, which wants a long slow scrub, and
+`.stack__item--pan` (220svh) for the pan, which wants to keep up.
+
+Tall heights are a **class**, never an inline `style="height:…"`. Section 22
+flattens the stack with `.stack__item{height:auto}`, and a stylesheet rule can
+never override an inline height — while `#how-item` carried one, reduced motion
+left it 2700px tall with an un-stuck card inside it.
+
+**The product tin.** Rotates 90°, rises 60px and scales to 0.88 across the
+hero's own exit, so it resolves rather than drifting. Composited transform only.
+
 **Loader.** The Strike turns exactly one revolution, lands where it started,
 and the overlay fades. Plays on **every** page load.
 
@@ -135,7 +178,45 @@ Under `prefers-reduced-motion`: no loader, cards un-stick, the orbit and
 marquee pause into a still arrangement, the timeline sits resolved at 25:00,
 and neither the rAF loop nor the scroll listener is ever registered.
 
+The pan does **not** become a sideways scroller here. It used to, and that left
+the row clipped with two panels off the edge under a progress rule that could
+never fill — indistinguishable from an unfinished section. The panels wrap into
+a `3+2` grid instead: all five visible, `.pan` horizontal overflow exactly 0,
+`.pan__foot` hidden. If someone reports "the animation doesn't work," check
+this setting first — the marquee standing still is the one-look tell.
+
+### The flavor accent is a fill, never ink
+
+The two flavor colors are legible on **opposite** surfaces, so no single
+"headline is the flavor color" rule can serve both product pages. Measured:
+
+| | on `--chalk` | on `--asphalt` |
+|---|---|---|
+| `--mint` | 2.82:1 — fails even large-text 3:1 | 5.73:1 — passes |
+| `--cherry` | 9.43:1 — passes | 1.71:1 — fails |
+
+Inverted it is symmetric. `--sku` is a **background** and `--sku-ink` is the
+palette color that passes on it — asphalt-on-mint **5.73:1**, chalk-on-cherry
+**9.43:1**. Headlines stay chalk/asphalt; interactive elements stay voltage.
+
 ## Content notes
+
+Pricing mirrors the `PACK_PRICES` object on the live
+`takezelyte.com/crispy-mint.html`. Every order ships free.
+
+| Pack | One Time | Subscribe & Save |
+|---|---|---|
+| **Pro Pack** — 3 tins | **$33** · $11.00 / tin | **$30** · $10.00 / tin · was $33 · save $3 |
+| **Elite Pack** — 5 tins | **$50** · $10.00 / tin · was $55 | **$45** · $9.00 / tin · was $55 · save $10 |
+
+There is no 1-tin SKU; $11.00/tin is simply the one-time base rate.
+
+**Both price sets are authored into the markup and CSS shows one of them** —
+`.is-mode-sub` / `.is-mode-one` on the `#bundles` card, `.m-sub` / `.m-one` on
+the spans. JS only swaps that one class, so with JavaScript off the authored
+subscribe prices still render and the page is never priceless. The toggle is on
+all four `#bundles` sections; quoting $30/$45 without it would present a
+subscribe-only price as the plain price.
 
 Two figures differ from takezelyte.com and were resolved toward the packaging:
 
@@ -152,4 +233,20 @@ Sports Drinks and Electrolyte Powders.
 
 - Checkout. All buy buttons route to the launch-list form; no payment is wired.
 - Real social and legal URLs (currently `#`).
-- A Black Cherry tin render — only Crispy Mint exists.
+- **Short-viewport card fit.** A pinned `.stack__item` supplies exactly one
+  screen of scroll, but `.stack__card` can be taller than that, and then the
+  next card clips it. Cards that can never fit take `.stack__item--flow`
+  (flavors, athletes, bundles, founder, the FAQ list, the wide tables). What
+  is left is height-dependent and unfixed:
+
+  | | overflow |
+  |---|---|
+  | 1440×900, 1440×800, 393×852 | none |
+  | 1280×720 | `shop #whats-in` +13 |
+  | 1024×768 | `index` +57/+98, `shop` +79, `science` +24 |
+  | 375×667 | `index #cat-h` +128, `science #buccal` +145, `#capture` +7 on every page |
+
+  All of these predate the product pages and every one is far smaller than it
+  was — at 375×667 `index` alone used to overflow five cards, the worst by
+  670px. The real fix is making `--sec` height-aware, which changes vertical
+  rhythm on every section site-wide.

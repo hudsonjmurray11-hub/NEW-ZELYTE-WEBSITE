@@ -36,7 +36,6 @@
       <a href="about.html" aria-current="page">About</a>
       <a href="faq.html">FAQ</a>
     </nav>
-    <a class="btn nav__cta" href="shop.html">Shop</a>
     <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
   </div>
 </header>
@@ -63,7 +62,7 @@
           <span class="line">Built by someone</span>
           <span class="line">who kept stopping.</span>
         </h1>
-        <p class="lede reveal">ZELYTE started with a specific, repeated problem: being deep into an effort, needing electrolytes, and having no way to take them without breaking the session.</p>
+        <p class="lede reveal">Deep into an effort, needing electrolytes, with no way to take them without stopping.</p>
         <div class="split hero__split reveal" aria-hidden="true" style="max-width:640px">
           <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
@@ -73,7 +72,9 @@
   </div>
 
   <!-- ============ FOUNDER STORY ============ -->
-  <div class="stack__item">
+  <!-- --flow: the portrait and the copy stack on a phone and overrun the
+       slot by 66px. -->
+  <div class="stack__item stack__item--flow">
     <section class="stack__card is-dark" id="founder" aria-labelledby="found-h">
       <div class="wrap">
         <div class="story">
@@ -86,8 +87,8 @@
               <span class="line reveal">A thousand meters in,</span>
               <span class="line reveal">with a dry mouth.</span>
             </h2>
-            <p class="story__q reveal" style="font-size:clamp(1.1rem,1.9vw,1.5rem);color:var(--chalk);margin-top:clamp(20px,2.6vw,30px)">"I knew the feeling of being 1,000 meters into a race with a dry mouth and cramping legs — and knowing a bottle was not going to help me in that moment."</p>
-            <p class="lede reveal">The idea came out of years of rowing, wrestling and lifting: sports where you cannot stop, cannot carry anything, and where the moment you need hydration most is the moment it is hardest to get. ZELYTE is the answer to that specific problem, not a general one.</p>
+            <p class="story__q reveal" style="margin-top:clamp(20px,2.6vw,30px)">"A thousand meters into a race, dry mouth, cramping legs — and a bottle was no help."</p>
+            <p class="lede reveal">Years of rowing, wrestling and lifting: sports where you cannot stop and cannot carry anything. ZELYTE answers that.</p>
             <p class="story__by reveal">Hudson Murray — Founder &amp; CEO</p>
           </div>
         </div>
@@ -102,10 +103,10 @@
         <p class="eyebrow reveal">Milestones</p>
         <h2 class="display" id="mile-h">Where we are.</h2>
         <ol class="timeline">
-          <li class="reveal"><span class="timeline__y">Origin</span><p>The idea takes shape during high school rowing, wrestling and lifting — sports where stopping to drink is not an option.</p></li>
-          <li class="reveal"><span class="timeline__y">Formula</span><p>Four compounds settled: sodium chloride, potassium chloride, magnesium malate, and 50mg of caffeine anhydrous.</p></li>
-          <li class="reveal"><span class="timeline__y">Format</span><p>The 25-minute active window is set, and the tin is designed around it — the timing rule is printed on the lid.</p></li>
-          <li class="reveal"><span class="timeline__y">Fall 2026</span><p>First batch. Two flavors, Crispy Mint and Black Cherry, 15 pouches per tin.</p></li>
+          <li class="reveal"><span class="timeline__y">Origin</span><p>High school rowing, wrestling and lifting. No stopping to drink.</p></li>
+          <li class="reveal"><span class="timeline__y">Formula</span><p>Four compounds settled. Three electrolytes and 50mg caffeine.</p></li>
+          <li class="reveal"><span class="timeline__y">Format</span><p>The 25-minute window set, printed on the lid.</p></li>
+          <li class="reveal"><span class="timeline__y">Fall 2026</span><p>First batch. Two flavors, 15 pouches per tin.</p></li>
         </ol>
       </div>
     </section>
@@ -132,7 +133,7 @@
             <tbody>
               <tr><th scope="row">Works without water</th><td class="is-us">Yes</td><td>No</td><td>No</td><td>No</td></tr>
               <tr><th scope="row">Hands free while moving</th><td class="is-us">Yes</td><td>No</td><td>No</td><td>No</td></tr>
-              <tr><th scope="row">Electrolytes and caffeine together</th><td class="is-us">Yes</td><td>Sometimes</td><td>Rarely</td><td>Rarely</td></tr>
+              <tr><th scope="row">Electrolytes + caffeine</th><td class="is-us">Yes</td><td>Sometimes</td><td>Rarely</td><td>Rarely</td></tr>
               <tr><th scope="row">Released over a set window</th><td class="is-us">25:00</td><td>All at once</td><td>All at once</td><td>All at once</td></tr>
               <tr><th scope="row">Sugar</th><td class="is-us">None</td><td>Usually</td><td>Usually</td><td>Varies</td></tr>
               <tr><th scope="row">Fits in a pocket</th><td class="is-us">Yes</td><td>No</td><td>No</td><td>Yes</td></tr>
@@ -153,7 +154,7 @@
           <span class="line reveal">First batch,</span>
           <span class="line reveal">fall 2026.</span>
         </h2>
-        <p class="lede reveal">Early access, new flavors and launch details. One email when the first batch ships.</p>
+        <p class="lede reveal">Early access and launch details. One email, when it ships.</p>
         <form class="capture__form reveal" data-signup="signup-status" novalidate style="margin-top:clamp(24px,3vw,34px)">
           <label class="visually-hidden" for="email">Email address</label>
           <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
@@ -175,7 +176,7 @@
         <span class="lockup__word">ZELYTE</span>
       </a>
       <nav class="footer__cols" aria-label="Footer">
-        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="shop.html#flavors">Flavors</a><a href="shop.html#bundles">Bundles</a></div>
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
         <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
         <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
         <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
@@ -187,7 +188,7 @@
     </div>
     <div class="footer__legal">
       <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
-      <p>ZELYTE supports hydration and provides caffeine. Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not recommended for children, or those pregnant or nursing.</p>
+      <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not for children, or those pregnant or nursing.</p>
       <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
     </div>
   </div>

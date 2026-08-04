@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
-<title>ZELYTE — Fuel you don't have to drink</title>
-<meta name="description" content="ZELYTE active hydration pouches. Electrolytes and 50mg of caffeine released over a 25-minute window, while you keep moving. 15 pouches per tin.">
+<title>ZELYTE — Fuel that keeps up</title>
+<meta name="description" content="ZELYTE active hydration pouches. Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
 <meta name="theme-color" content="#0C0E10">
 <meta property="og:type" content="website">
-<meta property="og:title" content="ZELYTE — Fuel you don't have to drink">
-<meta property="og:description" content="Electrolytes and 50mg of caffeine, released over a 25-minute window, while you keep moving.">
+<meta property="og:title" content="ZELYTE — Fuel that keeps up">
+<meta property="og:description" content="Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
 <meta property="og:site_name" content="ZELYTE">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
@@ -42,7 +42,6 @@
       <a href="about.html">About</a>
       <a href="faq.html">FAQ</a>
     </nav>
-    <a class="btn nav__cta" href="shop.html">Shop</a>
     <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
   </div>
 </header>
@@ -71,16 +70,16 @@
           <!-- Background layer: the tin, ringed by orbiting pouches. Rings are
                generated in main.js so radius and pouch size are real pixels. -->
           <div class="orbit" id="orbit">
-            <img class="orbit__tin" src="assets/img/tin.webp" width="900" height="898" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
+            <img class="orbit__tin" src="assets/img/tin-mint.webp" width="900" height="948" alt="A ZELYTE tin in Crispy Mint, lid facing up." fetchpriority="high" decoding="async">
           </div>
 
           <div class="hero__copy">
             <p class="eyebrow scramble reveal">Active hydration pouches</p>
             <h1 class="hero__h1" id="hero-h">
-              <span class="hero__fuel reveal">Fuel</span>
-              <span class="hero__rest reveal">You don't have to drink.</span>
+              <span class="hero__fuel reveal">Don't stop.</span>
+              <span class="hero__rest reveal">Fuel that keeps up.</span>
             </h1>
-            <p class="lede reveal">Electrolytes and 50mg of caffeine, released over a 25-minute window — while you keep moving. 15 pouches per tin.</p>
+            <p class="lede reveal">Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.</p>
             <div class="hero__actions reveal">
               <a class="btn" href="shop.html">Shop ZELYTE</a>
               <a class="btn btn--ghost" href="#how-it-works">How it works</a>
@@ -114,30 +113,33 @@
           <span class="line reveal">Drink less.</span>
           <span class="line reveal">Perform more.</span>
         </h2>
-        <p class="lede reveal">ZELYTE is an active hydration pouch. It sits under your upper lip and releases electrolytes and caffeine across a 25-minute window, so hydration happens while you work rather than between sets.</p>
+        <p class="lede reveal">An active hydration pouch. Electrolytes and caffeine, released while you work.</p>
         <div class="feats">
           <article class="feat reveal">
             <span class="feat__n">01</span>
             <h3 class="feat__h">A new format</h3>
-            <p>Not a powder, not a bottle. A pouch you wear for 25 minutes and take out when the window closes.</p>
+            <p>No powder. No bottle. A pouch you wear.</p>
           </article>
           <article class="feat reveal">
             <span class="feat__n">02</span>
             <h3 class="feat__h">Buccal delivery</h3>
-            <p>Held against the gum, the contents dissolve steadily into the tissue of the mouth rather than arriving all at once.</p>
+            <p>Absorbs steadily through the gum, not all at once.</p>
           </article>
           <article class="feat reveal">
             <span class="feat__n">03</span>
             <h3 class="feat__h">50mg caffeine</h3>
-            <p>Roughly half a cup of coffee, released across the window instead of swallowed in a single hit.</p>
+            <p>Half a cup of coffee, spread across the window.</p>
           </article>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- ============ HOW IT WORKS — scroll-linked, 320svh of travel ============ -->
-  <div class="stack__item" id="how-item" style="height:320svh">
+  <!-- ============ HOW IT WORKS — scroll-linked, --tall supplies the travel ===
+       The height is a CLASS, not an inline style: an inline height cannot be
+       overridden by the reduced-motion rule that flattens the stack, which
+       left this item 3 screens tall with an un-stuck card inside it. -->
+  <div class="stack__item stack__item--tall" id="how-item">
     <section class="stack__card" id="how-it-works" aria-labelledby="how-h">
       <div class="wrap">
         <p class="eyebrow">How it works</p>
@@ -150,19 +152,19 @@
         <ol class="how__stages" id="how-stages">
           <li class="stage" data-at="0.02">
             <span class="stage__t">00:00</span><h3 class="stage__h3">Pouch in</h3>
-            <p>Tuck it under your upper lip and keep going. No bottle, no bag, no pause in the session.</p>
+            <p>Under the lip. Keep going.</p>
           </li>
           <li class="stage" data-at="0.28">
             <span class="stage__t">00:04</span><h3 class="stage__h3">Electrolytes releasing</h3>
-            <p>Sodium, potassium and magnesium begin dissolving and absorbing steadily rather than all at once.</p>
+            <p>Sodium, potassium and magnesium start releasing.</p>
           </li>
           <li class="stage" data-at="0.55">
             <span class="stage__t">00:12</span><h3 class="stage__h3">Caffeine peak</h3>
-            <p>50mg of caffeine anhydrous comes through around the middle of the window — roughly half a cup of coffee.</p>
+            <p>50mg caffeine — half a cup of coffee.</p>
           </li>
           <li class="stage" data-at="0.82">
             <span class="stage__t">00:25</span><h3 class="stage__h3">Still going</h3>
-            <p>The window closes. Take the pouch out and carry on, or start the next one.</p>
+            <p>Window closes. Take it out.</p>
           </li>
         </ol>
       </div>
@@ -200,42 +202,48 @@
     </section>
   </div>
 
-  <!-- ============ FLAVORS — identical cards, accent on ring + name only ============ -->
-  <div class="stack__item">
+  <!-- ============ FLAVORS — identical cards; the tin carries the accent ============
+       --flow: with real product shots the card exceeds one screen, so it opts
+       out of pinning rather than overrunning its scroll slot. -->
+  <div class="stack__item stack__item--flow">
     <section class="stack__card" id="flavors" aria-labelledby="flav-h">
       <div class="wrap">
         <p class="eyebrow reveal">Flavors</p>
         <h2 class="display" id="flav-h">Two ways to run it.</h2>
         <div class="flavors__grid" style="margin-top:clamp(28px,3.4vw,44px)">
           <article class="sku sku--mint reveal">
-            <span class="sku__ring" aria-hidden="true"></span>
+            <div class="sku__img">
+              <img src="assets/img/tin-mint.webp" width="900" height="948" alt="ZELYTE Crispy Mint tin" loading="lazy" decoding="async">
+            </div>
             <h3 class="sku__name">Crispy Mint</h3>
-            <p class="sku__desc">Cold and sharp. Reads clean through a hard effort when everything else tastes like too much.</p>
+            <p class="sku__desc">Cold and sharp. Clean through a hard effort.</p>
             <dl class="sku__spec">
               <div><dt>Caffeine</dt><dd>50 mg</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
               <div><dt>Window</dt><dd>25:00</dd></div>
             </dl>
-            <a class="btn sku__btn" href="shop.html">Shop Crispy Mint</a>
+            <a class="btn sku__btn" href="crispy-mint.html">Shop Crispy Mint</a>
           </article>
           <article class="sku sku--cherry reveal">
-            <span class="sku__ring" aria-hidden="true"></span>
+            <div class="sku__img">
+              <img src="assets/img/tin-cherry.webp" width="900" height="948" alt="ZELYTE Black Cherry tin" loading="lazy" decoding="async">
+            </div>
             <h3 class="sku__name">Black Cherry</h3>
-            <p class="sku__desc">Dark and dry, not sweet. For longer sessions where mint gets tiring after the first hour.</p>
+            <p class="sku__desc">Dark and dry, not sweet. Built for long sessions.</p>
             <dl class="sku__spec">
               <div><dt>Caffeine</dt><dd>50 mg</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
               <div><dt>Window</dt><dd>25:00</dd></div>
             </dl>
-            <a class="btn sku__btn" href="shop.html">Shop Black Cherry</a>
+            <a class="btn sku__btn" href="black-cherry.html">Shop Black Cherry</a>
           </article>
         </div>
       </div>
     </section>
   </div>
 
-  <!-- ============ BUILT FOR ============ -->
-  <div class="stack__item">
+  <!-- ============ BUILT FOR — --flow, the photo + use list exceed one screen ============ -->
+  <div class="stack__item stack__item--flow">
     <section class="stack__card is-dark" id="athletes" aria-labelledby="built-h">
       <div class="wrap">
         <div class="story">
@@ -248,14 +256,14 @@
               <span class="line reveal">The back half</span>
               <span class="line reveal">of the session.</span>
             </h2>
-            <p class="lede reveal">Made for the part of the work where stopping costs the most — the last intervals, the second hour, the third station.</p>
+            <p class="lede reveal">For the part of the work where stopping costs the most.</p>
             <ul class="uses">
-              <li class="reveal"><span class="uses__k">Lift</span><p>Across long sessions where the set matters more than the break.</p></li>
-              <li class="reveal"><span class="uses__k">Run</span><p>Long efforts where carrying a bottle is the compromise.</p></li>
-              <li class="reveal"><span class="uses__k">On the field</span><p>Between shifts, when there is no time to drink anything.</p></li>
-              <li class="reveal"><span class="uses__k">Row</span><p>On the erg, hands occupied, pieces back to back.</p></li>
-              <li class="reveal"><span class="uses__k">Lock in</span><p>Long study or work blocks that need steady focus.</p></li>
-              <li class="reveal"><span class="uses__k">Travel</span><p>Flights and commutes where water is awkward to carry.</p></li>
+              <li class="reveal"><span class="uses__k">Lift</span><p>When the set matters more than the break.</p></li>
+              <li class="reveal"><span class="uses__k">Run</span><p>Long efforts, no bottle to carry.</p></li>
+              <li class="reveal"><span class="uses__k">On the field</span><p>Between shifts, no time to drink.</p></li>
+              <li class="reveal"><span class="uses__k">Row</span><p>Hands occupied, pieces back to back.</p></li>
+              <li class="reveal"><span class="uses__k">Lock in</span><p>Long work blocks that need steady focus.</p></li>
+              <li class="reveal"><span class="uses__k">Travel</span><p>Flights and commutes, water is awkward.</p></li>
             </ul>
           </div>
         </div>
@@ -264,35 +272,39 @@
   </div>
 
   <!-- ============ BUNDLE & SAVE ============ -->
-  <div class="stack__item">
-    <section class="stack__card" id="bundles" aria-labelledby="bundle-h">
+  <!-- --flow: at a 700px-tall viewport this card runs 52px past its scroll
+       slot and 109px past it on a phone, so it opts out of pinning rather
+       than letting the next card clip the pricing. -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card is-mode-sub" id="bundles" aria-labelledby="bundle-h">
       <div class="wrap">
         <p class="eyebrow reveal">Bundle &amp; save</p>
         <h2 class="display" id="bundle-h">Load up. Lock in.</h2>
+        <div class="mode" role="group" aria-label="Purchase option">
+          <button class="mode__btn is-on" type="button" data-mode="sub" aria-pressed="true">Subscribe &amp; save</button>
+          <button class="mode__btn" type="button" data-mode="one" aria-pressed="false">One time</button>
+        </div>
         <div class="buy">
-          <article class="buy__card reveal">
-            <h3 class="buy__n">Single tin</h3>
-            <div class="buy__price">$11</div>
-            <p class="buy__unit">$11.00 per tin</p>
-            <ul class="buy__list"><li>15 pouches</li><li>One flavor</li><li>Standard shipping</li></ul>
-            <a class="btn btn--ghost buy__btn" href="shop.html">Choose flavor</a>
-          </article>
           <article class="buy__card buy__card--best reveal">
             <span class="buy__tag">Most popular</span>
             <h3 class="buy__n">Pro Pack — 3 tins</h3>
-            <div class="buy__price">$30</div>
-            <p class="buy__unit">$10.00 per tin · save $3</p>
-            <ul class="buy__list"><li>45 pouches</li><li>Mix &amp; match flavors</li><li>Free shipping</li></ul>
+            <div class="buy__price"><span class="m-sub">$30</span><span class="m-one">$33</span></div>
+            <p class="buy__unit"><span class="m-sub"><s>$33.00</s> · $10.00 per tin · save $3.00</span><span class="m-one">$11.00 per tin</span></p>
+            <p class="buy__note m-sub">Best value per tin</p>
+            <ul class="buy__list"><li>45 pouches total</li><li>3 tins of your choice</li><li>Mix &amp; match flavors</li></ul>
             <a class="btn buy__btn" href="shop.html">Choose flavors</a>
           </article>
           <article class="buy__card reveal">
+            <span class="buy__tag buy__tag--ghost">Best value</span>
             <h3 class="buy__n">Elite Pack — 5 tins</h3>
-            <div class="buy__price">$45</div>
-            <p class="buy__unit">$9.00 per tin · save $10</p>
-            <ul class="buy__list"><li>75 pouches</li><li>Mix &amp; match flavors</li><li>Free shipping</li></ul>
+            <div class="buy__price"><span class="m-sub">$45</span><span class="m-one">$50</span></div>
+            <p class="buy__unit"><span class="m-sub"><s>$55.00</s> · $9.00 per tin · save $10.00</span><span class="m-one"><s>$55.00</s> · $10.00 per tin</span></p>
+            <p class="buy__note m-sub">Best value per tin</p>
+            <ul class="buy__list"><li>75 pouches total</li><li>5 tins of your choice</li><li>Mix &amp; match flavors</li></ul>
             <a class="btn btn--ghost buy__btn" href="shop.html">Choose flavors</a>
           </article>
         </div>
+        <p class="capture__micro reveal" style="margin-top:clamp(22px,3vw,32px)">Every order ships free.</p>
       </div>
     </section>
   </div>
@@ -306,7 +318,7 @@
           <span class="line reveal">First batch,</span>
           <span class="line reveal">fall 2026.</span>
         </h2>
-        <p class="lede reveal">Early access, new flavors and launch details. One email when the first batch ships.</p>
+        <p class="lede reveal">Early access and launch details. One email, when it ships.</p>
         <form class="capture__form reveal" data-signup="signup-status" novalidate style="margin-top:clamp(24px,3vw,34px)">
           <label class="visually-hidden" for="email">Email address</label>
           <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
@@ -328,7 +340,7 @@
         <span class="lockup__word">ZELYTE</span>
       </a>
       <nav class="footer__cols" aria-label="Footer">
-        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="index.html#flavors">Flavors</a><a href="index.html#formula">Formula</a></div>
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
         <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
         <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="index.html#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
         <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
@@ -340,7 +352,7 @@
     </div>
     <div class="footer__legal">
       <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
-      <p>ZELYTE supports hydration and provides caffeine. Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not recommended for children, or those pregnant or nursing.</p>
+      <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not for children, or those pregnant or nursing.</p>
       <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
     </div>
   </div>
