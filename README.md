@@ -1,10 +1,15 @@
 # ZELYTE — marketing site
 
-Seven static pages. No framework, no build step, no dependencies.
+Thirteen static pages. No framework, no build step, no dependencies — accounts
+included. Supabase is called with hand-written `fetch`; `supabase-js` is not
+loaded, here or anywhere.
 
 ```bash
 python3 -m http.server 8080
 ```
+
+`file://` will not do. Both Supabase hosts answer CORS with `*`, but an
+`Origin: null` is rejected, so the account pages need a real server.
 
 ## Files
 
@@ -18,16 +23,32 @@ science.html        Buccal delivery, the 25:00 window, full formula, safety
 about.html          Founder story, milestones, competitor comparison
 faq.html            12 questions in three groups
 
+signin.html         Sign in
+signup.html         Create an account
+account.html        Protected — early access no., launch code, flavor,
+                    name, password, sign out
+forgot.html         Request a password reset link
+reset.html          Landing for the reset link, then set a new password
+welcome.html        Landing for the confirmation link
+
 styles.css    shared, commented by section
 main.js       shared; every page-specific block is gated on its elements
+auth.js       accounts; loaded on the six account pages only
+config.js     the only file with credentials
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
 assets/img/   two tins, pouch, two athlete photos
-sql/          run before wiring the email form
+sql/          run both files before filling in config.js
 ```
 
 Nav and footer are duplicated into each page rather than injected by JS — no
 build step, and LCP and SEO stay intact without JavaScript. A footer change is
-therefore a seven-file change.
+therefore a **thirteen**-file change, and a nav change is thirteen files times
+two, because `.nav__links` and `.menu__links` are separate lists.
+
+The **Account** link in the nav is static and is never rewritten by JS. It
+always reads "Account"; `account.html` bounces a signed-out visitor to
+`signin.html` before the page paints. Swapping the label on auth state would
+mean injecting nav from JS, which is the one thing this site does not do.
 
 ### The nav is two boxes, on purpose
 
@@ -42,27 +63,93 @@ its own 1px borders**.
 
 ## Lighthouse
 
-All five pages, desktop: **performance 100, accessibility 100, best practices
-100, SEO 100.** CLS ≤ 0.006, LCP 0.4–0.5s.
+All seven marketing pages, desktop: **performance 100, accessibility 100, best
+practices 100, SEO 100.** CLS ≤ 0.006, LCP 0.4–0.5s.
+
+`account.html`, `reset.html` and `welcome.html` are `noindex` by design, so
+their SEO score reads ~90. That is the correct result, not a regression.
 
 One trap worth knowing: the loader must **not** set `opacity: 0` on the body's
 children. Elements at zero opacity are never LCP candidates, and doing so
 produced `NO_LCP` and an unscoreable page. The overlay alone hides the page;
 content paints behind it and is revealed when the overlay fades.
 
-## The email form is stubbed
+## Accounts and the email list
 
-`main.js` section 13. The previous app wrote to a Supabase table called
-`launch_signups`, but that repo's `.env` holds literal placeholders and no
-`CREATE TABLE` for it exists in any of its `.sql` files.
+Both run on one Supabase project. Until `config.js` is filled in, the launch
+form validates, shows its success state and logs to the console, and the
+account pages say plainly that accounts are not connected yet.
 
-1. Run `sql/launch_signups.sql`. It includes an **insert-only RLS policy** —
-   required, not optional. The anon key ships in `main.js` and is public by
-   design; without that policy it would expose the whole signup list.
-2. Fill in `SUPABASE_URL` and `SUPABASE_ANON_KEY`.
+### Keys
 
-Until then the form validates, shows its success state, and logs to the console.
-No existing Stripe, Supabase, or checkout code was modified.
+`config.js` is the only file with credentials, and they are **committed on
+purpose** — there is no build step, so there are no environment variables.
+
+The **anon** key is safe to commit. It is a signed JWT asserting nothing but
+`role: anon`; the two SQL files decide what that role may actually do. RLS is
+the boundary, not the key.
+
+The **service_role** key bypasses RLS entirely and must never appear in this
+repository. Read the signup list with it from a terminal, never a browser.
+
+### Setup, in order
+
+1. **Settings → API** — copy the Project URL and the anon key into `config.js`.
+2. **SQL Editor** — run `sql/launch_signups.sql`, then `sql/profiles.sql`.
+3. **Auth → Providers → Email** — confirmations **on**, minimum password
+   length **8** (every password input carries `minlength="8"` to match).
+4. **Auth → URL Configuration** — Site URL is the production domain; add
+   `http://localhost:8080/**` and the Vercel domains to Redirect URLs.
+5. **Auth → Emails → Templates** — rewrite two templates to use
+   `{{ .TokenHash }}`:
+
+   ```html
+   <a href="{{ .SiteURL }}/welcome.html?token_hash={{ .TokenHash }}&type=signup">Confirm your email</a>
+   <a href="{{ .SiteURL }}/reset.html?token_hash={{ .TokenHash }}&type=recovery">Set a new password</a>
+   ```
+
+   Not cosmetic. The default `{{ .ConfirmationURL }}` is redeemed by a **GET**,
+   so any corporate link scanner burns it before the human clicks — the usual
+   cause of "my link says it expired". A `token_hash` is only redeemable by a
+   POST. It also sidesteps PKCE entirely: a `?code=` link needs the
+   `code_verifier` that `supabase-js` stores at sign-up, and we do not ship
+   `supabase-js`.
+6. **Custom SMTP.** The built-in sender is capped near two emails an hour.
+   Without this, signups look like they worked and no mail ever arrives.
+
+`{{ .SiteURL }}` always points at production, so test emails do too. Do not
+flip Site URL back and forth — the token does not encode a host, so just edit
+the emailed link's origin to `localhost:8080`.
+
+### What the schema guarantees
+
+`sql/profiles.sql` gives every account a `signup_no` from a sequence and a
+unique `ZLT15-XXXXXX` launch code, both created by a trigger on `auth.users`
+that also mirrors the address into `launch_signups` — one marketing list.
+
+RLS restricts a signed-in user to their own row. RLS is row-level and **cannot
+protect columns**, so the fence on `signup_no` and `launch_code` is a column
+`GRANT`: only `full_name`, `flavor` and `marketing_opt_in` are writable. Never
+run `grant all on all tables in schema public to authenticated` on this
+project — it is a common copy-paste and it would let anyone mint their own
+launch code.
+
+Read `sql/profiles.sql` before editing `handle_new_user()`. If that function
+raises, GoTrue rolls the whole signup back and the user sees "Database error
+saving new user" with no account created.
+
+### Verifying RLS
+
+```bash
+curl -s "$URL/rest/v1/launch_signups?select=email" -H "apikey: $ANON" -H "Authorization: Bearer $ANON"
+```
+
+Passes on `[]` — and only proves anything once the table has rows, because an
+empty table returns `[]` too. `anon` keeps the table-level SELECT grant, so
+this is a 200 with zero rows surviving RLS, not a 403. `profiles` fails
+differently: `42501 permission denied`, because the grant itself was revoked.
+
+No existing Stripe or checkout code was modified; there still is none.
 
 ## Brand system
 
@@ -232,6 +319,13 @@ Sports Drinks and Electrolyte Powders.
 ## Still to do
 
 - Checkout. All buy buttons route to the launch-list form; no payment is wired.
+- Redeeming the launch codes. They are issued and reserved; nothing spends
+  them yet. Both Shopify and Stripe import unique promotion codes in bulk.
+- Custom SMTP, before any real volume — see above.
+- No `vercel.json`, deliberately. Every internal link is written `shop.html`,
+  which Vercel serves directly; `cleanUrls` would 308-redirect all of them,
+  including `welcome.html?token_hash=…`. Clean URLs are a site-wide link
+  rewrite, not a config flag.
 - Real social and legal URLs (currently `#`).
 - **Short-viewport card fit.** A pinned `.stack__item` supplies exactly one
   screen of scroll, but `.stack__card` can be taller than that, and then the

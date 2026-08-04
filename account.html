@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.className+=' js'</script>
+<!-- Runs before anything paints. A signed-out visitor is redirected before
+     the page exists, and location.replace keeps this URL out of the back
+     button. The check is deliberately cheap — "is there a session blob?" —
+     because the authoritative check is the token refresh auth.js runs a
+     moment later, and if that fails auth.js redirects too.
+
+     Nothing on this page is secret in the meantime: it ships with em dashes
+     where the numbers go and JS fills them in, so there is no unauthorized
+     content that could flash, and no need to hide the body. That matters —
+     the README's LCP rule is that no body child may ever sit at opacity 0. -->
+<script>
+(function(){
+  var raw=null;
+  try{raw=localStorage.getItem('zelyte.auth');}catch(e){}
+  if(!raw){location.replace('signin.html?next=account.html');return;}
+  document.documentElement.className+=' is-auth';
+})();
+</script>
+<title>Your account — ZELYTE</title>
+<meta name="description" content="Your ZELYTE early-access number, launch code and flavor preference.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0C0E10">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="strike" viewBox="0 0 552 754">
+    <path d="M207.5,754.0 L35.0,753.5 L139.0,632.5 L248.0,508.5 L263.0,489.5 L0.5,489.0 L0.0,487.5 L214.0,267.5 L323.0,152.5 L342.0,130.5 L129.5,130.0 L1.0,0.5 L495.5,0.0 L509.5,3.0 L519.5,8.0 L530.5,16.0 L542.0,29.5 L548.0,40.5 L550.0,51.5 L552.0,54.5 L552.0,75.5 L550.0,79.5 L548.0,90.5 L543.0,100.5 L527.0,122.5 L484.0,171.5 L371.0,292.5 L308.0,357.5 L320.5,359.0 L546.5,358.0 L550.0,359.5 Z"/>
+  </symbol>
+</svg>
+
+<div class="split split--progress" id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="split__rule"><span class="split__fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="lockup lockup--word" href="index.html" aria-label="ZELYTE home"><span class="lockup__word">ZELYTE</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="shop.html">Shop</a>
+      <a href="science.html">Science</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="account.html" aria-current="page">Account</a>
+    </nav>
+    <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="menu" id="menu" hidden>
+  <nav class="menu__links" aria-label="Mobile">
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="science.html">Science</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="account.html">Account</a>
+  </nav>
+  <div class="split split--dark" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+  </div>
+</div>
+
+<main id="main">
+<div class="stack">
+
+  <!-- ============ STATUS ============
+       Every value here ships as an em dash and is filled in by auth.js. The
+       number is a sequence, not a rank, so the label reads "no." and never
+       "you are the Nth of N" — sequences have gaps. -->
+  <div class="stack__item">
+    <section class="stack__card is-dark" id="account" aria-labelledby="acct-h">
+      <div class="wrap">
+        <p class="eyebrow scramble reveal">Early access</p>
+        <h1 class="display reveal" id="acct-h">You are in.</h1>
+        <p class="lede reveal">First batch ships fall 2026. Your code is reserved until it does.</p>
+
+        <ul class="stats reveal">
+          <li class="stat"><div class="stat__k">Early access no.</div><div class="stat__v is-busy" id="acct-no">—</div></li>
+          <li class="stat"><div class="stat__k">Discount</div><div class="stat__v">15%</div></li>
+        </ul>
+
+        <div class="reveal" style="margin-top:clamp(24px,3vw,32px)">
+          <div class="stat__k">Launch code</div>
+          <div class="code">
+            <span class="code__v is-busy" id="acct-code">—</span>
+            <span class="capture__micro" style="margin:0">Applied at checkout when the first batch ships.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ PREFERENCES ============
+       --flow because two picker cards plus three fields cannot fit one screen
+       at 768px, which is exactly what that class is for. -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card" id="prefs" aria-labelledby="prefs-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Preferences</p>
+        <h2 class="display reveal" id="prefs-h">Your flavor.</h2>
+        <p class="lede reveal">We will pack the first batch against what people picked. Change it any time before it ships.</p>
+
+        <form class="reveal" data-auth="profile" data-status="prefs-status" novalidate>
+          <div class="pick__grid">
+            <label class="buy__card pick" for="flavor-mint">
+              <input class="visually-hidden" type="radio" name="flavor" id="flavor-mint" value="crispy-mint">
+              <h3 class="buy__n">Crispy Mint</h3>
+              <p class="pick__d">Cool and clean. Stays sharp through a hard effort.</p>
+            </label>
+            <label class="buy__card pick" for="flavor-cherry">
+              <input class="visually-hidden" type="radio" name="flavor" id="flavor-cherry" value="black-cherry">
+              <h3 class="buy__n">Black Cherry</h3>
+              <p class="pick__d">Dark and tart. Rounder, with less bite.</p>
+            </label>
+          </div>
+
+          <div class="auth" style="margin-top:clamp(24px,3vw,32px)">
+            <div class="auth__form" style="margin-top:0">
+              <div class="field">
+                <label for="account-name">Name</label>
+                <input class="capture__input" id="account-name" name="name" type="text" autocomplete="name" placeholder="Optional">
+              </div>
+              <div class="field">
+                <label for="account-email">Email address</label>
+                <input class="capture__input" id="account-email" type="email" value="—" readonly aria-describedby="account-email-hint">
+                <p class="field__hint" id="account-email-hint">Contact us to change the address on the account.</p>
+              </div>
+              <label class="check" for="account-marketing">
+                <input type="checkbox" id="account-marketing" name="marketing">
+                <span>Email me launch details. One email when the first batch ships.</span>
+              </label>
+              <button class="btn" type="submit">Save</button>
+            </div>
+          </div>
+        </form>
+        <p class="capture__micro" id="prefs-status" role="status" aria-live="polite">Nothing is shared with anyone.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ SECURITY ============ -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card is-dark" id="security" aria-labelledby="sec-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Security</p>
+        <h2 class="display reveal" id="sec-h">Change your password.</h2>
+
+        <div class="auth">
+          <form class="auth__form reveal" data-auth="password" data-status="pw-status" novalidate>
+            <div class="field">
+              <label for="account-password">New password</label>
+              <input class="capture__input" id="account-password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+              <p class="field__hint">At least 8 characters.</p>
+            </div>
+            <div class="field">
+              <label for="account-confirm">Confirm new password</label>
+              <input class="capture__input" id="account-confirm" name="confirm" type="password" autocomplete="new-password" minlength="8" required>
+            </div>
+            <button class="btn" type="submit">Update password</button>
+          </form>
+          <p class="capture__micro" id="pw-status" role="status" aria-live="polite">You stay signed in on this device.</p>
+          <div class="account__row">
+            <button class="btn btn--ghost" type="button" data-auth-action="signout">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <a class="lockup lockup--dark footer__lockup" href="index.html" aria-label="ZELYTE home">
+        <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+        <span class="lockup__word">ZELYTE</span>
+      </a>
+      <nav class="footer__cols" aria-label="Footer">
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
+        <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="account.html">Account</a><a href="index.html#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
+      </nav>
+    </div>
+    <div class="split split--dark" aria-hidden="true">
+      <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+    </div>
+    <div class="footer__legal">
+      <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
+      <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not for children, or those pregnant or nursing.</p>
+      <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="main.js" defer></script>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.className+=' js'</script>
+<!-- Already signed in: skip the form entirely. The expiry check matters —
+     bouncing on the mere presence of a dead blob would ping-pong with the
+     guard on account.html. -->
+<script>
+(function(){
+  var raw=null;
+  try{raw=localStorage.getItem('zelyte.auth');}catch(e){}
+  if(!raw)return;
+  try{
+    var s=JSON.parse(raw);
+    if(s&&s.access_token&&s.expires_at>Math.floor(Date.now()/1000))location.replace('account.html');
+  }catch(e){}
+})();
+</script>
+<title>Sign in — ZELYTE</title>
+<meta name="description" content="Sign in to your ZELYTE account for early access, your waitlist number and your launch code.">
+<meta name="theme-color" content="#0C0E10">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="strike" viewBox="0 0 552 754">
+    <path d="M207.5,754.0 L35.0,753.5 L139.0,632.5 L248.0,508.5 L263.0,489.5 L0.5,489.0 L0.0,487.5 L214.0,267.5 L323.0,152.5 L342.0,130.5 L129.5,130.0 L1.0,0.5 L495.5,0.0 L509.5,3.0 L519.5,8.0 L530.5,16.0 L542.0,29.5 L548.0,40.5 L550.0,51.5 L552.0,54.5 L552.0,75.5 L550.0,79.5 L548.0,90.5 L543.0,100.5 L527.0,122.5 L484.0,171.5 L371.0,292.5 L308.0,357.5 L320.5,359.0 L546.5,358.0 L550.0,359.5 Z"/>
+  </symbol>
+</svg>
+
+<div class="split split--progress" id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="split__rule"><span class="split__fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="lockup lockup--word" href="index.html" aria-label="ZELYTE home"><span class="lockup__word">ZELYTE</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="shop.html">Shop</a>
+      <a href="science.html">Science</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="account.html">Account</a>
+    </nav>
+    <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<div class="menu" id="menu" hidden>
+  <nav class="menu__links" aria-label="Mobile">
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="science.html">Science</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="account.html">Account</a>
+  </nav>
+  <div class="split split--dark" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+  </div>
+</div>
+
+<main id="main">
+<div class="stack">
+
+  <!-- ============ SIGN IN ============ -->
+  <div class="stack__item">
+    <section class="stack__card" id="signin" aria-labelledby="signin-h">
+      <div class="wrap">
+        <p class="eyebrow scramble reveal">Account</p>
+        <h1 class="display reveal" id="signin-h">Sign in.</h1>
+        <p class="lede reveal">Your early access number, your launch code, and your flavor.</p>
+
+        <div class="auth">
+          <form class="auth__form reveal" data-auth="signin" data-status="signin-status" novalidate>
+            <div class="field">
+              <label for="signin-email">Email address</label>
+              <input class="capture__input" id="signin-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+            <div class="field">
+              <label for="signin-password">Password</label>
+              <input class="capture__input" id="signin-password" name="password" type="password" autocomplete="current-password" minlength="8" required>
+            </div>
+            <button class="btn" type="submit">Sign in</button>
+          </form>
+          <p class="capture__micro" id="signin-status" role="status" aria-live="polite">First batch, fall 2026.</p>
+          <!-- Shown only after an unconfirmed sign-in attempt: the one moment
+               we know the address of somebody who never opened the link. -->
+          <button class="btn btn--ghost btn--sm" id="signin-resend" type="button" hidden style="margin-top:14px">Resend confirmation</button>
+          <p class="auth__alt"><a href="forgot.html">Forgot password</a> · <a href="signup.html">Create an account</a></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <a class="lockup lockup--dark footer__lockup" href="index.html" aria-label="ZELYTE home">
+        <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+        <span class="lockup__word">ZELYTE</span>
+      </a>
+      <nav class="footer__cols" aria-label="Footer">
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
+        <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="account.html">Account</a><a href="index.html#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
+      </nav>
+    </div>
+    <div class="split split--dark" aria-hidden="true">
+      <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+    </div>
+    <div class="footer__legal">
+      <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
+      <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine — not for children, or those pregnant or nursing.</p>
+      <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js" defer></script>
+<script src="auth.js" defer></script>
+<script src="main.js" defer></script>
+</body>
+</html>

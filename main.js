@@ -1,8 +1,11 @@
 /* ==========================================================================
    ZELYTE — main.js (v2)
-   Shared by all five pages. No libraries. One IntersectionObserver for
+   Shared by all thirteen pages. No libraries. One IntersectionObserver for
    reveals, one requestAnimationFrame loop for everything scroll-linked.
    Every page-specific block is gated on its elements existing.
+
+   Accounts live in auth.js, which the six account pages load alongside this.
+   Credentials for both come from config.js.
 
      1. Helpers + reduced motion      8. Scroll: timeline, the pan, the tin
      2. Nav height                    9. Counters
@@ -10,7 +13,7 @@
      4. Reveals                      11. Mono scramble
      5. Mobile menu                  12. The rAF loop
      6. The orbit                    12b. One time / Subscribe & save
-     7. Card stack                   13. Email capture (STUBBED)
+     7. Card stack                   13. Email capture
    ========================================================================== */
 (function () {
   'use strict';
@@ -493,17 +496,22 @@
   });
 
 
-  /* 13. EMAIL CAPTURE — STUBBED ===========================================
-     The previous app wrote to a Supabase table called `launch_signups`, but
-     that repo's credentials are placeholders and no such table exists in any
-     of its .sql files.
+  /* 13. EMAIL CAPTURE =====================================================
+     Anonymous launch-list capture. A duplicate submit (409, or Postgres
+     23505) is a success, because being on the list twice is the same as
+     being on it once.
 
-     TO GO LIVE: run sql/launch_signups.sql (it contains the required
-     insert-only RLS policy — the anon key below is public by design), then
-     fill in these two constants. Nothing else changes.
+     Credentials come from config.js, the one file that carries them, shared
+     with auth.js so they are never written down twice. Until it is filled in
+     this still validates, shows its success state and logs to the console.
+
+     This stays here rather than moving into auth.js: the anonymous form has
+     to keep working if auth.js fails to load, it needs no session, and it is
+     wired to markup on six pages that auth.js never visits.
      ---------------------------------------------------------------------- */
-  var SUPABASE_URL = '';        // e.g. 'https://xxxxxxxx.supabase.co'
-  var SUPABASE_ANON_KEY = '';
+  var CFG = window.ZELYTE_CONFIG || {};
+  var SUPABASE_URL = String(CFG.SUPABASE_URL || '').replace(/\/+$/, '');
+  var SUPABASE_ANON_KEY = String(CFG.SUPABASE_ANON_KEY || '');
 
   function saveEmail(email) {
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {

@@ -1,7 +1,7 @@
 /* ==========================================================================
    ZELYTE — styles.css (v2)
 
-   Shared by all five pages. Sections in order:
+   Shared by all thirteen pages. Sections in order:
      00 Fonts            09 Marquee
      01 Tokens           10 Hero + orbit
      02 Reset & base     11 Feature cards
@@ -11,7 +11,8 @@
      06 The Split        15 Built for
      07 Loader           16 FAQ / accordion
      08 Floating nav     17 Forms
-     08b Card stack      18 Shop / bundles / compare / story
+     08b Card stack      17b Auth & account
+                         18 Shop / bundles / compare / story
                          18b Product pages (hero, the pan, swap)
                          19 Footer          21 Responsive
                          20 Reveal          22 Reduced motion
@@ -63,6 +64,17 @@
 
 /* 02 RESET & BASE ========================================================= */
 *,*::before,*::after{box-sizing:border-box}
+/* The UA rule for [hidden] is display:none at zero specificity, so ANY author
+   display wins and the element stays on screen with its attribute set. That
+   is not theoretical: .capture__form is display:flex, and main.js hides it by
+   setting form.hidden — so a successful launch-list signup used to print
+   "You are on the list" underneath a form that was still sitting there
+   inviting a second submit. Same trap for .auth__form (grid) and .btn
+   (inline-flex). !important because the whole point is to beat the component
+   rule that sets display in the first place.
+   The .menu[hidden] rule in section 08 was a one-off patch for this and is
+   now redundant; it is left alone rather than churned. */
+[hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%;background:var(--asphalt)}
 body{
   margin:0;
@@ -580,6 +592,70 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 .capture__micro.is-ok{color:var(--voltage)}
 
 
+/* 17b AUTH & ACCOUNT ======================================================
+   Almost nothing new. The input is .capture__input, the status line is
+   .capture__micro with its existing .is-error / .is-ok, the button is .btn,
+   the account numbers are .stats/.stat, and the flavor picker is .buy__card.
+
+   What IS new is a stacked label-above-input row, because the launch
+   capture's one-line flex row cannot carry four fields, and because a
+   password field needs a visible label where an email placeholder was enough.
+
+   Eight colors, as everywhere. --voltage for interactive and success,
+   --cherry for errors (the .capture__micro convention already), --iron on
+   light cards and --frost on .is-dark. Radii from --r-card / --r-btn. No
+   shadow, no gradient, no blur.
+   ========================================================================== */
+.auth{max-width:420px}
+.auth__form{display:grid;gap:clamp(12px,1.6vw,16px);margin-top:clamp(24px,3vw,34px)}
+.field{display:grid;gap:7px}
+.field label{font-family:var(--data);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--iron)}
+.is-dark .field label{color:var(--frost)}
+/* .capture__input carries flex:1 1 250px, which is inert outside a flex row —
+   inside this grid it has to be told to fill the column. */
+.field .capture__input{width:100%}
+.field__hint{font-family:var(--data);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--iron);margin:0}
+.is-dark .field__hint{color:var(--frost)}
+.auth__form .btn{width:100%;margin-top:6px}
+
+.auth__alt{font-family:var(--data);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--iron);margin:clamp(20px,2.6vw,26px) 0 0}
+.auth__alt a{color:var(--voltage);text-decoration:none}
+.auth__alt a:hover{text-decoration:underline;text-underline-offset:3px}
+/* Voltage is 2.6:1 on asphalt, so dark cards carry chalk instead — the same
+   rule .btn--ghost and the prose links already follow. */
+.is-dark .auth__alt{color:var(--frost)}
+.is-dark .auth__alt a{color:var(--chalk)}
+
+.check{display:flex;align-items:flex-start;gap:10px}
+/* accent-color takes a palette token, so the checkbox is not a ninth color. */
+.check input{width:16px;height:16px;flex:0 0 auto;margin:2px 0 0;accent-color:var(--voltage)}
+.check span{font-family:var(--data);font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--iron);line-height:1.5}
+.is-dark .check span{color:var(--frost)}
+
+/* The launch code. .stat__v already sizes the mono display; this is the box
+   it sits in, so the code reads as something issued rather than as copy. */
+.code{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:10px}
+.code__v{font-family:var(--data);font-weight:500;font-size:clamp(1.1rem,2.2vw,1.5rem);letter-spacing:.05em;padding:10px 14px;border:1px solid var(--hair-light);border-radius:var(--r-btn)}
+.is-dark .code__v{border-color:var(--hair-dark)}
+
+/* Flavor preference. The card IS .buy__card; .pick only adds the selected
+   border, and it is the same voltage border .buy__card--best already uses. */
+.pick__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,1.8vw,24px);margin-top:clamp(20px,2.6vw,28px)}
+.pick{cursor:pointer}
+.pick.is-on,.pick:focus-within{border-color:var(--voltage)}
+.pick__d{margin:0;font-size:1rem;color:var(--iron)}
+.is-dark .pick__d{color:var(--frost)}
+
+.account__row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:clamp(24px,3vw,32px)}
+
+/* Values arrive from Supabase after the page has painted, so the markup ships
+   an em dash rather than a blank or a spinner. No opacity: --iron is 9.08:1
+   on the card but ~4.0:1 at .7, under the body threshold — the same reason
+   .buy__unit s carries none. */
+.is-busy{color:var(--iron)}
+.is-dark .is-busy{color:var(--frost)}
+
+
 /* 18 SHOP / BUNDLES / COMPARE / STORY ===================================== */
 /* Two packs, not three — takezelyte.com sells no single tin. */
 .buy{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,1.8vw,24px);margin-top:clamp(28px,3.6vw,44px)}
@@ -812,6 +888,7 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   .how__clock{font-size:2.2rem}
   .capture__form{flex-direction:column}
   .capture__form .btn{width:100%}
+  .pick__grid{grid-template-columns:1fr}
   .split__label{display:none}
   .timeline li{grid-template-columns:1fr;gap:6px}
 }
