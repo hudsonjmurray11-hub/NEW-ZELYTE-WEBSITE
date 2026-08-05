@@ -393,25 +393,32 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 /* Deliberately NOT positioned: the orbit should anchor to the sticky card so
    it centres in the full hero height, not in the copy block's height. */
 .hero__grid{width:100%}
-.hero__copy{position:relative;z-index:2;max-width:min(56%,640px)}
+/* 62%, not 56%: measured, that is where the column's right edge meets the tin's
+   left edge at every desktop width, so it is the most the headline can take
+   without running onto the tin. */
+.hero__copy{position:relative;z-index:2;max-width:min(62%,700px)}
 /* No UA h1 margin here — the span owns all the spacing. */
 .hero__h1{margin:0}
 /* Sized to keep BOTH headline lines on ONE line each. Measured at this
    letter-spacing: "DROP THE BOTTLE." renders 10.07x its font-size wide (the
    longer of the two; "NOT THE PACE." is 7.95x), so the longer line is what
-   every term below is derived from. The copy column is narrowest (~520px) at a
-   1025px viewport — just above the breakpoint where it goes full width — so
-   that point, not 1440, is what caps the vw term. Measured to hold one line
+   every term below is derived from. This rule fits the 62% column above, i.e.
+   right up to the tin. The column is narrowest (~575px) at a 1025px viewport —
+   just above the breakpoint where it goes full width — so that point, not
+   1440, is what caps the vw term. The stacked layout under 1024 has no tin
+   beside it and is sized separately in section 21. Measured to hold one line
    from 360px up; it wraps somewhere under that, which is deliberate: no
    white-space:nowrap, since clipping beats wrapping there. */
 .hero__fuel{
   display:block;                 /* inline spans ran onto one line at 375 */
   font-family:var(--display);text-transform:uppercase;
-  font-size:clamp(1.84rem,min(4.8vw,7vh),3.55rem);
+  font-size:clamp(1.84rem,min(5.3vw,7.7vh),3.95rem);
   letter-spacing:-.045em;line-height:.82;margin:0;
 }
-/* .eyebrow's margin assumes it sits above the headline; under it, it flips. */
-.hero__kicker{margin:clamp(14px,2vw,20px) 0 0}
+/* .eyebrow's margin assumes it sits above the headline; under it, it flips.
+   The size overrides .eyebrow's flat 12px, which read as a footnote under a
+   headline this large. Scoped here so every other eyebrow is untouched. */
+.hero__kicker{margin:clamp(14px,2vw,20px) 0 0;font-size:clamp(13px,1.6vw,19px)}
 .hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(22px,3vw,34px)}
 .hero__split{margin-top:clamp(22px,3vw,34px)}
 
@@ -859,6 +866,15 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
      headline clears the tin instead of sitting on top of it. */
   .orbit{top:0;left:50%;transform:translate(-50%,-14%);width:min(150%,720px)}
   .hero__copy{max-width:none;padding-top:min(52vw,300px)}
+  /* The copy is full width here — no tin beside it — so the headline is fitted
+     to the wrap instead of to the 62% column, which is worth far more size than
+     the base rule allows. Full-width fit is 9.14vw from 500px up and ~8.85vw at
+     360; 8.2vw clears both with margin (8.5 wrapped at 360 — it landed exactly
+     on the fit). The vh term is doing real work in this range: the
+     stacked hero also carries up to 300px of padding-top to clear the orbit, so
+     a short landscape window is the one case where the card runs out of height
+     before it runs out of width. */
+  .hero__fuel{font-size:clamp(1.84rem,min(8.2vw,10vh),5.4rem)}
   .feats{grid-template-columns:1fr}
   .how__stages{grid-template-columns:repeat(2,1fr)}
   .story{grid-template-columns:1fr}
