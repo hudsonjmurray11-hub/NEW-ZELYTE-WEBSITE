@@ -70,21 +70,31 @@
   </div>
 
   <!-- ============ FOUNDER STORY ============ -->
-  <!-- --flow: the portrait and the copy stack on a phone and overrun the
-       slot by 66px. -->
+  <!-- --flow: the worst case is 1024x768, not a phone. At exactly 1024 .story
+       has already collapsed to one track while the card is still full width,
+       so the 3:2 photo renders 922x614 and the section overruns its slot by
+       271px. Phones are comfortable now (181px spare at 375) — it is the
+       breakpoint itself that needs the opt-out. -->
   <div class="stack__item stack__item--flow">
     <section class="stack__card is-dark" id="founder" aria-labelledby="found-h">
       <div class="wrap">
         <div class="story">
-          <figure class="story__img reveal" style="aspect-ratio:4/5;max-height:62svh">
-            <img src="assets/img/athlete-dc.webp" width="1200" height="1500" alt="A runner mid-stride beside the water at sunrise, the ZELYTE Strike mark overlaid." loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover">
-          </figure>
           <div>
             <p class="eyebrow reveal">Founder</p>
             <h2 class="display reveal" id="found-h" style="font-size:clamp(1.6rem,3.4vw,2.6rem)">Why I built it.</h2>
             <p class="story__q reveal" style="margin-top:clamp(20px,2.6vw,30px)">I rowed through high school. In a boat you can't stop and you can't carry anything. 1,000 meters into a race my mouth was dry, my legs were cramping, and a bottle was no help. So I built something you can take without breaking stride.</p>
             <p class="story__by reveal">Hudson Murray, Founder and CEO</p>
           </div>
+          <!-- Second in the grid, so it is the right column and, once .story
+               collapses to one track under 1024, sits below the message.
+               No aspect-ratio: the width/height attributes plus height:auto
+               give the photo its native 3:2, which is the point — a 4/5 box
+               with object-fit:cover would crop both oars out of the frame.
+               display:block kills the inline baseline gap, which would
+               otherwise show as a sliver of card inside the rounded corner. -->
+          <figure class="story__img reveal">
+            <img src="assets/img/founder-rowing.webp" width="1104" height="736" alt="Hudson Murray mid-stroke in a racing shell on open water." loading="lazy" decoding="async" style="width:100%;height:auto;display:block">
+          </figure>
         </div>
       </div>
     </section>
@@ -97,10 +107,10 @@
         <p class="eyebrow reveal">Milestones</p>
         <h2 class="display" id="mile-h">Where we are.</h2>
         <ol class="timeline">
-          <li class="reveal"><span class="timeline__y">Origin</span><p>High school rowing, wrestling and lifting. No stopping to drink.</p></li>
-          <li class="reveal"><span class="timeline__y">Formula</span><p>Four compounds settled. Three electrolytes and 50mg caffeine.</p></li>
-          <li class="reveal"><span class="timeline__y">Format</span><p>The 25-minute window set, printed on the lid.</p></li>
-          <li class="reveal"><span class="timeline__y">Fall 2026</span><p>First batch. Two flavors, 15 pouches per tin.</p></li>
+          <li class="reveal"><span class="timeline__y">Nov 2025</span><p>Won Pitch George, the startup pitch competition at George Washington University.</p></li>
+          <li class="reveal"><span class="timeline__y">Jan 2026</span><p>Incorporated as ZELYTE Inc.</p></li>
+          <li class="reveal"><span class="timeline__y">Apr 2026</span><p>Signed a Swedish pouch manufacturer to produce at scale.</p></li>
+          <li class="reveal"><span class="timeline__y">Aug 2026</span><p>Samples are in hand. The first production run is set for October.</p></li>
         </ol>
       </div>
     </section>
