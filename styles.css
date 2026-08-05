@@ -396,17 +396,22 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 .hero__copy{position:relative;z-index:2;max-width:min(56%,640px)}
 /* No UA h1 margin here — the span owns all the spacing. */
 .hero__h1{margin:0}
-/* Sized to keep "DON'T STOP." on ONE line. Measured: the string renders
-   6.39x its font-size wide. The copy column is narrowest (~517px) at a 1025px
-   viewport — just above the breakpoint where it goes full width — so that
-   point, not 1440, is what caps the vw term. Wraps below ~355px, which is
-   deliberate: no white-space:nowrap, since clipping beats wrapping there. */
+/* Sized to keep BOTH headline lines on ONE line each. Measured at this
+   letter-spacing: "DROP THE BOTTLE." renders 10.07x its font-size wide (the
+   longer of the two; "NOT THE PACE." is 7.95x), so the longer line is what
+   every term below is derived from. The copy column is narrowest (~520px) at a
+   1025px viewport — just above the breakpoint where it goes full width — so
+   that point, not 1440, is what caps the vw term. Measured to hold one line
+   from 360px up; it wraps somewhere under that, which is deliberate: no
+   white-space:nowrap, since clipping beats wrapping there. */
 .hero__fuel{
   display:block;                 /* inline spans ran onto one line at 375 */
   font-family:var(--display);text-transform:uppercase;
-  font-size:clamp(2.9rem,min(7.6vw,11vh),5.6rem);
+  font-size:clamp(1.84rem,min(4.8vw,7vh),3.55rem);
   letter-spacing:-.045em;line-height:.82;margin:0;
 }
+/* .eyebrow's margin assumes it sits above the headline; under it, it flips. */
+.hero__kicker{margin:clamp(14px,2vw,20px) 0 0}
 .hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(22px,3vw,34px)}
 .hero__split{margin-top:clamp(22px,3vw,34px)}
 
