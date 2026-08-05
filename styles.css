@@ -264,7 +264,7 @@ html.js.is-ready main{animation:page-rise 480ms var(--ease) both}
   position:fixed;z-index:700;
   top:10px;left:50%;transform:translateX(-50%);
   width:calc(100% - (var(--frame) * 2));max-width:1120px;
-  /* 54, not 52: the resting pill is 9+9 padding + a 34px CTA + its OWN 1px
+  /* 54, not 52: the resting pill is 9+9 padding + a 34px row + its OWN 1px
      borders. Sized to 52 the shell tracked the pill down to 52 when stuck,
      which is the 2px relayout this split exists to prevent. Measured. */
   min-height:54px;display:flex;align-items:flex-start;
@@ -275,11 +275,16 @@ html.js.is-ready main{animation:page-rise 480ms var(--ease) both}
   display:flex;align-items:center;gap:18px;
   background:var(--chalk);
   border:1px solid transparent;border-radius:999px;
+  /* The 34px row is stated, not inherited. Pages with a .nav__cta got it free
+     from the button's own height; pages without one (the homepage, the auth
+     pages) collapsed to the 22px link row and read as a thinner nav. These are
+     border-box totals, so each one is 34 + its own padding + the 1px borders. */
+  min-height:54px;
   padding:9px clamp(14px,1.8vw,20px);
-  transition:padding 200ms var(--ease),border-color 200ms var(--ease);
+  transition:padding 200ms var(--ease),min-height 200ms var(--ease),border-color 200ms var(--ease);
 }
-/* 9+9+34 = 52 at rest, 5+5+34 = 44 scrolled. The 34 is the CTA. */
-.nav.is-stuck .nav__inner{padding-block:5px;border-color:var(--hair-light)}
+/* 9+9+34+2 = 54 at rest, 5+5+34+2 = 46 scrolled. */
+.nav.is-stuck .nav__inner{min-height:46px;padding-block:5px;border-color:var(--hair-light)}
 .nav .lockup{--cap:15px;margin-right:auto}
 .nav__links{display:flex;gap:clamp(14px,1.8vw,28px)}
 /* Stays 12px. The nav gets thinner through padding and the wordmark, never by
@@ -291,7 +296,7 @@ html.js.is-ready main{animation:page-rise 480ms var(--ease) both}
 }
 .nav__links a:hover,.nav__links a[aria-current="page"]{color:var(--asphalt)}
 .nav__cta{padding:7px 16px;font-size:12px;border-radius:999px}
-/* 32px so the mobile pill (9+9+32) still fits inside the 52px shell. */
+/* 32px sits under the pill's 34px floor, so mobile keeps the desktop 54. */
 .nav__toggle{
   display:none;position:relative;width:32px;height:32px;padding:0;margin-right:-4px;
   background:none;border:0;cursor:pointer;
@@ -389,7 +394,7 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
    it centres in the full hero height, not in the copy block's height. */
 .hero__grid{width:100%}
 .hero__copy{position:relative;z-index:2;max-width:min(56%,640px)}
-/* No UA h1 margin here — the spans own all the spacing. */
+/* No UA h1 margin here — the span owns all the spacing. */
 .hero__h1{margin:0}
 /* Sized to keep "DON'T STOP." on ONE line. Measured: the string renders
    6.39x its font-size wide. The copy column is narrowest (~517px) at a 1025px
@@ -402,13 +407,6 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   font-size:clamp(2.9rem,min(7.6vw,11vh),5.6rem);
   letter-spacing:-.045em;line-height:.82;margin:0;
 }
-.hero__rest{
-  display:block;
-  font-family:var(--display);text-transform:uppercase;
-  font-size:clamp(1.5rem,min(4vw,5vh),3.1rem);
-  letter-spacing:-.03em;line-height:.98;margin:clamp(10px,1.2vw,16px) 0 0;
-}
-.hero__rest em{font-style:normal;color:var(--voltage)}
 .hero__actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:clamp(22px,3vw,34px)}
 .hero__split{margin-top:clamp(22px,3vw,34px)}
 

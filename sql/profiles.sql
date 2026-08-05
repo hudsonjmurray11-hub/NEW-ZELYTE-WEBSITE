@@ -53,10 +53,10 @@ create unique index if not exists profiles_signup_no_key   on public.profiles (s
 
 
 /* 3. THE LAUNCH CODE ------------------------------------------------------
-   One code per user, not one shared LAUNCH15. A shared code sits in the page
+   One code per user, not one shared LAUNCH10. A shared code sits in the page
    source of a page anyone can view, which makes it a coupon, not a perk; a
    per-user code is only readable through RLS by its owner and is traceable to
-   an account when it is redeemed. Same 15% for everyone — the prefix says so.
+   an account when it is redeemed. Same 10% for everyone, and the prefix says so.
 
    The alphabet is Crockford-ish: no I, L, O or U, so a code read off a screen
    and typed into a checkout cannot be mistranscribed.
@@ -81,7 +81,7 @@ declare
   tries     int := 0;
 begin
   loop
-    candidate := 'ZLT15-';
+    candidate := 'ZLT10-';
     for i in 1..6 loop
       candidate := candidate || substr(alphabet, 1 + floor(random() * 32)::int, 1);
     end loop;
