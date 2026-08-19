@@ -155,6 +155,48 @@
     </section>
   </div>
 
+  <!-- ============ THE DOSE — pouches are additive =========================
+       The control recomputes elemental values only. Compound weights are
+       never multiplied and never rendered; see formula.js. Every value here
+       is authored at one pouch, so with JS off this is a correct per-pouch
+       panel and the directions still read. -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card" id="dose" aria-labelledby="dose-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Your dose</p>
+        <h2 class="display" id="dose-h">Match the count to the session.</h2>
+        <p class="lede reveal">One pouch is the baseline. A long, hot session takes more than a short one. Scale it to the effort.</p>
+
+        <div class="dose reveal">
+          <p class="dose__label" id="dose-ctl-h">Pouches per session</p>
+          <div class="plus" role="group" aria-labelledby="dose-ctl-h">
+            <button class="plus__tile" type="button" data-pouches="1" aria-pressed="true">1</button>
+            <button class="plus__tile" type="button" data-pouches="2" aria-pressed="false">2</button>
+            <button class="plus__tile" type="button" data-pouches="3" aria-pressed="false">3</button>
+          </div>
+          <p class="dose__ceiling">Up to <span data-formula="dose.daily">6</span> pouches per day.</p>
+          <p class="dose__note">Start at one. Add a pouch when the session runs longer or hotter &#8212; not to feel more.</p>
+
+          <div class="table-wrap" style="margin-top:clamp(22px,2.8vw,32px)">
+            <table class="spec dose__table">
+              <caption class="visually-hidden">ZELYTE formula per session at the selected pouch count</caption>
+              <thead><tr><th scope="col">Nutrient</th><th scope="col">At <span data-dose-n>1</span> <span data-dose-unit>pouch</span></th><th scope="col">% DV</th></tr></thead>
+              <tbody>
+                <tr><th scope="row" data-formula="sodium.label">Sodium</th><td data-dose="sodium">70 mg</td><td data-dose="sodium" data-dose-field="dv">3%</td></tr>
+                <tr><th scope="row" data-formula="chloride.label">Chloride</th><td data-dose="chloride">106 mg</td><td data-dose="chloride" data-dose-field="dv">5%</td></tr>
+                <tr><th scope="row" data-formula="caffeine.label">Caffeine</th><td data-dose="caffeine">25 mg</td><td data-dose="caffeine" data-dose-field="dv">&#8224;</td></tr>
+                <tr><th scope="row" data-formula="potassium.label">Potassium</th><td data-dose="potassium">10 mg</td><td data-dose="potassium" data-dose-field="dv">0%</td></tr>
+                <tr><th scope="row" data-formula="magnesium.label">Magnesium</th><td data-dose="magnesium">6 mg</td><td data-dose="magnesium" data-dose-field="dv">1%</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="capture__micro" style="margin-top:clamp(16px,2vw,22px)">&#8224; Daily Value not established.</p>
+          <p class="visually-hidden" role="status" aria-live="polite" data-dose-live></p>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- ============ THE TASTE ============ -->
   <div class="stack__item stack__item--flow">
     <section class="stack__card is-dark" id="taste" aria-labelledby="taste-h">

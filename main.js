@@ -609,6 +609,85 @@
   }
 
 
+  /* 14. POUCH STACKING -----------------------------------------------------
+     A pouch is not a fixed dose. The control scales the session to the effort:
+     press 2 and every elemental value recomputes, live.
+
+     ELEMENTAL ONLY. mgOf multiplies what the pouch delivers. Compound weights
+     are never multiplied and never shown — three pouches is 210 mg of sodium,
+     not "525 mg of sodium chloride", and the second number would be both
+     meaningless to a reader and wrong to print.
+
+     No animation frame. This is click- and key-driven, and it writes
+     textContent directly. The one persistent rAF loop is section 12's and it
+     stays that way.
+
+     Values are authored into the markup at n=1, so with JS off the table is a
+     correct per-pouch panel and the directions still read. The control simply
+     is not there to press.
+     ---------------------------------------------------------------------- */
+  $$('.dose').forEach(function (dose) {
+    if (!F) return;
+    var tiles = $$('.plus__tile', dose);
+    var cells = $$('[data-dose]', dose);
+    var live = $('[data-dose-live]', dose);
+    var countEl = $('[data-dose-n]', dose);
+    var unitEl = $('[data-dose-unit]', dose);
+    if (!tiles.length || !cells.length) return;
+
+    function render(n) {
+      cells.forEach(function (cell) {
+        var key = cell.dataset.dose;
+        if (!F.perPouch[key]) return;
+        cell.textContent = cell.dataset.doseField === 'dv'
+          ? dvPct(key, n)
+          : mgText(key, n);
+      });
+      if (countEl) countEl.textContent = String(n);
+      if (unitEl) unitEl.textContent = n === 1 ? 'pouch' : 'pouches';
+
+      /* One sentence, not the whole table. An aria-live region wrapped around
+         five rows re-reads every label and header on each press, which
+         punishes the reader for using the control. The two values the copy
+         leads with are the two worth hearing. */
+      if (live) {
+        live.textContent = n + (n === 1 ? ' pouch' : ' pouches') + ' per session. ' +
+          F.perPouch.sodium.label + ' ' + mgText('sodium', n) + ', ' +
+          F.perPouch.caffeine.label + ' ' + mgText('caffeine', n) + '.';
+      }
+    }
+
+    function select(tile) {
+      tiles.forEach(function (t) {
+        var on = t === tile;
+        t.setAttribute('aria-pressed', on ? 'true' : 'false');
+      });
+      render(parseInt(tile.dataset.pouches, 10) || 1);
+    }
+
+    dose.addEventListener('click', function (e) {
+      var hit = e.target.closest('.plus__tile');
+      if (hit) select(hit);
+    });
+
+    /* Enter and Space come free with <button>. Arrow keys, Home and End do
+       not, and a three-stop control is exactly where a reader expects them. */
+    dose.addEventListener('keydown', function (e) {
+      var i = tiles.indexOf(document.activeElement);
+      if (i < 0) return;
+      var to = -1;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') to = (i + 1) % tiles.length;
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') to = (i - 1 + tiles.length) % tiles.length;
+      else if (e.key === 'Home') to = 0;
+      else if (e.key === 'End') to = tiles.length - 1;
+      if (to < 0) return;
+      e.preventDefault();
+      tiles[to].focus();
+      select(tiles[to]);
+    });
+  });
+
+
   /* 12b. ONE TIME / SUBSCRIBE & SAVE --------------------------------------
      Both price sets are in the markup; a class on the owning card decides
      which one CSS shows. With JS off the authored .is-mode-sub stands and the
