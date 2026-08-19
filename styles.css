@@ -346,7 +346,12 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
    25:00 clock wants a long, slow scrub; the pan wants to keep up with the
    finger (see the ratio note in section 18b). */
 .stack__item--tall{height:300svh}
-.stack__item--pan{height:220svh}
+/* 280 not 220: the pan went from five panels to six when the formula moved to
+   elemental values, which added 480px of travel without adding any scroll to
+   cross it — 1.16x became 1.78x at 1440, i.e. the row outran the finger. The
+   extra 60svh buys that travel back. Re-measure if the panel count changes
+   again; the ratio note on .pan__panel is what it has to satisfy. */
+.stack__item--pan{height:280svh}
 .stack__card{
   position:sticky;top:0;
   min-height:100svh;
