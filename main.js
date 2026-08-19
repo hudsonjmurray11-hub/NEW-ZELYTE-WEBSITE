@@ -140,6 +140,31 @@
         warn('"' + old + '" is still on this page. It is not in build ' + F.build + '.');
       }
     });
+
+    /* 4. The JSON-LD disagrees with formula.js. It is authored statically —
+          crawlers should not have to run JS to see it — which means it can
+          drift exactly like the markup can, so it gets checked the same way. */
+    $$('script[type="application/ld+json"]').forEach(function (node) {
+      var doc;
+      try { doc = JSON.parse(node.textContent); }
+      catch (e) { warn('JSON-LD does not parse: ' + e.message); return; }
+      var props = doc.additionalProperty;
+      if (!props || !props.length) return;
+      props.forEach(function (p) {
+        var key = null;
+        F.order.forEach(function (k) { if (F.perPouch[k].label === p.name) key = k; });
+        if (!key) return;
+        if (p.value !== mgOf(key, 1)) {
+          warn('JSON-LD says ' + p.name + ' is ' + p.value + ' mg but formula.js says ' +
+               mgOf(key, 1) + ' mg.');
+        }
+        var pct = p.valueReference && p.valueReference.value;
+        if (pct != null && pct + '%' !== dvPct(key, 1)) {
+          warn('JSON-LD says ' + p.name + ' is ' + pct + '% DV but formula.js computes ' +
+               dvPct(key, 1) + '.');
+        }
+      });
+    });
   }
 
   if (F) {
