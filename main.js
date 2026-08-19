@@ -8,12 +8,13 @@
    Credentials for both come from config.js.
 
      1. Helpers + reduced motion      8. Scroll: timeline, the pan, the tin
-     2. Nav height                    9. Counters
-     3. Loader                       10. Magnetic buttons
-     4. Reveals                      11. Mono scramble
-     5. Mobile menu                  12. The rAF loop
-     6. The orbit                    12b. One time / Subscribe & save
-     7. Card stack                   13. Email capture
+     1b. Formula: hydrate + drift     9. Counters
+     2. Nav height                   10. Magnetic buttons
+     3. Loader                       11. Mono scramble
+     4. Reveals                      12. The rAF loop
+     5. Mobile menu                  12b. One time / Subscribe & save
+     6. The orbit                    13. Email capture
+     7. Card stack                   14. Pouch stacking
    ========================================================================== */
 (function () {
   'use strict';
@@ -37,6 +38,142 @@
     p.setAttribute('d', STRIKE);
     s.appendChild(p);
     return s;
+  }
+
+
+  /* 1b. FORMULA — HYDRATE + DRIFT CHECK ------------------------------------
+     formula.js is the single source of truth. Every formula number in the
+     markup is authored as the correct value AND carries a data-formula token;
+     this block overwrites the authored text from formula.js on load.
+
+     Why author it twice. The same reason both price sets are in the markup at
+     section 12b: with JavaScript off the page still has to be right. Empty
+     spans would leave the spec tables blank. So the markup carries the value
+     as a fallback and this block makes formula.js authoritative whenever JS
+     runs — and, on localhost, warns about any fallback that has drifted out of
+     agreement with it. That warning is the thing that keeps "authored twice"
+     from decaying into "wrong in one of fourteen files".
+
+     Compound weights are unreachable from here on purpose. The token grammar
+     resolves against `mg` and computed `dv` only; there is no path to
+     `.compound`. checkDrift additionally scans the rendered page for a
+     compound weight and complains if one has leaked in by hand.
+
+     Runs before section 9, which zeroes every [data-count] and animates it to
+     its data-count target — so the targets have to be correct before it does.
+     ---------------------------------------------------------------------- */
+  var F = window.ZELYTE_FORMULA || null;
+
+  /* Elemental milligrams for `key` at `n` pouches. Always an integer: every
+     per-pouch value is an integer and n is 1..6. */
+  function mgOf(key, n) {
+    var item = F.perPouch[key];
+    return item ? item.mg * (n || 1) : null;
+  }
+
+  /* %DV computed from the Daily Value basis, never stored. Caffeine has no
+     established DV, so it gets the dagger and the standard footnote. */
+  function dvPct(key, n) {
+    var item = F.perPouch[key];
+    if (!item || item.dv == null) return '†';
+    return Math.round(mgOf(key, n) / item.dv * 100) + '%';
+  }
+
+  /* "70 mg" everywhere prose and tables read; "70mg" where the site's own
+     typographic habit is tight, as in the marquee and the pan panels. */
+  function mgText(key, n, compact) {
+    return mgOf(key, n) + (compact ? 'mg' : ' mg');
+  }
+
+  /* data-formula token grammar. Nothing here reaches .compound. */
+  function resolveToken(token, compact) {
+    var bits = token.split('.');
+    var key = bits[0], field = bits[1];
+    if (key === 'dose') {
+      if (field === 'range') return F.dose.min + '–' + F.dose.max;
+      if (field === 'daily') return String(F.dose.dailyMax);
+      return null;
+    }
+    if (key === 'perTin') return String(F.perTin);
+    if (!F.perPouch[key]) return null;
+    if (field === 'mg') return mgText(key, 1, compact);
+    if (field === 'dv') return dvPct(key, 1);
+    if (field === 'label') return F.perPouch[key].label;
+    if (field === 'role') return F.perPouch[key].role;
+    return null;
+  }
+
+  var DEV = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname) ||
+            location.protocol === 'file:';
+
+  function warn(msg) { if (DEV && window.console) console.warn('[ZELYTE formula] ' + msg); }
+
+  /* The three ways this can go wrong, all dev-only, all noisy on purpose. */
+  function checkDrift(drifted) {
+    var i;
+
+    /* 1. An authored fallback disagrees with formula.js. */
+    for (i = 0; i < drifted.length; i++) {
+      warn('markup says "' + drifted[i].was + '" but formula.js says "' +
+           drifted[i].now + '" for ' + drifted[i].token + '. Fix the markup.');
+    }
+
+    var text = document.body ? (document.body.innerText || document.body.textContent || '') : '';
+
+    /* 2. A compound weight has been hand-typed into the page. Elemental only,
+          everywhere — the compound spec is internal. */
+    F.order.forEach(function (key) {
+      var c = F.perPouch[key].compound;
+      if (!c) return;
+      var n = c.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      var near = '[^.]{0,24}';
+      if (new RegExp(c.mg + '\\s*mg' + near + n, 'i').test(text) ||
+          new RegExp(n + near + c.mg + '\\s*mg', 'i').test(text)) {
+        warn('a compound weight is rendering: "' + c.mg + ' mg ' + c.name +
+             '". The site declares elemental values only.');
+      }
+    });
+
+    /* 3. A retired Build A compound is still named somewhere. */
+    ['potassium chloride', 'magnesium malate', 'caffeine anhydrous'].forEach(function (old) {
+      if (text.toLowerCase().indexOf(old) > -1) {
+        warn('"' + old + '" is still on this page. It is not in build ' + F.build + '.');
+      }
+    });
+  }
+
+  if (F) {
+    var drift = [];
+
+    $$('[data-formula]').forEach(function (el) {
+      var token = el.dataset.formula;
+      var value = resolveToken(token, el.dataset.fmt === 'compact');
+      if (value === null) { warn('unknown data-formula token "' + token + '"'); return; }
+      var authored = el.textContent.trim();
+      if (authored && authored !== value) drift.push({ token: token, was: authored, now: value });
+      el.textContent = value;
+    });
+
+    /* Counter targets, set before section 9 reads them. The visible text is
+       left alone here — section 9 owns it from this point. */
+    $$('[data-formula-count]').forEach(function (el) {
+      var key = el.dataset.formulaCount;
+      if (!F.perPouch[key]) { warn('unknown data-formula-count key "' + key + '"'); return; }
+      var mg = String(mgOf(key, 1));
+      if (el.dataset.count && el.dataset.count !== mg) {
+        drift.push({ token: key + '.mg (data-count)', was: el.dataset.count, now: mg });
+      }
+      el.dataset.count = mg;
+      el.dataset.suffix = 'mg';
+    });
+
+    if (DEV) {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function () { checkDrift(drift); });
+      } else {
+        checkDrift(drift);
+      }
+    }
   }
 
 

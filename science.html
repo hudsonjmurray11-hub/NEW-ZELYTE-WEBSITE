@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
 <title>ZELYTE: Science</title>
-<meta name="description" content="How ZELYTE works: buccal delivery of electrolytes and 50mg caffeine anhydrous across a 25-minute active window. Full formula and sourcing.">
+<meta name="description" content="How ZELYTE works: 70 mg sodium and 25 mg caffeine per pouch across a 25-minute active window. Full formula, directions, and sourcing.">
 <meta name="theme-color" content="#0C0E10">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
@@ -118,7 +118,7 @@
           </li>
           <li class="stage" data-at="0.28">
             <span class="stage__t">00:04</span><h3 class="stage__h3">Mineral release</h3>
-            <p>Sodium, potassium and magnesium absorb steadily.</p>
+            <p>Sodium and chloride release steadily.</p>
           </li>
           <li class="stage" data-at="0.55">
             <span class="stage__t">00:12</span><h3 class="stage__h3">Caffeine mid-window</h3>
@@ -138,28 +138,30 @@
     <section class="stack__card" id="formula" aria-labelledby="form-h">
       <div class="wrap">
         <p class="eyebrow reveal">The formula</p>
-        <h2 class="display" id="form-h">Every compound, per pouch.</h2>
+        <h2 class="display" id="form-h">Every value, per pouch.</h2>
         <div class="table-wrap reveal" style="margin-top:clamp(26px,3.2vw,40px)">
           <table class="spec">
-            <caption class="visually-hidden">ZELYTE formula, per pouch, with the role of each compound</caption>
-            <thead><tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th><th scope="col">Role</th></tr></thead>
+            <caption class="visually-hidden">ZELYTE formula, per pouch, with the role of each value</caption>
+            <thead><tr><th scope="col">Nutrient</th><th scope="col">Per pouch</th><th scope="col">% DV</th><th scope="col">Role</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td><td>Lost most in sweat</td></tr>
-              <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td><td>Fluid balance</td></tr>
-              <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td><td>Solubility and taste</td></tr>
-              <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td><td>Half a coffee</td></tr>
+              <tr><th scope="row" data-formula="sodium.label">Sodium</th><td data-formula="sodium.mg">70 mg</td><td data-formula="sodium.dv">3%</td><td data-formula="sodium.role">The one you lose most in sweat</td></tr>
+              <tr><th scope="row" data-formula="chloride.label">Chloride</th><td data-formula="chloride.mg">106 mg</td><td data-formula="chloride.dv">5%</td><td data-formula="chloride.role">Paired with sodium as salt</td></tr>
+              <tr><th scope="row" data-formula="caffeine.label">Caffeine</th><td data-formula="caffeine.mg">25 mg</td><td data-formula="caffeine.dv">†</td><td data-formula="caffeine.role">Stimulant</td></tr>
+              <tr><th scope="row" data-formula="potassium.label">Potassium</th><td data-formula="potassium.mg">10 mg</td><td data-formula="potassium.dv">0%</td><td data-formula="potassium.role">Minor constituent</td></tr>
+              <tr><th scope="row" data-formula="magnesium.label">Magnesium</th><td data-formula="magnesium.mg">6 mg</td><td data-formula="magnesium.dv">1%</td><td data-formula="magnesium.role">Minor constituent</td></tr>
             </tbody>
           </table>
         </div>
         <ul class="stats reveal">
-          <li class="stat"><div class="stat__k">Sodium</div><div class="stat__v" data-count="45" data-suffix="mg">45mg</div></li>
-          <li class="stat"><div class="stat__k">Potassium</div><div class="stat__v" data-count="21" data-suffix="mg">21mg</div></li>
-          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
+          <li class="stat"><div class="stat__k">Sodium</div><div class="stat__v" data-formula-count="sodium" data-count="70" data-suffix="mg">70mg</div></li>
+          <li class="stat"><div class="stat__k">Chloride</div><div class="stat__v" data-formula-count="chloride" data-count="106" data-suffix="mg">106mg</div></li>
+          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-formula-count="caffeine" data-count="25" data-suffix="mg">25mg</div></li>
           <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
         </ul>
+        <p class="capture__micro reveal" style="margin-top:clamp(18px,2.2vw,26px)">† Daily Value not established.</p>
         <ul class="uses" style="margin-top:clamp(26px,3.2vw,40px)">
-          <li class="reveal"><span class="uses__k">Magnesium malate</span><p>Dissolves better than oxide. Far less bitter.</p></li>
-          <li class="reveal"><span class="uses__k">Caffeine anhydrous</span><p>Precise dose, stable in a dry pouch.</p></li>
+          <li class="reveal"><span class="uses__k">Elemental values</span><p>We declare what the pouch delivers, not the weight of the salt it comes from.</p></li>
+          <li class="reveal"><span class="uses__k">Caffeine</span><p>A dry, precise dose. Stable in the pouch.</p></li>
         </ul>
       </div>
     </section>
@@ -172,8 +174,8 @@
         <p class="eyebrow reveal">Use and safety</p>
         <h2 class="display" id="safe-h">Read this part.</h2>
         <ul class="uses" style="margin-top:clamp(26px,3.2vw,40px)">
-          <li class="reveal"><span class="uses__k">One at a time</span><p>One pouch per window. Take it out after.</p></li>
-          <li class="reveal"><span class="uses__k">Caffeine load</span><p>50mg each. Count it alongside your coffee.</p></li>
+          <li class="reveal"><span class="uses__k">How many</span><p>One to three per session. No more than six in a day.</p></li>
+          <li class="reveal"><span class="uses__k">Caffeine load</span><p><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> per pouch. 75mg at three. Count it alongside anything else you drink.</p></li>
           <li class="reveal"><span class="uses__k">Not for everyone</span><p>Not for children, or those pregnant or nursing.</p></li>
           <li class="reveal"><span class="uses__k">Check first</span><p>Caffeine-sensitive or on medication? Ask a clinician.</p></li>
         </ul>
@@ -212,6 +214,7 @@
 </footer>
 
 <script src="config.js" defer></script>
+<script src="formula.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
 <title>ZELYTE: FAQ</title>
-<meta name="description" content="Questions about ZELYTE active hydration pouches: how long a pouch lasts, how it feels, caffeine content, when to use one, ordering and shipping.">
+<meta name="description" content="Questions about ZELYTE active hydration pouches: how long a pouch lasts, how it feels, caffeine content, how many to use, ordering and shipping.">
 <meta name="theme-color" content="#0C0E10">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
@@ -78,15 +78,16 @@
         <p class="faq__group reveal">The product</p>
         <div class="faq__list">
           <details class="qa reveal"><summary><span class="qa__k">01</span><span class="qa__q">What is ZELYTE?</span><span class="qa__i" aria-hidden="true"></span></summary>
-            <div class="qa__a"><p>An active hydration pouch. It sits under your upper lip and releases electrolytes and 50mg caffeine over 25 minutes. No drinking required.</p></div></details>
+            <div class="qa__a"><p>An active hydration pouch. It sits under your upper lip and releases electrolytes and <span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine over 25 minutes. Use one to three per session. No drinking required.</p></div></details>
           <details class="qa reveal"><summary><span class="qa__k">02</span><span class="qa__q">What is in it?</span><span class="qa__i" aria-hidden="true"></span></summary>
             <div class="qa__a">
-              <p>Four compounds, no sugar:</p>
+              <p>Per pouch, no sugar:</p>
               <ul>
-                <li>Sodium chloride: 115mg</li>
-                <li>Potassium chloride: 40mg</li>
-                <li>Magnesium malate: 25mg</li>
-                <li>Caffeine anhydrous: 50mg</li>
+                <li>Sodium: <span data-formula="sodium.mg" data-fmt="compact">70mg</span> (<span data-formula="sodium.dv">3%</span> DV)</li>
+                <li>Chloride: <span data-formula="chloride.mg" data-fmt="compact">106mg</span> (<span data-formula="chloride.dv">5%</span> DV)</li>
+                <li>Caffeine: <span data-formula="caffeine.mg" data-fmt="compact">25mg</span></li>
+                <li>Potassium: <span data-formula="potassium.mg" data-fmt="compact">10mg</span> (<span data-formula="potassium.dv">0%</span> DV)</li>
+                <li>Magnesium: <span data-formula="magnesium.mg" data-fmt="compact">6mg</span> (<span data-formula="magnesium.dv">1%</span> DV)</li>
               </ul>
               <p style="margin-top:12px">Full table on the <a href="science.html">science page</a>.</p>
             </div></details>
@@ -113,7 +114,7 @@
             <div class="qa__a"><p>A few minutes before the hard part, or partway through a long session.</p></div></details>
           <details class="qa reveal"><summary><span class="qa__k">08</span><span class="qa__q">How much caffeine is in it?</span><span class="qa__i" aria-hidden="true"></span></summary>
             <div class="qa__a">
-              <p>50mg per pouch, about half a cup of coffee. Check with a clinician first if you are:</p>
+              <p><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> per pouch. At three pouches, 75mg. Check with a clinician first if you are:</p>
               <ul>
                 <li>Sensitive to caffeine</li>
                 <li>Pregnant or nursing</li>
@@ -122,7 +123,7 @@
               </ul>
             </div></details>
           <details class="qa reveal"><summary><span class="qa__k">09</span><span class="qa__q">Can I use more than one?</span><span class="qa__i" aria-hidden="true"></span></summary>
-            <div class="qa__a"><p>One per window. Across a day, count the caffeine alongside your coffee.</p></div></details>
+            <div class="qa__a"><p>Yes — that is the design. Use one to three per session, scaled to how long and how hard you are going. Up to 6 pouches per day.</p></div></details>
           <details class="qa reveal"><summary><span class="qa__k">10</span><span class="qa__q">Do I swallow it?</span><span class="qa__i" aria-hidden="true"></span></summary>
             <div class="qa__a"><p>No. It stays under your lip for the window, then comes out.</p></div></details>
         </div>
@@ -188,6 +189,7 @@
 </footer>
 
 <script src="config.js" defer></script>
+<script src="formula.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

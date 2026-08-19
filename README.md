@@ -35,6 +35,7 @@ styles.css    shared, commented by section
 main.js       shared; every page-specific block is gated on its elements
 auth.js       accounts; loaded on the six account pages only
 config.js     the only file with credentials
+formula.js    the only file with formula numbers
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
 assets/img/   two tins, pouch, two athlete photos
 sql/          run both files before filling in config.js
@@ -285,6 +286,38 @@ The two flavor colors are legible on **opposite** surfaces, so no single
 Inverted it is symmetric. `--sku` is a **background** and `--sku-ink` is the
 palette color that passes on it — asphalt-on-mint **5.73:1**, chalk-on-cherry
 **9.43:1**. Headlines stay chalk/asphalt; interactive elements stay voltage.
+
+## The formula
+
+`formula.js` is the single source of truth. It is loaded ahead of `main.js` on
+the seven pages that show formula values, and `main.js` section 1b hydrates
+every `[data-formula]` element from it.
+
+**Elemental values only, everywhere.** The build declares what the pouch
+delivers — 70 mg sodium — never the weight of the salt it comes from. The
+compound spec lives in `formula.js` beside each value so the two can never
+drift apart, but nothing renders it: the `data-formula` token grammar resolves
+against `mg` and computed `dv` only, and there is no path to `.compound`.
+
+Note that sodium and chloride share one compound entry. 175 mg of sodium
+chloride is one input yielding two declared elementals, so summing a compound
+column would double-count it — which is the other reason no such column exists.
+
+`%DV` is computed, never stored: `round(mg / dv * 100)` against the standard
+FDA Daily Values in `formula.js`. Caffeine has no established DV, so it renders
+a dagger and the standard footnote.
+
+**Numbers are authored twice on purpose**, the same bargain the bundle prices
+make below: the markup carries the correct value so the page is right with
+JavaScript off, and `formula.js` overrides it whenever JS runs. On localhost,
+section 1b warns in the console about three things — an authored fallback that
+disagrees with `formula.js`, a compound weight that has leaked into the page,
+and any retired Build A compound name still sitting in the copy. That warning
+is what keeps "authored twice" from decaying into "wrong in one of seven files".
+
+Potassium and magnesium are listed as present and never headlined. At 10 mg and
+6 mg they will not support a "full electrolyte blend" claim, so the site does
+not make one — `lead` and `quiet` in `formula.js` record which is which.
 
 ## Content notes
 

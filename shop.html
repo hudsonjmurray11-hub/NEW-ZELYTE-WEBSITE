@@ -98,7 +98,7 @@
             <dl class="sku__spec">
               <div><dt>From</dt><dd>$9 / tin</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+              <div><dt>Caffeine</dt><dd data-formula="caffeine.mg">25 mg</dd></div>
             </dl>
             <a class="btn sku__btn" href="crispy-mint.html">See Crispy Mint</a>
           </article>
@@ -111,7 +111,7 @@
             <dl class="sku__spec">
               <div><dt>From</dt><dd>$9 / tin</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+              <div><dt>Caffeine</dt><dd data-formula="caffeine.mg">25 mg</dd></div>
             </dl>
             <a class="btn sku__btn" href="black-cherry.html">See Black Cherry</a>
           </article>
@@ -164,26 +164,28 @@
       <div class="wrap">
         <p class="eyebrow reveal">What's in the tin</p>
         <h2 class="display" id="tin-h">
-          <span class="line reveal">Four ingredients.</span>
+          <span class="line reveal">Every value.</span>
           <span class="line reveal">Nothing hidden.</span>
         </h2>
         <div class="table-wrap reveal" style="margin-top:clamp(26px,3.2vw,40px)">
           <table class="spec">
             <caption class="visually-hidden">ZELYTE formula, per pouch</caption>
-            <thead><tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th></tr></thead>
+            <thead><tr><th scope="col">Nutrient</th><th scope="col">Per pouch</th><th scope="col">% DV</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td></tr>
-              <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td></tr>
-              <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td></tr>
-              <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td></tr>
+              <tr><th scope="row" data-formula="sodium.label">Sodium</th><td data-formula="sodium.mg">70 mg</td><td data-formula="sodium.dv">3%</td></tr>
+              <tr><th scope="row" data-formula="chloride.label">Chloride</th><td data-formula="chloride.mg">106 mg</td><td data-formula="chloride.dv">5%</td></tr>
+              <tr><th scope="row" data-formula="caffeine.label">Caffeine</th><td data-formula="caffeine.mg">25 mg</td><td data-formula="caffeine.dv">†</td></tr>
+              <tr><th scope="row" data-formula="potassium.label">Potassium</th><td data-formula="potassium.mg">10 mg</td><td data-formula="potassium.dv">0%</td></tr>
+              <tr><th scope="row" data-formula="magnesium.label">Magnesium</th><td data-formula="magnesium.mg">6 mg</td><td data-formula="magnesium.dv">1%</td></tr>
             </tbody>
           </table>
         </div>
         <ul class="stats reveal">
           <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
           <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
-          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
+          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-formula-count="caffeine" data-count="25" data-suffix="mg">25mg</div></li>
         </ul>
+        <p class="capture__micro reveal" style="margin-top:clamp(18px,2.2vw,26px)">† Daily Value not established.</p>
       </div>
     </section>
   </div>
@@ -238,6 +240,7 @@
 </footer>
 
 <script src="config.js" defer></script>
+<script src="formula.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

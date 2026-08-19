@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
 <title>ZELYTE: Black Cherry</title>
-<meta name="description" content="ZELYTE Black Cherry. Bold, ripe, and juicy. Electrolytes and 50mg caffeine in a pouch, released over 25 minutes. 15 pouches per tin, zero sugar.">
+<meta name="description" content="ZELYTE Black Cherry. Bold, ripe, and juicy. 70 mg sodium and 25 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin, zero sugar.">
 <meta name="theme-color" content="#0C0E10">
 <meta property="og:type" content="product">
 <meta property="og:title" content="ZELYTE Black Cherry">
-<meta property="og:description" content="Bold, ripe, and juicy. Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
+<meta property="og:description" content="Bold, ripe, and juicy. 70 mg sodium and 25 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin.">
 <meta property="og:site_name" content="ZELYTE">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
@@ -73,14 +73,14 @@
               <span class="line">Black</span>
               <span class="line">Cherry</span>
             </h1>
-            <p class="lede reveal">Bold, ripe, and juicy. Electrolytes and 50mg caffeine, released under your lip over 25 minutes.</p>
+            <p class="lede reveal">Bold, ripe, and juicy. <span data-formula="sodium.mg" data-fmt="compact">70mg</span> sodium and <span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine, released under your lip. Use one to three per session.</p>
             <div class="hero__actions reveal">
               <a class="btn" href="#bundles">See bundles</a>
               <a class="btn btn--ghost" href="#inside">What's inside</a>
             </div>
             <ul class="stats pdp__spec reveal">
               <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
-              <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
+              <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-formula-count="caffeine" data-count="25" data-suffix="mg">25mg</div></li>
               <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
             </ul>
           </div>
@@ -93,7 +93,7 @@
   <div class="stack__item stack__item--flow">
     <div class="marquee" aria-hidden="true">
       <div class="marquee__track">
-        <span>Black Cherry</span><span>Zero sugar</span><span>Zero calories</span><span>50mg caffeine</span><span>25:00 window</span><span>15 pouches per tin</span>
+        <span>Black Cherry</span><span>Zero sugar</span><span>Zero calories</span><span><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine</span><span>25:00 window</span><span><span data-formula="dose.range">1&#8211;3</span> per session</span><span>15 pouches per tin</span>
       </div>
     </div>
   </div>
@@ -106,44 +106,50 @@
     <section class="stack__card" id="inside" aria-labelledby="inside-h">
       <div class="wrap">
         <p class="eyebrow reveal">Inside the pouch</p>
-        <h2 class="display" id="inside-h">Four compounds. One window.</h2>
+        <h2 class="display" id="inside-h">What one pouch carries.</h2>
         <div class="pan" id="pan">
           <ol class="pan__track" id="pan-track">
             <li class="pan__panel">
               <span class="pan__n">01</span>
-              <span class="pan__v">115mg</span>
-              <h3 class="pan__k">Sodium chloride</h3>
-              <p>Yields ~45mg sodium. The one you lose most in sweat.</p>
+              <span class="pan__v" data-formula="sodium.mg" data-fmt="compact">70mg</span>
+              <h3 class="pan__k">Sodium</h3>
+              <p>The one you lose most in sweat.</p>
             </li>
             <li class="pan__panel">
               <span class="pan__n">02</span>
-              <span class="pan__v">40mg</span>
-              <h3 class="pan__k">Potassium chloride</h3>
-              <p>Yields ~21mg potassium. Fluid balance.</p>
+              <span class="pan__v" data-formula="chloride.mg" data-fmt="compact">106mg</span>
+              <h3 class="pan__k">Chloride</h3>
+              <p>Paired with sodium as salt.</p>
             </li>
             <li class="pan__panel">
               <span class="pan__n">03</span>
-              <span class="pan__v">25mg</span>
-              <h3 class="pan__k">Magnesium malate</h3>
-              <p>Yields ~3.75mg magnesium. Solubility and taste.</p>
+              <span class="pan__v" data-formula="caffeine.mg" data-fmt="compact">25mg</span>
+              <h3 class="pan__k">Caffeine</h3>
+              <p>Per pouch, not per session.</p>
             </li>
             <li class="pan__panel">
               <span class="pan__n">04</span>
-              <span class="pan__v">50mg</span>
-              <h3 class="pan__k">Caffeine anhydrous</h3>
-              <p>Half a coffee, spread across the window.</p>
+              <span class="pan__v"><span data-formula="potassium.mg" data-fmt="compact">10mg</span> / <span data-formula="magnesium.mg" data-fmt="compact">6mg</span></span>
+              <h3 class="pan__k">Potassium &amp; magnesium</h3>
+              <p>Also in the blend, in small amounts.</p>
             </li>
-            <li class="pan__panel pan__panel--end">
+            <li class="pan__panel">
               <span class="pan__n">05</span>
               <span class="pan__v">25:00</span>
               <h3 class="pan__k">The window</h3>
-              <p>One pouch, under the lip. Then it's done.</p>
+              <p>One pouch, under the lip.</p>
+            </li>
+            <li class="pan__panel pan__panel--end">
+              <span class="pan__n">06</span>
+              <span class="pan__v" data-formula="dose.range">1&#8211;3</span>
+              <h3 class="pan__k">Per session</h3>
+              <p>Start at one. Up to six a day.</p>
             </li>
           </ol>
         </div>
         <div class="split split--track pan__foot" aria-hidden="true">
           <div class="split__rule"><span class="split__fill" id="pan-fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
-          <div class="split__labels"><span id="pan-step">01</span><span class="split__label">Formula</span><span>05</span></div>
+          <div class="split__labels"><span id="pan-step">01</span><span class="split__label">Formula</span><span>06</span></div>
         </div>
       </div>
     </section>
@@ -264,6 +270,7 @@
 </footer>
 
 <script src="config.js" defer></script>
+<script src="formula.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

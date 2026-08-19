@@ -5,11 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script>document.documentElement.className+=' js'</script>
 <title>ZELYTE: active hydration pouches</title>
-<meta name="description" content="ZELYTE active hydration pouches. Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
+<meta name="description" content="ZELYTE active hydration pouches. 70 mg sodium and 25 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin. No water needed.">
 <meta name="theme-color" content="#0C0E10">
 <meta property="og:type" content="website">
 <meta property="og:title" content="ZELYTE: active hydration pouches">
-<meta property="og:description" content="Electrolytes and 50mg caffeine. 15 pouches per tin. No water needed.">
+<meta property="og:description" content="70 mg sodium and 25 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin. No water needed.">
 <meta property="og:site_name" content="ZELYTE">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
@@ -99,8 +99,8 @@
   <div class="stack__item stack__item--flow">
     <div class="marquee" aria-hidden="true">
       <div class="marquee__track">
-        <span>Zero sugar</span><span>Zero calories</span><span>Hands free</span><span>50mg caffeine</span><span>25:00 window</span><span>15 pouches per tin</span>
-        <span>Zero sugar</span><span>Zero calories</span><span>Hands free</span><span>50mg caffeine</span><span>25:00 window</span><span>15 pouches per tin</span>
+        <span>Zero sugar</span><span>Zero calories</span><span>Hands free</span><span><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine</span><span>25:00 window</span><span><span data-formula="dose.range">1–3</span> per session</span><span>15 pouches per tin</span>
+        <span>Zero sugar</span><span>Zero calories</span><span>Hands free</span><span><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine</span><span>25:00 window</span><span><span data-formula="dose.range">1–3</span> per session</span><span>15 pouches per tin</span>
       </div>
     </div>
   </div>
@@ -125,8 +125,8 @@
           </article>
           <article class="feat reveal">
             <span class="feat__n">03</span>
-            <h3 class="feat__h">50mg caffeine</h3>
-            <p>About half a cup of coffee, spread across 25 minutes.</p>
+            <h3 class="feat__h"><span data-formula="caffeine.mg" data-fmt="compact">25mg</span> caffeine</h3>
+            <p>Per pouch. Use one, two, or three to match the session.</p>
           </article>
         </div>
       </div>
@@ -141,7 +141,7 @@
     <section class="stack__card" id="how-it-works" aria-labelledby="how-h">
       <div class="wrap">
         <p class="eyebrow">How it works</p>
-        <h2 class="display" id="how-h">One pouch. 25 minutes.</h2>
+        <h2 class="display" id="how-h">One pouch, start to finish.</h2>
         <div class="how__clock"><span id="how-clock">00:00</span></div>
         <div class="split split--track" aria-hidden="true">
           <div class="split__rule"><span class="split__fill" id="how-fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -154,7 +154,7 @@
           </li>
           <li class="stage" data-at="0.28">
             <span class="stage__t">00:04</span><h3 class="stage__h3">Electrolytes releasing</h3>
-            <p>Sodium, potassium and magnesium start releasing.</p>
+            <p>Sodium and chloride start releasing.</p>
           </li>
           <li class="stage" data-at="0.55">
             <span class="stage__t">00:12</span><h3 class="stage__h3">Caffeine peak</h3>
@@ -174,22 +174,24 @@
     <section class="stack__card" id="formula" aria-labelledby="form-h">
       <div class="wrap">
         <p class="eyebrow reveal">The formula</p>
-        <h2 class="display" id="form-h">There are four ingredients.</h2>
+        <h2 class="display" id="form-h">What one pouch delivers.</h2>
         <div class="table-wrap reveal">
           <table class="spec">
             <caption class="visually-hidden">ZELYTE formula, per pouch</caption>
-            <thead><tr><th scope="col">Compound</th><th scope="col">Per pouch</th><th scope="col">Yields</th></tr></thead>
+            <thead><tr><th scope="col">Nutrient</th><th scope="col">Per pouch</th><th scope="col">% DV</th></tr></thead>
             <tbody>
-              <tr><th scope="row">Sodium Chloride</th><td>115 mg</td><td>~45 mg sodium</td></tr>
-              <tr><th scope="row">Potassium Chloride</th><td>40 mg</td><td>~21 mg potassium</td></tr>
-              <tr><th scope="row">Magnesium Malate</th><td>25 mg</td><td>~3.75 mg magnesium</td></tr>
-              <tr><th scope="row">Caffeine Anhydrous</th><td>50 mg</td><td>~50 mg caffeine</td></tr>
+              <tr><th scope="row" data-formula="sodium.label">Sodium</th><td data-formula="sodium.mg">70 mg</td><td data-formula="sodium.dv">3%</td></tr>
+              <tr><th scope="row" data-formula="chloride.label">Chloride</th><td data-formula="chloride.mg">106 mg</td><td data-formula="chloride.dv">5%</td></tr>
+              <tr><th scope="row" data-formula="caffeine.label">Caffeine</th><td data-formula="caffeine.mg">25 mg</td><td data-formula="caffeine.dv">†</td></tr>
+              <tr><th scope="row" data-formula="potassium.label">Potassium</th><td data-formula="potassium.mg">10 mg</td><td data-formula="potassium.dv">0%</td></tr>
+              <tr><th scope="row" data-formula="magnesium.label">Magnesium</th><td data-formula="magnesium.mg">6 mg</td><td data-formula="magnesium.dv">1%</td></tr>
             </tbody>
           </table>
         </div>
+        <p class="capture__micro reveal">† Daily Value not established.</p>
         <ul class="stats reveal">
-          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-count="50" data-suffix="mg">50mg</div></li>
-          <li class="stat"><div class="stat__k">Sodium</div><div class="stat__v" data-count="45" data-suffix="mg">45mg</div></li>
+          <li class="stat"><div class="stat__k">Caffeine</div><div class="stat__v" data-formula-count="caffeine" data-count="25" data-suffix="mg">25mg</div></li>
+          <li class="stat"><div class="stat__k">Sodium</div><div class="stat__v" data-formula-count="sodium" data-count="70" data-suffix="mg">70mg</div></li>
           <li class="stat"><div class="stat__k">Window</div><div class="stat__v" data-count="1500" data-format="time">25:00</div></li>
           <li class="stat"><div class="stat__k">Per tin</div><div class="stat__v" data-count="15">15</div></li>
         </ul>
@@ -213,7 +215,7 @@
             <h3 class="sku__name">Crispy Mint</h3>
             <p class="sku__desc">Cold and sharp all the way through a hard effort.</p>
             <dl class="sku__spec">
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+              <div><dt>Caffeine</dt><dd data-formula="caffeine.mg">25 mg</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
               <div><dt>Window</dt><dd>25:00</dd></div>
             </dl>
@@ -226,7 +228,7 @@
             <h3 class="sku__name">Black Cherry</h3>
             <p class="sku__desc">Dark and dry rather than sweet, made for long sessions.</p>
             <dl class="sku__spec">
-              <div><dt>Caffeine</dt><dd>50 mg</dd></div>
+              <div><dt>Caffeine</dt><dd data-formula="caffeine.mg">25 mg</dd></div>
               <div><dt>Per tin</dt><dd>15</dd></div>
               <div><dt>Window</dt><dd>25:00</dd></div>
             </dl>
@@ -354,6 +356,7 @@
 </footer>
 
 <script src="config.js" defer></script>
+<script src="formula.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>
