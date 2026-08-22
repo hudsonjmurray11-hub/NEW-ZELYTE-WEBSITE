@@ -134,8 +134,11 @@
       }
     });
 
-    /* 3. A retired Build A compound is still named somewhere. */
-    ['potassium chloride', 'magnesium malate', 'caffeine anhydrous'].forEach(function (old) {
+    /* 3. A retired compound is still named somewhere. Caffeine anhydrous used
+          to be on this list; it is a current ingredient again, and check 2
+          above now guards it automatically because caffeine has a compound
+          entry. These two are the ones the formula genuinely left behind. */
+    ['potassium chloride', 'magnesium malate'].forEach(function (old) {
       if (text.toLowerCase().indexOf(old) > -1) {
         warn('"' + old + '" is still on this page. It is not in build ' + F.build + '.');
       }
@@ -177,6 +180,20 @@
       var authored = el.textContent.trim();
       if (authored && authored !== value) drift.push({ token: token, was: authored, now: value });
       el.textContent = value;
+    });
+
+    /* The stacking table's cells belong to section 14, which renders them from
+       formula.js. Their authored text is the no-JS fallback, so it still has to
+       agree — and it is checked here rather than there because at this point
+       section 14 has not run and the authored text is still in the DOM. */
+    $$('[data-dose]').forEach(function (cell) {
+      var key = cell.dataset.dose;
+      if (!F.perPouch[key]) { warn('unknown data-dose key "' + key + '"'); return; }
+      var value = cell.dataset.doseField === 'dv' ? dvPct(key, 1) : mgText(key, 1);
+      var authored = cell.textContent.trim();
+      if (authored && authored !== value) {
+        drift.push({ token: key + ' (dose table)', was: authored, now: value });
+      }
     });
 
     /* Counter targets, set before section 9 reads them. The visible text is
@@ -639,8 +656,8 @@
      press 2 and every elemental value recomputes, live.
 
      ELEMENTAL ONLY. mgOf multiplies what the pouch delivers. Compound weights
-     are never multiplied and never shown — three pouches is 210 mg of sodium,
-     not "525 mg of sodium chloride", and the second number would be both
+     are never multiplied and never shown — three pouches is 165 mg of sodium,
+     not "420 mg of sodium chloride", and the second number would be both
      meaningless to a reader and wrong to print.
 
      No animation frame. This is click- and key-driven, and it writes
@@ -660,7 +677,7 @@
     var unitEl = $('[data-dose-unit]', dose);
     if (!tiles.length || !cells.length) return;
 
-    function render(n) {
+    function render(n, announce) {
       cells.forEach(function (cell) {
         var key = cell.dataset.dose;
         if (!F.perPouch[key]) return;
@@ -674,20 +691,29 @@
       /* One sentence, not the whole table. An aria-live region wrapped around
          five rows re-reads every label and header on each press, which
          punishes the reader for using the control. The two values the copy
-         leads with are the two worth hearing. */
-      if (live) {
+         leads with are the two worth hearing.
+
+         Silent on the initial render: the reader has not pressed anything yet,
+         and a live region that speaks on page load is a bug, not a feature. */
+      if (live && announce) {
         live.textContent = n + (n === 1 ? ' pouch' : ' pouches') + ' per session. ' +
           F.perPouch.sodium.label + ' ' + mgText('sodium', n) + ', ' +
           F.perPouch.caffeine.label + ' ' + mgText('caffeine', n) + '.';
       }
     }
 
+    /* Render once from formula.js rather than trusting the authored markup, so
+       the table matches every other number on the page. Section 1b has already
+       compared that markup against formula.js and reported any disagreement. */
+    var start = tiles.filter(function (t) { return t.getAttribute('aria-pressed') === 'true'; })[0];
+    render(parseInt((start || tiles[0]).dataset.pouches, 10) || 1, false);
+
     function select(tile) {
       tiles.forEach(function (t) {
         var on = t === tile;
         t.setAttribute('aria-pressed', on ? 'true' : 'false');
       });
-      render(parseInt(tile.dataset.pouches, 10) || 1);
+      render(parseInt(tile.dataset.pouches, 10) || 1, true);
     }
 
     dose.addEventListener('click', function (e) {

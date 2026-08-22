@@ -294,14 +294,16 @@ the seven pages that show formula values, and `main.js` section 1b hydrates
 every `[data-formula]` element from it.
 
 **Elemental values only, everywhere.** The build declares what the pouch
-delivers — 70 mg sodium — never the weight of the salt it comes from. The
+delivers — 55 mg sodium — never the weight of the salt it comes from. The
 compound spec lives in `formula.js` beside each value so the two can never
 drift apart, but nothing renders it: the `data-formula` token grammar resolves
 against `mg` and computed `dv` only, and there is no path to `.compound`.
 
-Note that sodium and chloride share one compound entry. 175 mg of sodium
+Note that sodium and chloride share one compound entry. 140 mg of sodium
 chloride is one input yielding two declared elementals, so summing a compound
-column would double-count it — which is the other reason no such column exists.
+column would double-count it. The two totals do not reconcile in any case — the
+actives add to 235 mg as compounds and 205 mg as elementals — which is the other
+reason no such column exists.
 
 `%DV` is computed, never stored: `round(mg / dv * 100)` against the standard
 FDA Daily Values in `formula.js`. Caffeine has no established DV, so it renders
@@ -310,14 +312,18 @@ a dagger and the standard footnote.
 **Numbers are authored twice on purpose**, the same bargain the bundle prices
 make below: the markup carries the correct value so the page is right with
 JavaScript off, and `formula.js` overrides it whenever JS runs. On localhost,
-section 1b warns in the console about three things — an authored fallback that
-disagrees with `formula.js`, a compound weight that has leaked into the page,
-and any retired Build A compound name still sitting in the copy. That warning
-is what keeps "authored twice" from decaying into "wrong in one of seven files".
+section 1b warns in the console about four things — an authored fallback that
+disagrees with `formula.js`, a compound weight that has leaked into the page, a
+retired compound name still sitting in the copy, and JSON-LD that has drifted.
+That warning is what keeps "authored twice" from decaying into "wrong in one of
+seven files".
 
-Potassium and magnesium are listed as present and never headlined. At 10 mg and
-6 mg they will not support a "full electrolyte blend" claim, so the site does
-not make one — `lead` and `quiet` in `formula.js` record which is which.
+Potassium and magnesium are listed as present and never headlined. At 13 mg and
+12 mg they will not support a "full electrolyte blend" claim, so the site does
+not make one — `lead` and `quiet` in `formula.js` record which is which. That is
+a copy strategy rather than a magnitude ranking: magnesium's 3% DV now runs ahead
+of sodium's 2%, and sodium still leads because sweat loss is what the product is
+for.
 
 ## Content notes
 
