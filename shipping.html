@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.className+=' js'</script>
+<title>ZELYTE: Shipping and returns</title>
+<meta name="description" content="Shipping is calculated at checkout. US only at launch, first batch Fall 2026, 30 days to return an unopened tin for a full refund.">
+<meta name="theme-color" content="#0C0E10">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ZELYTE">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://takezelyte.com/shipping.html">
+<meta property="og:title" content="ZELYTE: Shipping and returns">
+<meta property="og:description" content="Shipping is calculated at checkout. US only at launch, first batch Fall 2026, 30 days to return an unopened tin for a full refund.">
+<meta property="og:image" content="https://takezelyte.com/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A ZELYTE tin beside a single pouch on an asphalt ground.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZELYTE: Shipping and returns">
+<meta name="twitter:description" content="Shipping is calculated at checkout. US only at launch, first batch Fall 2026, 30 days to return an unopened tin for a full refund.">
+<meta name="twitter:image" content="https://takezelyte.com/assets/img/og.png">
+<link rel="canonical" href="https://takezelyte.com/shipping.html">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css">
+<!-- ===================================================================
+     BEFORE THIS GOES LIVE, a lawyer should read it, and these facts need
+     confirming against the actual company. They are placeholders chosen to be
+     plausible, not researched:
+
+       * state of incorporation      currently "Delaware"
+       * registered mailing address  currently "Washington, DC"
+       * governing law / venue       currently "the State of Delaware"
+       * contact inboxes             support@takezelyte.com / privacy@takezelyte.com
+       * the 30-day return window and who pays return postage
+
+     Everything describing what the SITE does — the Supabase tables, what is
+     stored, the launch code, the caffeine ceiling — was read out of this
+     repository and is accurate as written.
+     =================================================================== -->
+</head>
+<body>
+
+<div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
+<a class="skip" href="#main">Skip to content</a>
+
+<svg class="sprite" aria-hidden="true" focusable="false" width="0" height="0">
+  <symbol id="strike" viewBox="0 0 552 754">
+    <path d="M207.5,754.0 L35.0,753.5 L139.0,632.5 L248.0,508.5 L263.0,489.5 L0.5,489.0 L0.0,487.5 L214.0,267.5 L323.0,152.5 L342.0,130.5 L129.5,130.0 L1.0,0.5 L495.5,0.0 L509.5,3.0 L519.5,8.0 L530.5,16.0 L542.0,29.5 L548.0,40.5 L550.0,51.5 L552.0,54.5 L552.0,75.5 L550.0,79.5 L548.0,90.5 L543.0,100.5 L527.0,122.5 L484.0,171.5 L371.0,292.5 L308.0,357.5 L320.5,359.0 L546.5,358.0 L550.0,359.5 Z"/>
+  </symbol>
+</svg>
+
+<div class="split split--progress" id="scroll-progress" role="progressbar" aria-label="Page scroll progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="split__rule"><span class="split__fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <a class="lockup lockup--word" href="index.html" aria-label="ZELYTE home"><span class="lockup__word">ZELYTE</span></a>
+    <nav class="nav__links" aria-label="Primary">
+      <a href="shop.html">Shop</a>
+      <a href="science.html">Science</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="account.html">Account</a>
+    </nav>
+    <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
+  </div>
+</header>
+
+<!-- Sticky mobile CTA. Below 820 the stylesheet hides .nav__cta, and this is
+     what stands in for it. Written before .menu in source order so an open
+     menu paints over it; main.js section 2b toggles .is-on. -->
+<div class="cta-bar" id="cta-bar">
+  <span class="cta-bar__text">Questions</span>
+  <a class="btn" href="faq.html">Read the FAQ</a>
+</div>
+
+<div class="menu" id="menu" hidden>
+  <nav class="menu__links" aria-label="Mobile">
+    <a href="index.html">Home</a><a href="shop.html">Shop</a><a href="science.html">Science</a><a href="about.html">About</a><a href="faq.html">FAQ</a><a href="account.html">Account</a>
+  </nav>
+  <div class="split split--dark" aria-hidden="true">
+    <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+  </div>
+</div>
+
+<main id="main">
+<div class="stack">
+
+  <div class="stack__item">
+    <section class="stack__card" aria-labelledby="sh-h">
+      <div class="wrap">
+        <p class="eyebrow scramble reveal">Support</p>
+        <h1 class="display reveal" id="sh-h">Shipping &amp; returns.</h1>
+        <p class="lede reveal">What shipping costs, when it arrives, and how to send it back. Thirty days to change your mind on an unopened tin.</p>
+        <div class="split hero__split reveal" aria-hidden="true">
+          <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="split__labels"><span>00:00</span><span class="split__label">Ships fall 2026</span><span>25:00</span></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card" id="doc" aria-labelledby="doc-h">
+      <div class="wrap">
+        <h2 class="visually-hidden" id="doc-h">Shipping and returns</h2>
+        <div class="legal">
+          <p class="legal__updated">Last updated: August 26, 2026</p>
+          <ol class="legal__toc">
+            <li><a href="#cost">What shipping costs</a></li>
+            <li><a href="#where">Where we ship</a></li>
+            <li><a href="#when">When it ships</a></li>
+            <li><a href="#tracking">Tracking</a></li>
+            <li><a href="#returns">Returns</a></li>
+            <li><a href="#refunds">Refunds</a></li>
+            <li><a href="#damaged">Damaged or lost</a></li>
+            <li><a href="#subs">Subscriptions</a></li>
+            <li><a href="#s-contact">Contact</a></li>
+          </ol>
+
+          <h2 id="cost">01 &#8212; What shipping costs</h2>
+          <div class="legal__note">
+            <p><strong>Shipping is calculated at checkout</strong>, from the weight of your order and where it is going. You see the exact cost before you pay, and nothing is added after.</p>
+          </div>
+          <p>There is no free-shipping threshold at launch, and we would rather say so here than have you find out at the last step. If that changes, the <a href="index.html#capture">launch list</a> hears first.</p>
+
+          <h2 id="where">02 &#8212; Where we ship</h2>
+          <p>The United States only at launch, including Alaska, Hawaii, and APO/FPO addresses. We do not ship internationally yet. If you are outside the US, join the <a href="index.html#capture">launch list</a> &#8212; that is where the announcement goes when it changes.</p>
+
+          <h2 id="when">03 &#8212; When it ships</h2>
+          <p>The first production run is <strong>October 2026</strong> and the first batch ships in <strong>fall 2026</strong>. It is limited, and the launch list orders before anyone else.</p>
+          <p>Once we are shipping regularly, orders leave within <strong>1&#8211;2 business days</strong> and arrive in <strong>3&#8211;7 business days</strong> depending on where you are. Orders placed on a weekend or a holiday go out the next business day.</p>
+
+          <h2 id="tracking">04 &#8212; Tracking</h2>
+          <p>You get a tracking number by email as soon as your order leaves. If it has been more than two business days since you ordered and nothing has arrived, check your spam folder first, then email us.</p>
+
+          <h2 id="returns">05 &#8212; Returns</h2>
+          <p>You have <strong>30 days from delivery</strong> to return tins for a full refund on the tins. Section 06 covers what happens to the shipping you paid.</p>
+          <ul>
+            <li><strong>Unopened tins</strong> come back for a full refund on the tins, no reason needed.</li>
+            <li><strong>Opened tins</strong> &#8212; if you tried it and did not like it, email us. We would rather hear why than keep your money.</li>
+            <li>Email <a href="mailto:support@takezelyte.com">support@takezelyte.com</a> with your order number to start a return. We will reply with the return address and what to include.</li>
+            <li><strong>Return postage is yours to pay.</strong> The one exception is an order that arrived damaged or wrong &#8212; that is our mistake, and section 07 covers it instead.</li>
+          </ul>
+          <p>For food-safety reasons we cannot resell a returned tin, opened or not. Returns are destroyed, which is exactly why we would rather you ordered the Pro Pack first and the Elite Pack second.</p>
+
+          <h2 id="refunds">06 &#8212; Refunds</h2>
+          <p>Refunds go back to the original payment method within <strong>5&#8211;10 business days</strong> of us receiving the return. We refund the price of the tins.</p>
+          <p>The shipping you paid on the original order is <strong>not</strong> refunded on a change-of-mind return, and return postage is not reimbursed. Both are refunded in full when the return is our error &#8212; a damaged, wrong, or missing item.</p>
+
+          <h2 id="damaged">07 &#8212; Damaged or lost</h2>
+          <p>If your order arrives damaged, photograph it and email <a href="mailto:support@takezelyte.com">support@takezelyte.com</a> within 7 days. We will replace it and you keep the damaged one &#8212; do not post it back.</p>
+          <p>If tracking says delivered and nothing is there, check with your household and neighbours, then give it 48 hours &#8212; carriers scan early more often than they lose parcels. If it still has not turned up, tell us and we will replace it.</p>
+
+          <h2 id="subs">08 &#8212; Subscriptions</h2>
+          <p>Subscription orders are charged shipping the same way as one-time orders, and carry the same returns window. Cancel, pause, or skip from your account at any time; the <a href="terms.html#t-subs">terms</a> cover the rest.</p>
+
+          <h2 id="s-contact">09 &#8212; Contact</h2>
+          <p>Anything about an order: <a href="mailto:support@takezelyte.com">support@takezelyte.com</a>. Questions about the product itself are probably already answered in the <a href="faq.html">FAQ</a>.</p>
+
+        </div>
+      </div>
+    </section>
+  </div>
+
+</div>
+</main>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer__top">
+      <a class="lockup lockup--dark footer__lockup" href="index.html" aria-label="ZELYTE home">
+        <svg class="lockup__icon" viewBox="0 0 552 754" aria-hidden="true" focusable="false"><use href="#strike"/></svg>
+        <span class="lockup__word">ZELYTE</span>
+      </a>
+      <nav class="footer__cols" aria-label="Footer">
+        <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
+        <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="founder.html">Founder</a><a href="account.html">Account</a><a href="index.html#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
+      </nav>
+    </div>
+    <div class="split split--dark" aria-hidden="true">
+      <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="split__labels"><span>00:00</span><span class="split__label">25-minute window</span><span>25:00</span></div>
+    </div>
+    <div class="footer__legal">
+      <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
+      <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine. Not for children, or those pregnant or nursing.</p>
+      <nav aria-label="Legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="terms.html#accessibility">Accessibility</a></nav>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js" defer></script>
+<script src="main.js" defer></script>
+</body>
+</html>

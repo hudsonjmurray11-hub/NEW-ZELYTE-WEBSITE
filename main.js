@@ -10,11 +10,13 @@
      1. Helpers + reduced motion      8. Scroll: timeline, the pan, the tin
      1b. Formula: hydrate + drift     9. Counters
      2. Nav height                   10. Magnetic buttons
-     3. Loader                       11. Mono scramble
-     4. Reveals                      12. The rAF loop
-     5. Mobile menu                  12b. One time / Subscribe & save
-     6. The orbit                    13. Email capture
+     2b. Sticky mobile CTA           11. Mono scramble
+     3. Loader                       12. The rAF loop
+     4. Reveals                      12b. One time / Subscribe & save
+     5. Mobile menu                  13. Email capture
+     6. The orbit                    13b. Waitlist popup
      7. Card stack                   14. Pouch stacking
+                                     15. Reviews (reviews.js, flag-gated)
    ========================================================================== */
 (function () {
   'use strict';
@@ -92,6 +94,11 @@
     if (key === 'dose') {
       if (field === 'range') return F.dose.min + '–' + F.dose.max;
       if (field === 'daily') return String(F.dose.dailyMax);
+      /* DERIVED, never stored — the same bargain %DV makes. The Facts panel
+         has to state the caffeine a reader hits at the daily ceiling, and
+         storing that number would let it drift from the two it comes from.
+         Computed, it cannot: change dailyMax or caffeine.mg and this follows. */
+      if (field === 'dailyCaffeine') return String(F.perPouch.caffeine.mg * F.dose.dailyMax);
       return null;
     }
     if (key === 'perTin') return String(F.perTin);
@@ -228,6 +235,55 @@
   if (window.ResizeObserver && nav) new ResizeObserver(measureNav).observe(nav);
 
 
+  /* 2b. STICKY MOBILE CTA -------------------------------------------------
+     Below 820 the stylesheet hides .nav__cta, so this bar is the only CTA in
+     the chrome. It shows once the first card is behind you and hides again
+     over the page's own #capture — a "join the list" bar floating on top of
+     the actual signup form is noise, not a conversion.
+
+     Visibility is a class, and the class is set from updateScroll() inside the
+     existing rAF loop. No second scroll listener: section 12 is deliberately
+     the only one on the page, and under reduced motion it is never registered
+     at all — which is why CSS section 22 renders the bar visible outright
+     rather than waiting for an .is-on that would never arrive.
+
+     Nothing here reads window.innerWidth. The bar's existence is a CSS media
+     query and JS does not duplicate that decision; toggling a class on a
+     display:none element is free and cannot disagree with the breakpoint.
+     ---------------------------------------------------------------------- */
+  var ctaBar = $('#cta-bar');
+  var ctaAnchor = $('#main .stack__item');       // the hero slot
+  var ctaHide = $('#capture');
+
+  function updateCtaBar() {
+    if (!ctaBar) return;
+    var on = true;
+
+    /* Past the hero. offsetHeight (not innerHeight) so a --flow hero, which
+       is shorter than a screen, still resolves at its own real bottom. */
+    if (ctaAnchor) {
+      var r = ctaAnchor.getBoundingClientRect();
+      on = r.bottom < window.innerHeight * 0.6;
+    }
+    /* Off from the moment the capture card arrives, and it stays off. Testing
+       `bottom > 0` as well would switch it back on for the last sliver of the
+       page, once capture has scrolled past and only the footer is left — a bar
+       that vanishes and then reappears at the very bottom, over a footer that
+       already carries every link. Reaching the signup form is the end of the
+       bar's job. */
+    if (on && ctaHide && ctaHide.getBoundingClientRect().top < window.innerHeight) {
+      on = false;
+    }
+    ctaBar.classList.toggle('is-on', on);
+    /* Inert to the keyboard and to AT while it is off screen, so tabbing does
+       not land on an invisible button. visibility:hidden already handles this
+       in browsers that support inert; this covers the rest. */
+    ctaBar.setAttribute('aria-hidden', on ? 'false' : 'true');
+    var btn = $('a,button', ctaBar);
+    if (btn) btn.tabIndex = on ? 0 : -1;
+  }
+
+
   /* 3. LOADER -------------------------------------------------------------
      Blank asphalt, the Strike turns exactly one revolution and lands where
      it started, then the page fades up. Plays on EVERY page load.
@@ -235,9 +291,16 @@
   var loader = $('#loader');
   var loaderMark = $('#loader-mark');
 
+  /* Callbacks that must not start counting until the page is actually visible.
+     Section 13b's five-second timer is the reason this exists: started at parse
+     it would spend most of its wait behind a black overlay. */
+  var onPageReady = [];
+
   function revealPage() {
     root.classList.add('is-ready');
     if (loader) loader.classList.add('is-done');
+    onPageReady.forEach(function (fn) { fn(); });
+    onPageReady.length = 0;
   }
 
   function buildExtrusion(host, layers, depthRatio) {
@@ -550,6 +613,7 @@
       pdpTin.style.setProperty('--tin-s', (1 - hp * 0.12).toFixed(4));
     }
 
+    updateCtaBar();
     updateStack();
   }
 
@@ -780,9 +844,13 @@
   var SUPABASE_URL = String(CFG.SUPABASE_URL || '').replace(/\/+$/, '');
   var SUPABASE_ANON_KEY = String(CFG.SUPABASE_ANON_KEY || '');
 
-  function saveEmail(email) {
+  /* `flavor` is null whenever the form has no picker or nobody picked, and the
+     column is nullable for exactly that reason — see sql/launch_signups_flavor.sql.
+     `source` separates popup signups from the inline sections so the popup's
+     value is measurable rather than assumed. */
+  function saveEmail(email, flavor, source) {
     if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-      console.warn('[ZELYTE] Email capture is stubbed — no Supabase credentials set. Captured:', email);
+      console.warn('[ZELYTE] Email capture is stubbed — no Supabase credentials set. Captured:', email, flavor || '(no flavor)');
       return Promise.resolve({ stubbed: true });
     }
     return fetch(SUPABASE_URL + '/rest/v1/launch_signups', {
@@ -793,7 +861,11 @@
         'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
         'Prefer': 'return=minimal'
       },
-      body: JSON.stringify({ email: email })
+      body: JSON.stringify({
+        email: email,
+        flavor: flavor || null,
+        source: source || 'marketing-site'
+      })
     }).then(function (res) {
       if (res.ok || res.status === 409) return { ok: true };
       return res.json().catch(function () { return {}; }).then(function (b) {
@@ -803,11 +875,32 @@
     });
   }
 
-  $$('form[data-signup]').forEach(function (form) {
+  /* The selected flavor card is a class, toggled the same way auth.js does it
+     at its own paintPicks, rather than :has() — which this stylesheet uses
+     nowhere. DUPLICATED from auth.js on purpose: auth.js loads only on the six
+     account pages and never visits the eight marketing pages this runs on, so
+     sharing it would mean loading an account bundle everywhere to paint a
+     border. `.pick:focus-within` already covers the keyboard; this is what
+     covers the pointer. */
+  function paintPicks(form) {
+    $$('input[name="flavor"]', form).forEach(function (radio) {
+      var card = radio.closest('.pick');
+      if (card) card.classList.toggle('is-on', radio.checked);
+    });
+  }
+
+  /* Wiring lives in a named function rather than inside the forEach because
+     the popup (13b) builds its form after this sweep has already run and needs
+     the identical path — validation, duplicate handling, the stubbed branch and
+     the redirect. Calling it explicitly there removes the ordering question
+     instead of depending on when the DOM node happens to appear. */
+  function wireSignup(form) {
     var input = $('input[type="email"]', form);
     var btn = $('button[type="submit"]', form);
     var status = document.getElementById(form.dataset.signup);
     var micro = status ? status.textContent : '';
+
+    if (!input || !btn) return;
 
     function say(msg, kind) {
       if (!status) return;
@@ -815,6 +908,13 @@
       status.classList.toggle('is-error', kind === 'error');
       status.classList.toggle('is-ok', kind === 'ok');
     }
+
+    /* Product pages ship a `checked` radio, so the border has to be painted
+       once up front — not only on the first change. */
+    paintPicks(form);
+    form.addEventListener('change', function (e) {
+      if (e.target.name === 'flavor') paintPicks(form);
+    });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -825,12 +925,36 @@
         input.focus();
         return;
       }
+      /* Absent picker or nothing picked both give null. Flavor is never
+         required: an email with no preference is still a signup, and blocking
+         on it would trade real addresses for a field nobody asked for. */
+      var picked = $('input[name="flavor"]:checked', form);
       input.removeAttribute('aria-invalid');
       btn.disabled = true;
       say('Submitting…');
-      saveEmail(email).then(function () {
-        form.hidden = true;
-        say('You are on the list. We will email you once when the first batch ships.', 'ok');
+      saveEmail(email, picked ? picked.value : null, form.dataset.source).then(function (res) {
+        /* A real save earns the confirmation page. The STUBBED path — no
+           Supabase credentials in config.js — deliberately does not navigate:
+           nothing was stored, and sending a developer to a page that says
+           "you're on the list" would be a lie that looks like a working
+           feature. It shows the inline success state instead, which is what
+           the console warning above is already telling you about.
+
+           A duplicate (409 / 23505) resolves as ok and lands here too. Being
+           on the list twice is the same as being on it once, so it gets the
+           same page — bouncing a returning visitor to an error would be
+           telling them something false about their own signup. */
+        if (res && res.stubbed) {
+          form.hidden = true;
+          say('You are on the list. We will email you once when the first batch ships.', 'ok');
+          return;
+        }
+        /* Recorded BEFORE navigating: this is what stops the popup asking a
+           second time on the next visit. Written on every successful signup,
+           inline or popup, because someone who joined from #capture should not
+           then be popped at either. */
+        rememberPopup('signed');
+        window.location.assign('waitlist-confirmed.html');
       }).catch(function (err) {
         console.error('[ZELYTE] signup failed:', err);
         btn.disabled = false;
@@ -844,5 +968,354 @@
         say(micro);
       }
     });
-  });
+  }
+
+  $$('form[data-signup]').forEach(wireSignup);
+
+
+  /* 13b. WAITLIST POPUP ===================================================
+     The same launch-list ask as #capture, for the visitor who leaves before
+     ever scrolling that far. One ask, dismissible, remembered — it does not
+     come back once it has been answered either way.
+
+     GATED ON `data-waitlist-popup` on <body>, which the eight marketing pages
+     carry and nothing else does. An attribute rather than a list of filenames
+     in here: adding or removing a page is then a one-attribute edit in that
+     page, visible to whoever is editing it, instead of a hidden array in a
+     shared file that nobody thinks to look at. It is the same "gated on its
+     elements existing" rule every other block here follows.
+
+     BUILT IN JS, like the reviews in section 15, rather than authored into
+     eight files. One place to change the copy, and no eighth copy that drifts.
+     With JS off nothing appears, which is correct — the form could not submit
+     either, so a popup there would be a dead box over the page.
+     ---------------------------------------------------------------------- */
+
+  var POPUP_KEY = 'zelyte.waitlist.popup';
+
+  /* Every touch wrapped: Safari in private mode throws on setItem, and a
+     storage failure must not take the form down with it. Same bargain auth.js
+     makes around its session. */
+  function rememberPopup(v) {
+    try { localStorage.setItem(POPUP_KEY, v); } catch (e) {}
+  }
+  function popupAnswered() {
+    try {
+      var v = localStorage.getItem(POPUP_KEY);
+      return v === 'dismissed' || v === 'signed';
+    } catch (e) { return false; }
+  }
+
+  if (document.body.hasAttribute('data-waitlist-popup') && !popupAnswered()) {
+    (function () {
+      var wlp = null, panel = null, lastPopupFocus = null, fired = false;
+      var captureSection = $('#capture');
+
+      function el(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text) n.textContent = text;
+        return n;
+      }
+
+      /* Flavor cards. Ids are prefixed `popup-` because #capture already owns
+         `email`/`signup-status` on all six of its pages and account.html owns
+         `flavor-mint`/`flavor-cherry`. Duplicate ids break label association
+         silently — the inline form's label would start focusing this input. */
+      function flavorCard(id, value, name, desc) {
+        var label = el('label', 'buy__card pick');
+        label.setAttribute('for', id);
+        var radio = el('input', 'visually-hidden');
+        radio.type = 'radio';
+        radio.name = 'flavor';
+        radio.id = id;
+        radio.value = value;
+        label.appendChild(radio);
+        label.appendChild(el('h3', 'buy__n', name));
+        label.appendChild(el('p', 'pick__d', desc));
+        return label;
+      }
+
+      function build() {
+        wlp = el('div', 'wlp');
+        wlp.id = 'waitlist-popup';
+        wlp.hidden = true;
+
+        panel = el('div', 'wlp__panel is-dark');
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-modal', 'true');
+        panel.setAttribute('aria-labelledby', 'wlp-h');
+        /* Focus lands here, not on the first control. A screen reader then
+           hears the dialog and its heading rather than the word "Close", and a
+           phone does not throw up a keyboard for a box nobody asked for. */
+        panel.setAttribute('tabindex', '-1');
+
+        var close = el('button', 'wlp__x', '×');
+        close.type = 'button';
+        close.setAttribute('aria-label', 'Close');
+        panel.appendChild(close);
+
+        panel.appendChild(el('p', 'eyebrow', 'Launch list'));
+        var h = el('h2', 'display wlp__h', 'First batch, fall 2026.');
+        h.id = 'wlp-h';
+        panel.appendChild(h);
+        panel.appendChild(el('p', 'lede', 'Early access and launch details. One email, when it ships.'));
+
+        var form = el('form', 'capture__form');
+        form.setAttribute('data-signup', 'popup-status');
+        form.setAttribute('data-source', 'popup');
+        form.setAttribute('novalidate', '');
+
+        /* INSIDE the form, exactly as the six inline captures have it. As a
+           sibling of the form it would look identical and submit nothing:
+           wireSignup scopes its flavor lookup to the form, so every popup
+           signup would quietly record no preference. */
+        var grid = el('div', 'pick__grid');
+        grid.appendChild(flavorCard('popup-flavor-mint', 'crispy-mint', 'Crispy Mint',
+          'Cool and clean. Stays sharp through a hard effort.'));
+        grid.appendChild(flavorCard('popup-flavor-cherry', 'black-cherry', 'Black Cherry',
+          'Dark and tart. Rounder, with less bite.'));
+        form.appendChild(grid);
+
+        var lab = el('label', 'visually-hidden', 'Email address');
+        lab.setAttribute('for', 'popup-email');
+        form.appendChild(lab);
+
+        var input = el('input', 'capture__input');
+        input.id = 'popup-email';
+        input.name = 'email';
+        input.type = 'email';
+        input.setAttribute('inputmode', 'email');
+        input.setAttribute('autocomplete', 'email');
+        input.placeholder = 'you@example.com';
+        input.required = true;
+        form.appendChild(input);
+
+        var submit = el('button', 'btn', 'Get early access');
+        submit.type = 'submit';
+        form.appendChild(submit);
+        panel.appendChild(form);
+
+        var status = el('p', 'capture__micro', 'No spam. One email when the first batch ships.');
+        status.id = 'popup-status';
+        status.setAttribute('role', 'status');
+        status.setAttribute('aria-live', 'polite');
+        panel.appendChild(status);
+
+        wlp.appendChild(panel);
+        document.body.appendChild(wlp);
+
+        /* The form is younger than the sweep above, so it is wired by hand. */
+        wireSignup(form);
+
+        close.addEventListener('click', function () { closePopup(true); });
+        wlp.addEventListener('mousedown', function (e) {
+          if (e.target === wlp) closePopup(true);   // backdrop only, never the panel
+        });
+      }
+
+      /* Same selector as the mobile menu's. The flavor radios are
+         .visually-hidden, which is the clip pattern, not display:none — they
+         are still focusable and still in the tab order, so leaving them out
+         would compute the wrong last element and let Tab walk out of the
+         dialog onto the page behind it. */
+      function popupFocusables() {
+        return $$('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])', panel);
+      }
+
+      function openPopup() {
+        if (fired) return;
+        /* Re-checked at fire time, not only at setup: the menu can open and
+           #capture can scroll into view during the five seconds we waited. */
+        if (menu && !menu.hidden) return;
+        if (captureSection && inView(captureSection)) return;
+        fired = true;
+        detach();
+
+        build();
+        wlp.hidden = false;
+        lastPopupFocus = document.activeElement;
+        // Next frame, so the transition has a hidden->shown edge to run on.
+        requestAnimationFrame(function () { wlp.classList.add('is-on'); });
+        document.body.classList.add('popup-open');
+        panel.focus();
+      }
+
+      function closePopup(answered) {
+        if (!wlp || wlp.hidden) return;
+        if (answered) rememberPopup('dismissed');
+        wlp.classList.remove('is-on');
+        wlp.hidden = true;
+        document.body.classList.remove('popup-open');
+        if (lastPopupFocus && lastPopupFocus.focus) lastPopupFocus.focus();
+      }
+
+      function inView(node) {
+        var r = node.getBoundingClientRect();
+        return r.top < (window.innerHeight || 0) && r.bottom > 0;
+      }
+
+      /* Escape and the tab trap, mirroring the mobile menu in section 5. */
+      document.addEventListener('keydown', function (e) {
+        if (!wlp || wlp.hidden) return;
+        if (e.key === 'Escape') { closePopup(true); return; }
+        if (e.key !== 'Tab') return;
+        var f = popupFocusables();
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+
+      /* --- Triggers. First to fire wins; the rest detach. --------------- */
+      var timer = null;
+
+      function onExitIntent(e) {
+        if (e.clientY <= 0 && !e.relatedTarget) openPopup();
+      }
+
+      /* The coarse-pointer stand-in for exit intent: a hard flick upward is
+         the thumb reaching for the back gesture. Sampled on scroll rather than
+         added to the rAF loop — it unbinds after one fire, and a permanent
+         frame cost for a one-shot check is the wrong trade. */
+      var lastY = window.pageYOffset, lastT = 0;
+      function onFlick() {
+        var y = window.pageYOffset, t = Date.now(), dt = t - lastT;
+        if (dt > 0 && y < lastY && (lastY - y) / dt > 1.6 && y > 200) openPopup();
+        lastY = y; lastT = t;
+      }
+
+      function detach() {
+        if (timer) clearTimeout(timer);
+        document.removeEventListener('mouseout', onExitIntent);
+        window.removeEventListener('scroll', onFlick);
+      }
+
+      /* Five seconds of VISIBLE page, not five seconds from parse. The loader
+         owns the first ~1.5s (section 3) and counting through it would put the
+         popup up almost as the page arrives. */
+      function startTimer() {
+        timer = setTimeout(openPopup, 5000);
+      }
+
+      if (root.classList.contains('is-ready')) startTimer();
+      else onPageReady.push(startTimer);
+
+      if (window.matchMedia('(pointer: fine)').matches) {
+        document.addEventListener('mouseout', onExitIntent);
+      } else {
+        window.addEventListener('scroll', onFlick, { passive: true });
+      }
+    })();
+  }
+
+
+  /* 15. REVIEWS ===========================================================
+     Renders reviews.js into #reviews on the product pages, and ONLY when that
+     file's LIVE flag is true. Gated on the container existing, like every
+     other page-specific block here.
+
+     Everything is built with createElement and textContent — never innerHTML.
+     Review text is the one string on this site that will eventually come from
+     a member of the public, and the markup path it takes should already be
+     safe on the day it stops being a constant in a file we control.
+
+     The AggregateRating is injected into the page's existing Product JSON-LD
+     rather than authored into it. See the header of reviews.js for why that
+     distinction is load-bearing and not a style preference.
+     ---------------------------------------------------------------------- */
+  var reviewsHost = $('#reviews');
+  var R = window.ZELYTE_REVIEWS;
+
+  if (reviewsHost && R && R.LIVE) {
+    var sku = reviewsHost.dataset.sku;
+    var items = (R.items && R.items[sku]) || [];
+
+    if (items.length) {
+      /* The whole slot — heading included — ships `hidden` and is revealed
+         here. Authoring the heading visible and only filling the list would
+         leave a card reading "What people are saying" over empty space
+         whenever the flag is off or JS fails, which is a worse first
+         impression than no section at all. */
+      var slot = reviewsHost.closest('.stack__item');
+      if (slot) slot.hidden = false;
+
+      var list = document.createElement('ul');
+      list.className = 'reviews';
+
+      items.forEach(function (rv) {
+        var li = document.createElement('li');
+        li.className = 'review';
+
+        /* Stars carry the rating in text for AT; the glyphs themselves are
+           decorative and hidden, so a screen reader hears "4 out of 5" once
+           rather than five separate star characters. */
+        var stars = document.createElement('p');
+        stars.className = 'review__stars';
+        var sr = document.createElement('span');
+        sr.className = 'visually-hidden';
+        sr.textContent = rv.stars + ' out of 5 stars';
+        stars.appendChild(sr);
+        var glyphs = document.createElement('span');
+        glyphs.setAttribute('aria-hidden', 'true');
+        for (var s = 1; s <= 5; s++) {
+          if (s <= rv.stars) {
+            glyphs.appendChild(document.createTextNode('★'));
+          } else {
+            var dim = document.createElement('i');
+            dim.textContent = '★';
+            glyphs.appendChild(dim);
+          }
+        }
+        stars.appendChild(glyphs);
+        li.appendChild(stars);
+
+        var q = document.createElement('p');
+        q.className = 'review__q';
+        q.textContent = rv.text;
+        li.appendChild(q);
+
+        var by = document.createElement('p');
+        by.className = 'review__by';
+        var who = document.createElement('b');
+        who.textContent = rv.name;
+        by.appendChild(who);
+        if (rv.title) by.appendChild(document.createTextNode(' · ' + rv.title));
+        li.appendChild(by);
+
+        list.appendChild(li);
+      });
+
+      reviewsHost.appendChild(list);
+
+      /* Mean to one decimal, and only over what actually rendered. */
+      var sum = items.reduce(function (a, rv) { return a + rv.stars; }, 0);
+      var avg = Math.round((sum / items.length) * 10) / 10;
+
+      var agg = document.createElement('p');
+      agg.className = 'reviews__agg';
+      agg.textContent = avg + ' out of 5 · ' + items.length +
+                        (items.length === 1 ? ' review' : ' reviews');
+      reviewsHost.appendChild(agg);
+
+      /* Into the Product block, not a second block of our own. Two Product
+         nodes for one page is what produces "duplicate field" in the Rich
+         Results Test. */
+      var ldNodes = $$('script[type="application/ld+json"]');
+      for (var n = 0; n < ldNodes.length; n++) {
+        var data;
+        try { data = JSON.parse(ldNodes[n].textContent); } catch (e) { continue; }
+        if (!data || data['@type'] !== 'Product') continue;
+        data.aggregateRating = {
+          '@type': 'AggregateRating',
+          ratingValue: String(avg),
+          reviewCount: items.length,
+          bestRating: '5',
+          worstRating: '1'
+        };
+        ldNodes[n].textContent = JSON.stringify(data, null, 2);
+        break;
+      }
+    }
+  }
 })();

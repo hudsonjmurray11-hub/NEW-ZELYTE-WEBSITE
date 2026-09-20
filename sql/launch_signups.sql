@@ -4,12 +4,20 @@
 -- The previous app (zelyte-ecommerce-main/src/components/LaunchCapture.tsx)
 -- inserts into `launch_signups`, but no CREATE TABLE for it exists in any of
 -- that repo's .sql files. This is that missing definition.
+--
+-- IF YOUR TABLE PREDATES `flavor`: `create table if not exists` will NOT add a
+-- column to a table that already exists, so this file is a no-op for you. Run
+-- launch_signups_flavor.sql instead. The column is defined in both places so a
+-- fresh project and the live one end up with the same table.
 
 create table if not exists public.launch_signups (
   id          uuid primary key default gen_random_uuid(),
   email       text not null,
   created_at  timestamptz not null default now(),
-  source      text default 'marketing-site'
+  source      text default 'marketing-site',
+  -- Nullable: null means "did not say". See launch_signups_flavor.sql for why
+  -- that is deliberate and not an oversight.
+  flavor      text check (flavor is null or flavor in ('crispy-mint', 'black-cherry'))
 );
 
 -- Lets the client treat a duplicate submit as success (Postgres error 23505),

@@ -7,13 +7,29 @@
 <title>ZELYTE: About</title>
 <meta name="description" content="ZELYTE was built by an athlete who got tired of stopping to drink. The story, the milestones, and how ZELYTE compares to what else is on the shelf.">
 <meta name="theme-color" content="#0C0E10">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ZELYTE">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://takezelyte.com/about.html">
+<meta property="og:title" content="ZELYTE: About">
+<meta property="og:description" content="Built by an athlete who got tired of stopping to drink. The story, the milestones, and how ZELYTE compares.">
+<meta property="og:image" content="https://takezelyte.com/assets/img/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A ZELYTE tin beside a single pouch on an asphalt ground.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZELYTE: About">
+<meta name="twitter:description" content="Built by an athlete who got tired of stopping to drink. The story, the milestones, and how ZELYTE compares.">
+<meta name="twitter:image" content="https://takezelyte.com/assets/img/og.png">
 <link rel="canonical" href="https://takezelyte.com/about.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
 </head>
-<body>
+<body data-waitlist-popup>
 
 <div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
 <a class="skip" href="#main">Skip to content</a>
@@ -38,9 +54,19 @@
       <a href="faq.html">FAQ</a>
       <a href="account.html">Account</a>
     </nav>
+    <a class="btn nav__cta" href="shop.html">Shop</a>
     <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
   </div>
 </header>
+
+<!-- Sticky mobile CTA. Below 820 the stylesheet hides .nav__cta and shows
+     this instead, so exactly one CTA is in the chrome at every width. Written
+     before .menu in source order so an open menu paints over it; main.js
+     section 2b toggles .is-on and hides it over #capture. -->
+<div class="cta-bar" id="cta-bar">
+  <span class="cta-bar__text">First batch, fall 2026</span>
+  <a class="btn" href="shop.html">Shop ZELYTE</a>
+</div>
 
 <div class="menu" id="menu" hidden>
   <nav class="menu__links" aria-label="Mobile">
@@ -62,6 +88,10 @@
         <p class="eyebrow scramble reveal">Our story</p>
         <h1 class="display reveal" id="ab-h">We make one thing.</h1>
         <p class="lede reveal">An active hydration pouch that works while you keep moving. Everything below is how it got here.</p>
+        <div class="hero__actions reveal">
+          <a class="btn" href="shop.html">Shop ZELYTE</a>
+          <a class="btn btn--ghost" href="founder.html">The founder story</a>
+        </div>
         <div class="split hero__split reveal" aria-hidden="true" style="max-width:640px">
           <div class="split__rule"><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="split__labels"><span>00:00</span><span class="split__label">Active window</span><span>25:00</span></div>
@@ -85,6 +115,9 @@
             <h2 class="display reveal" id="found-h" style="font-size:clamp(1.6rem,3.4vw,2.6rem)">Why I built it.</h2>
             <p class="story__q reveal" style="margin-top:clamp(20px,2.6vw,30px)">I rowed through high school. In a boat you can't stop and you can't carry anything. 1,000 meters into a race my mouth was dry, my legs were cramping, and a bottle was no help. So I built something you can take without breaking stride.</p>
             <p class="story__by reveal">Hudson Murray, Founder and CEO</p>
+            <div class="hero__actions reveal" style="margin-top:clamp(22px,2.6vw,30px)">
+              <a class="btn btn--ghost" href="founder.html">Read the full story</a>
+            </div>
           </div>
           <!-- Second in the grid, so it is the right column and, once .story
                collapses to one track under 1024, sits below the message.
@@ -163,6 +196,18 @@
         </h2>
         <p class="lede reveal">Early access and launch details. One email, when it ships.</p>
         <form class="capture__form reveal" data-signup="signup-status" novalidate style="margin-top:clamp(24px,3vw,34px)">
+          <div class="pick__grid">
+            <label class="buy__card pick" for="cap-flavor-mint">
+              <input class="visually-hidden" type="radio" name="flavor" id="cap-flavor-mint" value="crispy-mint">
+              <h3 class="buy__n">Crispy Mint</h3>
+              <p class="pick__d">Cool and clean. Stays sharp through a hard effort.</p>
+            </label>
+            <label class="buy__card pick" for="cap-flavor-cherry">
+              <input class="visually-hidden" type="radio" name="flavor" id="cap-flavor-cherry" value="black-cherry">
+              <h3 class="buy__n">Black Cherry</h3>
+              <p class="pick__d">Dark and tart. Rounder, with less bite.</p>
+            </label>
+          </div>
           <label class="visually-hidden" for="email">Email address</label>
           <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
           <button class="btn" type="submit">Get early access</button>
@@ -185,7 +230,7 @@
       <nav class="footer__cols" aria-label="Footer">
         <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
         <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
-        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="account.html">Account</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="founder.html">Founder</a><a href="account.html">Account</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
         <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
       </nav>
     </div>
@@ -196,7 +241,7 @@
     <div class="footer__legal">
       <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
       <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine. Not for children, or those pregnant or nursing.</p>
-      <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
+      <nav aria-label="Legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="terms.html#accessibility">Accessibility</a></nav>
     </div>
   </div>
 </footer>

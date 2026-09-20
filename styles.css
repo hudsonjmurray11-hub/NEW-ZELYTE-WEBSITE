@@ -11,12 +11,16 @@
      06 The Split        15 Built for
      07 Loader           16 FAQ / accordion
      08 Floating nav     17 Forms
-     08b Card stack      17b Auth & account
-                         18 Shop / bundles / compare / story
+     08c Sticky mobile CTA   17b Auth & account
+     08b Card stack      18 Shop / bundles / compare / story
                          18b Product pages (hero, the pan, swap)
                          18c Pouch stacking (the dose control)
+                         18d The promise strip
+                         18e Supplement Facts
+                         18f Reviews
                          19 Footer          21 Responsive
                          20 Reveal          22 Reduced motion
+                                            23 Legal pages
    ========================================================================== */
 
 
@@ -137,8 +141,11 @@ p{max-width:68ch}
 /* Links inside prose. Without this the browser's default link blue is the one
    color on the site outside the palette. Voltage is 5.34:1 on chalk but only
    2.6:1 on asphalt, so dark surfaces carry chalk — same rule as .btn--ghost. */
-.lede a,.qa__a a,.uses p a,.feat p a{color:var(--voltage);text-underline-offset:3px;text-decoration-thickness:1px}
-.is-dark .lede a,.is-dark .qa__a a,.is-dark .uses p a,.is-dark .feat p a{color:var(--chalk)}
+/* Links are styled through a WHITELIST of parents, never a bare `a{}`. Any new
+   prose container has to be added here or its links render browser-default
+   blue — a ninth color, straight through the eight-color rule. */
+.lede a,.qa__a a,.uses p a,.feat p a,.legal a,.promise p a,.facts__foot a{color:var(--voltage);text-underline-offset:3px;text-decoration-thickness:1px}
+.is-dark .lede a,.is-dark .qa__a a,.is-dark .uses p a,.is-dark .feat p a,.is-dark .legal a,.is-dark .promise p a{color:var(--chalk)}
 
 
 /* 04 BUTTONS ============================================================== */
@@ -330,6 +337,52 @@ body.menu-open .nav__toggle span:first-child{transform:translateY(3px) rotate(45
 body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px) rotate(-45deg)}
 
 
+/* 08c STICKY MOBILE CTA ===================================================
+   Below 820 section 21 sets `.nav__links,.nav__cta{display:none}`, so from
+   that width down there is no call to action in the chrome at all. This bar
+   is what stands in for it, and it exists ONLY in that range — the base rule
+   is display:none and the 820 query is what turns it on. Same breakpoint as
+   the one that kills .nav__cta, deliberately: one CTA is visible at every
+   width, never two and never zero.
+
+   It is NOT part of .nav. main.js measures nav.offsetHeight into --nav-h, and
+   --nav-h drives every card's top padding and every [id]'s scroll-margin-top,
+   so anything added inside the nav shell would relayout the whole card stack.
+   A separate fixed element costs nothing and touches none of that.
+
+   z-index 690 is the menu's own layer, and .cta-bar is written BEFORE .menu in
+   source order, so an open menu paints over it. body.menu-open also hides it
+   outright (below) — the paint order is the belt, the class is the braces.
+   ========================================================================== */
+.cta-bar{
+  position:fixed;z-index:690;
+  left:var(--frame);right:var(--frame);bottom:var(--frame);
+  display:none;                      /* desktop never sees it — see 21 */
+  gap:10px;align-items:center;
+  background:var(--chalk);
+  border:1px solid var(--hair-light);border-radius:999px;
+  padding:8px 8px 8px clamp(14px,4vw,20px);
+  /* The iOS home indicator sits inside the viewport. Without this the pill's
+     lower edge is under it on every notched phone. */
+  padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));
+  /* Hidden state is a transform, not display, so it can animate. The 20px
+     overshoot past 100% clears the border and the safe-area padding. */
+  transform:translateY(calc(100% + 20px));
+  opacity:0;visibility:hidden;
+  transition:transform 260ms var(--ease),opacity 200ms var(--ease),visibility 0s linear 260ms;
+}
+.cta-bar.is-on{transform:none;opacity:1;visibility:visible;transition-delay:0s}
+/* An open mobile menu is a fixed full-screen surface on the same layer. */
+body.menu-open .cta-bar{transform:translateY(calc(100% + 20px));opacity:0;visibility:hidden}
+.cta-bar__text{
+  flex:1 1 auto;min-width:0;
+  font-family:var(--data);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--iron);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cta-bar .btn{flex:0 0 auto;border-radius:999px;padding:10px 18px;font-size:12px}
+
+
 /* 08b CARD STACK ==========================================================
    Each item supplies the scroll distance; the card inside pins to the top
    for that distance. Consecutive cards therefore rise over one another.
@@ -406,19 +459,30 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 /* No UA h1 margin here — the span owns all the spacing. */
 .hero__h1{margin:0}
 /* Sized to keep BOTH headline lines on ONE line each. Measured at this
-   letter-spacing: "DROP THE BOTTLE." renders 10.07x its font-size wide (the
-   longer of the two; "NOT THE PACE." is 7.95x), so the longer line is what
-   every term below is derived from. This rule fits the 62% column above, i.e.
-   right up to the tin. The column is narrowest (~575px) at a 1025px viewport —
-   just above the breakpoint where it goes full width — so that point, not
-   1440, is what caps the vw term. The stacked layout under 1024 has no tin
-   beside it and is sized separately in section 21. Measured to hold one line
-   from 360px up; it wraps somewhere under that, which is deliberate: no
-   white-space:nowrap, since clipping beats wrapping there. */
+   letter-spacing: "NO BREAKS." renders 6.49x its font-size wide (the longer of
+   the two; "NO BOTTLE." is 6.33x), so the longer line is what every term below
+   is derived from. The lines are near-equal width by design, so the block sets
+   as a tight rectangle rather than a ragged pair. This rule fits the 62%
+   column above, i.e. right up to the tin. The column is narrowest (~575px) at
+   a 1025px viewport — just above the breakpoint where it goes full width — so
+   that point, not 1440, is what caps the vw term. The stacked layout under
+   1024 has no tin beside it and is sized separately in section 21. Measured to
+   hold one line from 360px up; it wraps somewhere under that, which is
+   deliberate: no white-space:nowrap, since clipping beats wrapping there.
+   Every term is the previous headline's scaled by 1.557 — the ratio of that
+   headline's longest line to this one — INCLUDING the vh term. Holding vh
+   while the width terms grew was tried and is wrong: vh then binds at every
+   ordinary desktop size and the headline sets at 51-79% of the column instead
+   of the 93-96% the old one measured. Scaled, it reproduces that fill curve
+   almost exactly (96% at 900px tall, 93% at 800, 82% at 700 — matching the old
+   build within a point), because the rem max goes back to being the term that
+   binds on a normal desktop and vh only takes over on a short window, which is
+   what it is for. The taller block that buys costs ~50px at 1440x700, against
+   200px+ of slack in the card there. */
 .hero__fuel{
   display:block;                 /* inline spans ran onto one line at 375 */
   font-family:var(--display);text-transform:uppercase;
-  font-size:clamp(1.84rem,min(5.3vw,7.7vh),3.95rem);
+  font-size:clamp(2.87rem,min(8.25vw,12vh),6.15rem);
   letter-spacing:-.045em;line-height:.82;margin:0;
 }
 /* .eyebrow's margin assumes it sits above the headline; under it, it flips.
@@ -591,6 +655,11 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 
 /* 17 FORMS ================================================================ */
 .capture__form{display:flex;flex-wrap:wrap;gap:10px;max-width:540px}
+/* The flavor picker rides INSIDE .capture__form, not above it, so that one
+   query scoped to the form finds both the address and the choice — and so a
+   native reset clears them together. The row already wraps, so the grid simply
+   takes a full-width line of its own above the email and the button. */
+.capture__form .pick__grid{flex:1 1 100%;margin:0 0 4px}
 .capture__input{
   flex:1 1 250px;min-width:0;
   background:var(--white);color:var(--asphalt);
@@ -670,6 +739,88 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
    .buy__unit s carries none. */
 .is-busy{color:var(--iron)}
 .is-dark .is-busy{color:var(--frost)}
+
+
+/* 17c WAITLIST POPUP ======================================================
+   The launch-list ask for the visitor who leaves before reaching #capture.
+   main.js section 13b builds the markup; this only places and dresses it.
+
+   Almost nothing new, on purpose. The panel carries .is-dark, which is what
+   switches .capture__input and .capture__micro to their existing dark variants
+   above — so the form inside is the same form as everywhere else, not a second
+   one styled to match. The flavor cards are .buy__card.pick and .pick__grid,
+   unchanged from the account page.
+
+   Eight colors, and no shadow, no gradient, no blur — the same rule 17b states.
+   Depth here is the flat scrim and a hairline, which is how every other raised
+   surface on this site reads.
+
+   z-index 950: above .nav (800) and .skip (900) so nothing punches through the
+   scrim, below .loader (1000) so the loader always owns the entrance. The
+   mobile menu sits at 690 and is excluded in JS instead — a modal over an open
+   menu is a stacking fix for a sequencing mistake.
+   ========================================================================== */
+.wlp{
+  position:fixed;inset:0;z-index:950;
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--gutter);
+  background:rgba(12,14,16,.72);            /* --asphalt, flat. Not a blur. */
+  opacity:0;transition:opacity 240ms var(--ease);
+}
+.wlp.is-on{opacity:1}
+.wlp[hidden]{display:none}
+
+.wlp__panel{
+  position:relative;
+  width:min(560px,100%);
+  max-height:calc(100vh - (var(--gutter) * 2));
+  overflow-y:auto;
+  background:var(--asphalt);
+  /* Declared here, not inherited. The chalk on every other dark surface comes
+     from `.stack__card.is-dark`, and this panel is not a .stack__card — .is-dark
+     alone would leave .display inheriting asphalt onto asphalt, i.e. an
+     invisible heading. */
+  color:var(--chalk);
+  border:1px solid var(--hair-dark);
+  border-radius:var(--r-card);
+  padding:clamp(28px,3.6vw,44px);
+  transform:translateY(12px);
+  transition:transform 300ms var(--ease);
+}
+/* Focus is moved here by script on open, and there is nothing to activate on
+   the container — the dialog arriving is its own indicator. Every control
+   inside keeps its ring. */
+.wlp__panel:focus{outline:none}
+.wlp.is-on .wlp__panel{transform:none}
+
+/* The panel's own heading, a step down from a section .display: this is an
+   interruption, and it should not shout louder than the page it covers. */
+.wlp__h{font-size:clamp(28px,3.4vw,40px);margin:6px 0 0}
+.wlp .lede{margin-top:12px}
+/* The grid is a child of the form here (see 13b), so the form carries the
+   spacing and the grid keeps the flush margin the shared rule gives it. */
+.wlp .capture__form{margin-top:clamp(18px,2.2vw,24px);max-width:none}
+.wlp .capture__micro{margin-top:14px}
+
+/* Cards inside the panel sit on asphalt, so they take the dark treatment the
+   .is-dark ancestor does not reach (.buy__card hard-codes --white). */
+.wlp .buy__card{background:transparent;border-color:var(--hair-dark);padding:clamp(16px,2vw,22px)}
+.wlp .buy__card:hover{transform:none;border-color:var(--frost)}
+.wlp .buy__n{color:var(--chalk)}
+
+.wlp__x{
+  position:absolute;top:10px;right:14px;
+  background:none;border:0;padding:8px;line-height:1;cursor:pointer;
+  font-family:var(--data);font-size:24px;color:var(--frost);
+}
+.wlp__x:hover{color:var(--chalk)}
+
+body.popup-open{overflow:hidden}
+
+@media (prefers-reduced-motion: reduce){
+  .wlp,.wlp__panel{transition:none}
+  .wlp__panel{transform:none}
+}
 
 
 /* 18 SHOP / BUNDLES / COMPARE / STORY ===================================== */
@@ -898,6 +1049,131 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
 .dose__table thead th:nth-child(2),.dose__table thead th:nth-child(3){width:26%}
 
 
+/* 18d THE PROMISE STRIP ===================================================
+   Free shipping / when it ships / returns, sitting directly under #bundles.
+   Built on .uses' geometry rather than a new grid — same auto-fit track, same
+   hairline-above-each-item rule, so it reads as the same instrument.
+   ========================================================================== */
+.promise{
+  list-style:none;margin:clamp(30px,3.6vw,46px) 0 0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+  gap:clamp(18px,2.4vw,32px);
+}
+.promise li{border-top:1px solid var(--hair-light);padding-top:14px}
+.is-dark .promise li{border-top-color:var(--hair-dark)}
+.promise__k{
+  display:block;font-family:var(--data);font-weight:500;font-size:13px;
+  letter-spacing:.05em;text-transform:uppercase;margin-bottom:8px;
+}
+.promise p{margin:0;color:var(--iron);font-size:1rem;max-width:34ch}
+.is-dark .promise p{color:var(--frost)}
+
+
+/* 18e SUPPLEMENT FACTS ====================================================
+   The regulated panel, and deliberately NOT .spec. Section 13 styles .spec as
+   an editorial table — generous 16px rows, hairlines throughout. A Facts panel
+   is a different object: tight leading, a black keyline box, and a rule
+   hierarchy that carries meaning (the heavy rule under the heading, the medium
+   rule above the % DV column head, hairlines between rows).
+
+   Sized in px rather than clamp() on purpose. This panel is the one thing on
+   the site that should look the same everywhere, because it is the thing a
+   reader may be comparing against another tin in their hand.
+
+   White ground, not chalk: it sits on a chalk card, and .feat/.sku/.buy__card
+   already establish white-on-chalk as how a nested surface separates here.
+   ========================================================================== */
+.facts{
+  background:var(--white);color:var(--asphalt);
+  border:1px solid var(--asphalt);border-radius:var(--r-btn);
+  padding:14px 16px 16px;
+  max-width:420px;
+  font-family:var(--body);font-size:14px;line-height:1.35;
+}
+.facts__h{
+  font-family:var(--display);font-size:22px;line-height:1;
+  text-transform:uppercase;letter-spacing:-.03em;margin:0 0 8px;
+}
+.facts__serve{
+  display:flex;justify-content:space-between;gap:12px;
+  font-family:var(--data);font-size:12px;letter-spacing:.02em;
+  padding:3px 0;
+}
+.facts__serve span:last-child{font-variant-numeric:tabular-nums}
+/* The three rule weights. 7px is the FDA panel's heavy bar; 3px separates the
+   column head; 1px is the row hairline that .facts__t already draws. */
+.facts__bar{height:7px;background:var(--asphalt);margin:8px 0 0}
+.facts__t{width:100%;border-collapse:collapse;font-size:14px}
+.facts__t caption{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.facts__t thead th{
+  font-family:var(--data);font-weight:500;font-size:11px;
+  letter-spacing:.05em;text-transform:uppercase;text-align:right;
+  padding:5px 0 4px;border-bottom:3px solid var(--asphalt);
+}
+.facts__t thead th:first-child{text-align:left}
+.facts__t tbody th{
+  text-align:left;font-weight:600;padding:6px 0;
+  border-bottom:1px solid var(--hair-light);
+}
+.facts__t tbody td{
+  text-align:right;padding:6px 0 6px 10px;
+  border-bottom:1px solid var(--hair-light);
+  font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+/* Caffeine is the last row and sits below the % DV group it is not part of,
+   which is what the heavier top border is saying. */
+.facts__t tbody tr:last-child th,.facts__t tbody tr:last-child td{
+  border-top:3px solid var(--asphalt);border-bottom:0;
+}
+.facts__foot{
+  margin:0;padding-top:8px;border-top:7px solid var(--asphalt);margin-top:8px;
+  font-family:var(--data);font-size:11px;line-height:1.5;letter-spacing:.02em;
+  color:var(--iron);max-width:none;
+}
+.facts__warn{
+  margin:10px 0 0;font-family:var(--data);font-size:11px;line-height:1.5;
+  letter-spacing:.02em;text-transform:uppercase;color:var(--asphalt);
+  max-width:none;
+}
+
+
+/* 18f REVIEWS =============================================================
+   Rendered by main.js section 15 from reviews.js, and ONLY when that file's
+   LIVE flag is true. Nothing here is authored into the page, so with the flag
+   off — or with JS off — there is no empty shell and no layout shift.
+   ========================================================================== */
+.reviews{
+  list-style:none;margin:clamp(28px,3.6vw,48px) 0 0;padding:0;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:clamp(14px,1.8vw,24px);
+}
+.review{
+  background:var(--white);border:1px solid var(--hair-light);
+  border-radius:calc(var(--r-card) - 6px);
+  padding:clamp(20px,2.4vw,28px);
+  display:flex;flex-direction:column;gap:12px;
+}
+.is-dark .review{background:transparent;border-color:var(--hair-dark)}
+/* Filled stars are voltage; the remainder is the hairline. Both are palette. */
+.review__stars{font-family:var(--data);font-size:13px;letter-spacing:.24em;color:var(--voltage)}
+.review__stars i{color:var(--iron);opacity:.34;font-style:normal}
+.review__q{margin:0;font-size:1rem;line-height:1.5;color:var(--asphalt)}
+.is-dark .review__q{color:var(--chalk)}
+.review__by{
+  margin:auto 0 0;font-family:var(--data);font-size:12px;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--iron);
+}
+.is-dark .review__by{color:var(--frost)}
+.review__by b{font-weight:500;color:var(--asphalt)}
+.is-dark .review__by b{color:var(--chalk)}
+.reviews__agg{
+  margin:clamp(18px,2.2vw,26px) 0 0;
+  font-family:var(--data);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--iron);
+}
+.is-dark .reviews__agg{color:var(--frost)}
+
+
 /* 19 FOOTER =============================================================== */
 .footer{
   background:var(--asphalt);color:var(--chalk);
@@ -937,13 +1213,17 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   .hero__copy{max-width:none;padding-top:min(52vw,300px)}
   /* The copy is full width here — no tin beside it — so the headline is fitted
      to the wrap instead of to the 62% column, which is worth far more size than
-     the base rule allows. Full-width fit is 9.14vw from 500px up and ~8.85vw at
-     360; 8.2vw clears both with margin (8.5 wrapped at 360 — it landed exactly
-     on the fit). The vh term is doing real work in this range: the
-     stacked hero also carries up to 300px of padding-top to clear the orbit, so
-     a short landscape window is the one case where the card runs out of height
-     before it runs out of width. */
-  .hero__fuel{font-size:clamp(1.84rem,min(8.2vw,10vh),5.4rem)}
+     the base rule allows. Full-width fit for this headline is 14.23vw from
+     500px up and ~13.78vw at 360; 12.7vw clears both with the same margin the
+     previous headline carried (both figures, and the 12.7, are that headline's
+     measured values scaled by 1.557 — the ratio of its longest line to
+     "NO BREAKS."). The vh term is scaled by the same 1.557 for the same reason
+     as the base rule — left at 10vh it binds early and undersizes the headline.
+     It is still doing real work in this range, since the stacked hero also
+     carries up to 300px of padding-top to clear the orbit, so a short landscape
+     window is the one case where the card runs out of height before it runs out
+     of width; measured at 896x414 and 812x375, the taller block still clears. */
+  .hero__fuel{font-size:clamp(2.87rem,min(12.7vw,15.6vh),8.4rem)}
   .feats{grid-template-columns:1fr}
   .how__stages{grid-template-columns:repeat(2,1fr)}
   .story{grid-template-columns:1fr}
@@ -953,6 +1233,12 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   :root{--r-card:14px}
   .nav__links,.nav__cta{display:none}
   .nav__toggle{display:flex}
+  /* The two halves of one decision: the pill's CTA goes away here and the
+     sticky bar arrives here. Change one width and you must change both, or
+     the page has two CTAs or none. */
+  .cta-bar{display:flex}
+  /* So an in-page anchor never lands underneath the bar. */
+  html{scroll-padding-bottom:84px}
   .flavors__grid{grid-template-columns:1fr}
   /* Two bundle cards are comfortable at 1024; they only need stacking here. */
   .buy{grid-template-columns:1fr}
@@ -975,6 +1261,11 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   .stage p{font-size:.95rem;line-height:1.45}
   .how__clock{font-size:2.2rem}
   .capture__form{flex-direction:column}
+  /* .capture__input carries `flex:1 1 250px` for the one-line row. Once the
+     form turns into a column, flex-basis stops meaning width and starts
+     meaning HEIGHT — which rendered the email field ~250px tall on every
+     capture section at phone widths. Reset the basis with the direction. */
+  .capture__form .capture__input{flex:0 0 auto;width:100%}
   .capture__form .btn{width:100%}
   .pick__grid{grid-template-columns:1fr}
   .split__label{display:none}
@@ -1017,4 +1308,76 @@ body.menu-open .nav__toggle span:last-child{width:20px;transform:translateY(-3px
   .loader{display:none}
   html.js body>*:not(.loader){opacity:1}
   html.js.is-ready main{animation:none}
+  /* The rAF loop is never started in this mode, so nothing will ever add
+     .is-on. The bar has to be visible from the start or it never appears —
+     and it must not animate in when it does. */
+  .cta-bar{transform:none;opacity:1;visibility:visible}
+  body.menu-open .cta-bar{visibility:hidden;opacity:0}
 }
+
+
+/* 23 LEGAL PAGES ==========================================================
+   privacy / terms / shipping, and the long-form founder story. Straight prose,
+   which the rest of the site has almost none of — every other page is
+   components. Two rules matter here:
+
+   1. The card MUST be .stack__item--flow. A pinned item supplies exactly one
+      screen of scroll, and a policy is many; pinned, the next card clips it.
+   2. Links inside .legal are covered by the whitelist in section 03. Adding a
+      prose container without adding it there ships default-blue links.
+   ========================================================================== */
+.legal{max-width:72ch}
+.legal__updated{
+  font-family:var(--data);font-size:12px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--iron);
+  margin:0 0 clamp(26px,3vw,38px);
+}
+/* The jump list. Ordered, because the sections are numbered in the prose and
+   a reader referring to "section 7" should find 7 here. */
+.legal__toc{
+  list-style:none;margin:0 0 clamp(34px,4vw,52px);padding:0;
+  border-top:1px solid var(--hair-light);
+  counter-reset:toc;
+}
+.legal__toc li{border-bottom:1px solid var(--hair-light)}
+.legal__toc a{
+  display:flex;gap:14px;padding:11px 0;
+  font-family:var(--data);font-size:13px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--iron);text-decoration:none;
+  transition:color 180ms var(--ease);
+}
+.legal__toc a::before{
+  counter-increment:toc;content:counter(toc,decimal-leading-zero);
+  color:var(--voltage);flex:0 0 auto;
+}
+.legal__toc a:hover{color:var(--asphalt)}
+.legal h2{
+  font-family:var(--data);font-weight:500;font-size:13px;
+  letter-spacing:.05em;text-transform:uppercase;color:var(--voltage);
+  margin:clamp(38px,4.4vw,58px) 0 12px;
+  padding-top:clamp(18px,2.2vw,26px);
+  border-top:1px solid var(--hair-light);
+}
+.legal h2:first-of-type{margin-top:0}
+.legal h3{
+  font-family:var(--body);font-weight:600;font-size:1.02rem;
+  color:var(--asphalt);margin:clamp(22px,2.6vw,30px) 0 8px;
+}
+.legal p{margin:0 0 14px;color:var(--iron);line-height:1.6}
+.legal p:last-child{margin-bottom:0}
+.legal ul,.legal ol{margin:0 0 16px;padding-left:20px;color:var(--iron);line-height:1.6;max-width:68ch}
+.legal li{margin-bottom:7px}
+.legal li:last-child{margin-bottom:0}
+.legal strong{color:var(--asphalt);font-weight:600}
+/* Addresses and contact blocks. */
+.legal address{
+  font-style:normal;font-family:var(--data);font-size:13px;line-height:1.7;
+  letter-spacing:.02em;color:var(--iron);margin:0 0 14px;
+}
+/* Callout for the one or two lines a reader must not miss — the caffeine
+   ceiling in Terms, the return window in Shipping. */
+.legal__note{
+  border-left:2px solid var(--voltage);
+  padding:2px 0 2px 16px;margin:0 0 16px;
+}
+.legal__note p{margin:0;color:var(--asphalt)}

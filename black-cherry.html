@@ -8,11 +8,23 @@
 <meta name="description" content="ZELYTE Black Cherry. Bold, ripe, and juicy. 55 mg sodium and 40 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin, zero sugar.">
 <meta name="theme-color" content="#0C0E10">
 <meta property="og:type" content="product">
+<meta property="og:site_name" content="ZELYTE">
+<meta property="og:locale" content="en_US">
+<meta property="og:url" content="https://takezelyte.com/black-cherry.html">
 <meta property="og:title" content="ZELYTE Black Cherry">
 <meta property="og:description" content="Bold, ripe, and juicy. 55 mg sodium and 40 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin.">
-<meta property="og:site_name" content="ZELYTE">
+<meta property="og:image" content="https://takezelyte.com/assets/img/og-cherry.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A ZELYTE Black Cherry tin on an asphalt ground.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ZELYTE Black Cherry">
+<meta name="twitter:description" content="Bold, ripe, and juicy. 55 mg sodium and 40 mg caffeine per pouch. Use 1–3 per session. 15 pouches per tin.">
+<meta name="twitter:image" content="https://takezelyte.com/assets/img/og-cherry.png">
 <link rel="canonical" href="https://takezelyte.com/black-cherry.html">
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/Archivo-Black.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="styles.css">
@@ -115,8 +127,21 @@
   }
 </script>
 
+<!-- Breadcrumb. Home > Shop > this flavor, matching the real path a
+     visitor takes and the one the nav offers. -->
+<script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://takezelyte.com/" },
+      { "@type": "ListItem", "position": 2, "name": "Shop", "item": "https://takezelyte.com/shop.html" },
+      { "@type": "ListItem", "position": 3, "name": "Black Cherry", "item": "https://takezelyte.com/black-cherry.html" }
+    ]
+  }
+</script>
 </head>
-<body class="pdp pdp--cherry">
+<body class="pdp pdp--cherry" data-waitlist-popup>
 
 <div class="loader" id="loader"><div class="loader__mark"><div class="mark3d" id="loader-mark"></div></div></div>
 <a class="skip" href="#main">Skip to content</a>
@@ -145,6 +170,15 @@
     <button class="nav__toggle" id="menu-toggle" aria-expanded="false" aria-controls="menu" aria-label="Open menu"><span></span><span></span></button>
   </div>
 </header>
+
+<!-- Sticky mobile CTA. Below 820 the stylesheet hides .nav__cta and shows
+     this instead, so exactly one CTA is in the chrome at every width. Written
+     before .menu in source order so an open menu paints over it; main.js
+     section 2b toggles .is-on and hides it over #capture. -->
+<div class="cta-bar" id="cta-bar">
+  <span class="cta-bar__text">First batch, fall 2026</span>
+  <a class="btn" href="#capture">Get early access</a>
+</div>
 
 <div class="menu" id="menu" hidden>
   <nav class="menu__links" aria-label="Mobile">
@@ -293,6 +327,45 @@
           <p class="capture__micro" style="margin-top:clamp(16px,2vw,22px)">&#8224; Daily Value not established.</p>
           <p class="visually-hidden" role="status" aria-live="polite" data-dose-live></p>
         </div>
+
+        <!-- SUPPLEMENT FACTS ------------------------------------------------
+             The regulated panel, per pouch, and deliberately not the .spec
+             table above it: that one changes under the reader as they press
+             1/2/3, this one is fixed at one serving because that is what a
+             Facts panel declares.
+
+             Every number carries a data-formula token, so formula.js stays the
+             only place any of them lives. The authored text is the no-JS
+             fallback and has to agree with it -- main.js section 1b warns on
+             localhost the moment it does not. dose.dailyCaffeine is COMPUTED
+             (caffeine.mg x dailyMax), never stored, so the ceiling and the
+             caffeine total can never drift apart.
+
+             Elemental values only. No compound weight appears here, and 1b
+             asserts that none has leaked in. -->
+        <div class="facts reveal" style="margin-top:clamp(30px,3.6vw,44px)">
+          <p class="facts__h">Supplement Facts</p>
+          <div class="facts__serve"><span>Serving Size</span><span>1 pouch</span></div>
+          <div class="facts__serve"><span>Servings Per Container</span><span data-formula="perTin">15</span></div>
+          <div class="facts__bar" aria-hidden="true"></div>
+          <table class="facts__t">
+            <caption>ZELYTE Supplement Facts, per pouch</caption>
+            <thead>
+              <tr><th scope="col">&nbsp;</th><th scope="col">Amount Per Serving</th><th scope="col">% DV</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row" data-formula="sodium.label">Sodium</th><td data-formula="sodium.mg">55 mg</td><td data-formula="sodium.dv">2%</td></tr>
+              <tr><th scope="row" data-formula="chloride.label">Chloride</th><td data-formula="chloride.mg">85 mg</td><td data-formula="chloride.dv">4%</td></tr>
+              <tr><th scope="row" data-formula="potassium.label">Potassium</th><td data-formula="potassium.mg">13 mg</td><td data-formula="potassium.dv">0%</td></tr>
+              <tr><th scope="row" data-formula="magnesium.label">Magnesium</th><td data-formula="magnesium.mg">12 mg</td><td data-formula="magnesium.dv">3%</td></tr>
+              <tr><th scope="row" data-formula="caffeine.label">Caffeine</th><td data-formula="caffeine.mg">40 mg</td><td data-formula="caffeine.dv">&#8224;</td></tr>
+            </tbody>
+          </table>
+          <p class="facts__foot">&#8224; Daily Value not established. Percent Daily Values are based on a 2,000 calorie diet.</p>
+          <p class="facts__warn">Do not exceed <span data-formula="dose.daily">6</span> pouches (<span data-formula="dose.dailyCaffeine">240</span> mg caffeine) in 24 hours. Contains caffeine. Not for children, or those pregnant or nursing. Do not chew or swallow.</p>
+        </div>
+
+        <p class="capture__micro reveal" style="margin-top:clamp(22px,2.6vw,30px)">More on dosing, caffeine and the daily maximum in the <a href="faq.html#using">FAQ</a>.</p>
       </div>
     </section>
   </div>
@@ -357,7 +430,57 @@
             <a class="btn btn--ghost buy__btn" href="#capture">Notify me</a>
           </article>
         </div>
-        <p class="capture__micro reveal" style="margin-top:clamp(22px,3vw,32px)">Every order ships free. Checkout opens with the first batch.</p>
+        <!-- The shipping promise. It used to be the one line below, which is
+             the right sentence in the wrong place -- a reader deciding between
+             two pack sizes wants the shipping answer here, not in the footer. -->
+        <ul class="promise">
+          <li class="reveal"><span class="promise__k"><a href="shipping.html#cost">Shipping</a></span><p>Calculated at checkout from weight and destination. You see it before you pay.</p></li>
+          <li class="reveal"><span class="promise__k"><a href="shipping.html#when">Ships fall 2026</a></span><p>First production run in October, and the first batch is limited.</p></li>
+          <li class="reveal"><span class="promise__k"><a href="shipping.html#returns">30-day returns</a></span><p>Unopened tins, full refund on the tins. Return postage is yours.</p></li>
+        </ul>
+        <p class="capture__micro reveal" style="margin-top:clamp(22px,3vw,32px)">Checkout opens with the first batch.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ REVIEWS ============
+       Ships `hidden` and is revealed by main.js section 15 only when
+       reviews.js has LIVE:true. With the flag off, or with JS off, this whole
+       card renders nothing -- no heading over empty space, no layout shift,
+       and no AggregateRating in the JSON-LD. See reviews.js for why that last
+       one is not negotiable. -->
+  <div class="stack__item stack__item--flow" hidden>
+    <section class="stack__card" aria-labelledby="rev-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Reviews</p>
+        <h2 class="display" id="rev-h">What people say.</h2>
+        <div id="reviews" data-sku="black-cherry"></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ QUESTIONS ============
+       Three of the fourteen, chosen as the ones a reader asks on a product
+       page specifically, each linking through to the full answer. Deliberately
+       NOT marked up as FAQPage JSON-LD: faq.html already carries that block
+       for these same questions, and a second FAQPage on another URL is a
+       duplicate-content signal rather than a second rich result. -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card is-dark" id="questions" aria-labelledby="pq-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Questions</p>
+        <h2 class="display" id="pq-h">The three we get most.</h2>
+        <div class="faq__list" style="margin-top:clamp(28px,3.4vw,42px)">
+          <details class="qa reveal"><summary><span class="qa__k">01</span><span class="qa__q">What is a buccal pouch?</span><span class="qa__i" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>A small pouch that sits between your gum and upper lip. The tissue there absorbs directly, so the contents release steadily across the window instead of arriving all at once. Nothing is swallowed. More on <a href="science.html#buccal">how that works</a>.</p></div></details>
+          <details class="qa reveal"><summary><span class="qa__k">02</span><span class="qa__q">How do I use one?</span><span class="qa__i" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p>Between gum and upper lip, flat side against the gum. Leave it there for the 25-minute window, then take it out and bin it. Do not chew it and do not swallow it. Start with one.</p></div></details>
+          <details class="qa reveal"><summary><span class="qa__k">03</span><span class="qa__q">How much caffeine, and how many a day?</span><span class="qa__i" aria-hidden="true"></span></summary>
+            <div class="qa__a"><p><span data-formula="caffeine.mg" data-fmt="compact">40mg</span> per pouch. Use <span data-formula="dose.range">1&#8211;3</span> per session and <strong>no more than <span data-formula="dose.daily">6</span> in 24 hours</strong>, which is <span data-formula="dose.dailyCaffeine">240</span> mg of caffeine. Check with a clinician first if you are sensitive to caffeine, pregnant or nursing, under 18, or taking medication.</p></div></details>
+        </div>
+        <div class="hero__actions reveal" style="margin-top:clamp(28px,3.4vw,40px)">
+          <a class="btn btn--ghost" href="faq.html">All fourteen questions</a>
+        </div>
       </div>
     </section>
   </div>
@@ -373,6 +496,18 @@
         </h2>
         <p class="lede reveal">Early access and launch details. One email, when it ships.</p>
         <form class="capture__form reveal" data-signup="signup-status" novalidate style="margin-top:clamp(24px,3vw,34px)">
+          <div class="pick__grid">
+            <label class="buy__card pick" for="cap-flavor-mint">
+              <input class="visually-hidden" type="radio" name="flavor" id="cap-flavor-mint" value="crispy-mint">
+              <h3 class="buy__n">Crispy Mint</h3>
+              <p class="pick__d">Cool and clean. Stays sharp through a hard effort.</p>
+            </label>
+            <label class="buy__card pick" for="cap-flavor-cherry">
+              <input class="visually-hidden" type="radio" name="flavor" id="cap-flavor-cherry" value="black-cherry" checked>
+              <h3 class="buy__n">Black Cherry</h3>
+              <p class="pick__d">Dark and tart. Rounder, with less bite.</p>
+            </label>
+          </div>
           <label class="visually-hidden" for="email">Email address</label>
           <input class="capture__input" id="email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required>
           <button class="btn" type="submit">Get early access</button>
@@ -395,7 +530,7 @@
       <nav class="footer__cols" aria-label="Footer">
         <div><h2 class="footer__h">Product</h2><a href="shop.html">Shop</a><a href="crispy-mint.html">Crispy Mint</a><a href="black-cherry.html">Black Cherry</a></div>
         <div><h2 class="footer__h">Learn</h2><a href="science.html">Science</a><a href="index.html#how-it-works">How it works</a><a href="faq.html">FAQ</a></div>
-        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="account.html">Account</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
+        <div><h2 class="footer__h">Company</h2><a href="about.html">About</a><a href="founder.html">Founder</a><a href="account.html">Account</a><a href="#capture">Launch list</a><a href="index.html#athletes">Athletes</a></div>
         <div><h2 class="footer__h">Social</h2><a href="#" rel="noopener">Instagram</a><a href="#" rel="noopener">TikTok</a><a href="#" rel="noopener">YouTube</a></div>
       </nav>
     </div>
@@ -406,13 +541,14 @@
     <div class="footer__legal">
       <p>&copy; 2026 ZELYTE Inc. All rights reserved.</p>
       <p>Not evaluated by the FDA. Not intended to diagnose, treat, cure, or prevent any disease. Contains caffeine. Not for children, or those pregnant or nursing.</p>
-      <nav aria-label="Legal"><a href="#">Terms</a><a href="#">Privacy</a><a href="#">Accessibility</a></nav>
+      <nav aria-label="Legal"><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="shipping.html">Shipping</a><a href="terms.html#accessibility">Accessibility</a></nav>
     </div>
   </div>
 </footer>
 
 <script src="config.js" defer></script>
 <script src="formula.js" defer></script>
+<script src="reviews.js" defer></script>
 <script src="main.js" defer></script>
 </body>
 </html>

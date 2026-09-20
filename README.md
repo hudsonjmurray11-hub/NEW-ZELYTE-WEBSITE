@@ -1,6 +1,6 @@
 # ZELYTE — marketing site
 
-Thirteen static pages. No framework, no build step, no dependencies — accounts
+Nineteen static pages. No framework, no build step, no dependencies — accounts
 included. Supabase is called with hand-written `fetch`; `supabase-js` is not
 loaded, here or anywhere.
 
@@ -21,7 +21,14 @@ crispy-mint.html    Product — hero, the pan, taste, bundles, launch list
 black-cherry.html   Product — same structure, different flavor
 science.html        Buccal delivery, the 25:00 window, full formula, safety
 about.html          Founder story, milestones, competitor comparison
-faq.html            12 questions in three groups
+faq.html            14 questions in three groups
+
+founder.html        Long-form founder story
+privacy.html        Privacy policy
+terms.html          Terms of service (accessibility statement is section 13)
+shipping.html       Shipping and returns
+404.html            Not found — noindex, served by Vercel automatically
+waitlist-confirmed.html  Landing after a launch-list signup — noindex
 
 signin.html         Sign in
 signup.html         Create an account
@@ -36,15 +43,25 @@ main.js       shared; every page-specific block is gated on its elements
 auth.js       accounts; loaded on the six account pages only
 config.js     the only file with credentials
 formula.js    the only file with formula numbers
+reviews.js    seeded reviews behind one LIVE flag; dark until October
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
 assets/img/   two tins, pouch, two athlete photos
-sql/          run both files before filling in config.js
+sql/          run these before filling in config.js:
+              launch_signups.sql, profiles.sql, and — on a project whose
+              launch_signups table predates it — launch_signups_flavor.sql
 ```
 
 Nav and footer are duplicated into each page rather than injected by JS — no
 build step, and LCP and SEO stay intact without JavaScript. A footer change is
-therefore a **thirteen**-file change, and a nav change is thirteen files times
+therefore a **nineteen**-file change, and a nav change is nineteen files times
 two, because `.nav__links` and `.menu__links` are separate lists.
+
+The footer has exactly **two variants**, differing in one href: the Launch list
+link is `#capture` on the five pages that have their own capture section
+(`about`, `black-cherry`, `crispy-mint`, `faq`, `shop`) and `index.html#capture`
+on the other fourteen. Batch footer edits against those two strings rather than
+going file by file — and remember that a new page generated from an `#capture`
+page inherits a link to an anchor it does not have.
 
 The **Account** link in the nav is static and is never rewritten by JS. It
 always reads "Account"; `account.html` bounces a signed-out visitor to
@@ -64,11 +81,14 @@ its own 1px borders**.
 
 ## Lighthouse
 
-All seven marketing pages, desktop: **performance 100, accessibility 100, best
-practices 100, SEO 100.** CLS ≤ 0.006, LCP 0.4–0.5s.
+The seven original marketing pages, desktop: **performance 100, accessibility
+100, best practices 100, SEO 100.** CLS ≤ 0.006, LCP 0.4–0.5s. The four new
+indexable pages (`founder`, `privacy`, `terms`, `shipping`) are held to the same
+bar and have not yet been measured.
 
-`account.html`, `reset.html` and `welcome.html` are `noindex` by design, so
-their SEO score reads ~90. That is the correct result, not a regression.
+`account.html`, `reset.html`, `welcome.html`, `404.html` and
+`waitlist-confirmed.html` are `noindex` by design, so their SEO score reads ~90.
+That is the correct result, not a regression.
 
 One trap worth knowing: the loader must **not** set `opacity: 0` on the body's
 children. Elements at zero opacity are never LCP candidates, and doing so
@@ -97,6 +117,13 @@ repository. Read the signup list with it from a terminal, never a browser.
 
 1. **Settings → API** — copy the Project URL and the anon key into `config.js`.
 2. **SQL Editor** — run `sql/launch_signups.sql`, then `sql/profiles.sql`.
+   On a project where `launch_signups` already exists, also run
+   `sql/launch_signups_flavor.sql` — `create table if not exists` will not add
+   a column to a table that is already there, so the `flavor` column arrives
+   only via that migration. Run it **before** deploying a `main.js` that sends
+   `flavor`: PostgREST rejects the whole insert when the body names a column
+   the table does not have, which takes the launch list down rather than
+   degrading it.
 3. **Auth → Providers → Email** — confirmations **on**, minimum password
    length **8** (every password input carries `minlength="8"` to match).
 4. **Auth → URL Configuration** — Site URL is the production domain; add
@@ -121,6 +148,66 @@ repository. Read the signup list with it from a terminal, never a browser.
 `{{ .SiteURL }}` always points at production, so test emails do too. Do not
 flip Site URL back and forth — the token does not encode a host, so just edit
 the emailed link's origin to `localhost:8080`.
+
+### The waitlist popup
+
+`main.js` section 13b. The same launch-list ask as `#capture`, for the visitor
+who leaves before scrolling that far. It is built in JS rather than authored
+into eight files, so the copy lives in one place — and with JS off nothing
+appears, which is right, because the form could not submit either.
+
+**Which pages pop is decided by one attribute**: `data-waitlist-popup` on
+`<body>`. Eight marketing pages carry it — `index`, `shop`, `science`, `about`,
+`founder`, `faq`, `crispy-mint`, `black-cherry`. Nothing else does, and that is
+deliberate: the account pages (`signin`, `signup`, `forgot`, `reset`, `welcome`,
+`account`) must never interrupt someone mid password reset, the legal pages and
+`404` have no reason to sell, and `waitlist-confirmed` is for people already on
+the list. Adding or removing a page is a one-attribute edit **in that page**,
+not a hidden array in `main.js`.
+
+**Triggers, first to fire wins** — the rest then detach, so it opens at most
+once per page load:
+
+| Trigger | Where |
+|---|---|
+| 5s timer | everywhere, started when the loader finishes |
+| Cursor leaves through the top edge | `(pointer: fine)` only |
+| Hard upward scroll flick | coarse pointers — the thumb going for "back" |
+
+The timer starts from `revealPage()`, not from script parse, via the
+`onPageReady` queue in section 3. The loader owns the first ~1.5s, and counting
+through it would put the popup up almost as the page arrives.
+
+**It will not open** if the visitor already answered (a `zelyte.waitlist.popup`
+key of `dismissed` or `signed` in `localStorage`), if the mobile menu is open,
+or if `#capture` is already on screen — no stacking an ask on an ask. The
+`signed` flag is written by **every** successful signup, inline or popup, so
+someone who joined from `#capture` is never popped at afterwards. Every
+`localStorage` touch is wrapped in `try/catch`: Safari in private mode throws,
+and storage must not take the form down with it.
+
+To see it again while working: `localStorage.removeItem('zelyte.waitlist.popup')`.
+
+### Flavor preference
+
+Both the popup and all six `#capture` forms ask Crispy Mint or Black Cherry,
+using the same `.pick__grid` / `.buy__card.pick` markup as the account page.
+
+The picker sits **inside** `<form class="capture__form">`, not above it. Two
+reasons, and both bite if it moves: `wireSignup` scopes its flavor lookup to
+the form, so a sibling picker would look fine and silently record no preference
+on every signup; and radios sharing `name="flavor"` are grouped per-form, which
+is what keeps the popup's pair independent of the inline pair on a page showing
+both.
+
+`crispy-mint.html` and `black-cherry.html` preselect their own flavor — someone
+who read a whole product page has stated a preference by being there. The other
+four preselect nothing, and **`flavor` is nullable** so that "did not say" stays
+distinguishable from a choice. A default here would invent demand and skew what
+the first batch packs.
+
+`source` separates the two paths: `popup` or `marketing-site`. That is how you
+find out whether the popup is worth its interruption.
 
 ### What the schema guarantees
 
@@ -325,10 +412,82 @@ a copy strategy rather than a magnitude ranking: magnesium's 3% DV now runs ahea
 of sodium's 2%, and sodium still leads because sweat loss is what the product is
 for.
 
+## The sticky mobile CTA
+
+Below 820 the stylesheet hides `.nav__cta`, so from that width down there was no
+call to action in the chrome at all. `.cta-bar` is what stands in for it, and it
+exists **only** in that range: the base rule is `display:none` and the 820 query
+is what turns it on. Those two halves are one decision — change the breakpoint
+and you must change both, or the page has two CTAs or none.
+
+It is deliberately **not** part of `.nav`. `main.js` measures `nav.offsetHeight`
+into `--nav-h`, and that drives every card's top padding and every `[id]`'s
+`scroll-margin-top`, so anything added inside the nav shell would relayout the
+entire card stack.
+
+Visibility is a class set from `updateScroll()` inside the existing rAF loop —
+no second scroll listener. Under `prefers-reduced-motion` that loop is never
+started, which is why section 22 renders the bar visible outright rather than
+waiting for an `.is-on` that would never arrive.
+
+The bar goes off the moment `#capture` arrives **and stays off**. Testing
+`bottom > 0` as well would switch it back on for the last sliver of the page,
+once capture has scrolled past and only the footer is left — a bar that vanishes
+and then reappears at the bottom, over a footer that already carries every link.
+
+## Reviews
+
+`reviews.js` holds seeded reviews behind one `LIVE` flag, and `main.js` section
+15 renders them only when it is true. The whole slot — heading included — ships
+`hidden`; revealing it is part of the render. An authored-visible heading over an
+empty grid is a worse first impression than no section at all.
+
+**The `AggregateRating` is injected, never authored.** Section 15 adds it to the
+page's existing `Product` block at render time, so it exists only when `LIVE` is
+true and only over reviews actually on the page. Writing it into the static
+`<head>` would leave a review-snippet claim with no reviews behind it whenever
+the flag is off — a manipulative structured-data signal and grounds for a manual
+action — and it would trip the section 1b JSON-LD drift check.
+
+Review text is built with `createElement` and `textContent`, never `innerHTML`.
+It is the one string on this site that will eventually come from a member of the
+public, and the path it takes should already be safe on the day it stops being a
+constant in a file we control.
+
+Do **not** ship the seed copy as real reviews. Fabricated testimony is illegal
+under the FTC's rule on fake reviews (16 CFR Part 465), not merely unwise.
+
+## Supplement Facts
+
+`.facts` is a regulated panel and deliberately not `.spec`. Section 13 styles
+`.spec` as an editorial table; a Facts panel is a different object, with tight
+leading and a rule hierarchy that carries meaning — 7px heavy bar under the
+heading, 3px under the column head, 1px between rows. It is sized in px rather
+than `clamp()` because it is the one thing on the site that should look the same
+everywhere: a reader may be holding it against another tin.
+
+Every number carries a `data-formula` token. `dose.dailyCaffeine` is **computed**
+(`caffeine.mg × dose.dailyMax`), never stored — the same bargain `%DV` makes — so
+the 6-pouch ceiling and the 240 mg total can never drift apart.
+
+## The prose-link trap
+
+`styles.css` line 140 styles links through a **whitelist of parents**, not a bare
+`a{}`. A plain `<p>` inside a `.wrap` on a new page gets the browser default
+blue — a ninth color, straight through the eight-color rule. Any new prose
+container has to be added to that selector list *and* its `.is-dark` twin on the
+line below. This is the easiest way to silently break the brand system.
+
 ## Content notes
 
 Pricing mirrors the `PACK_PRICES` object on the live
-`takezelyte.com/crispy-mint.html`. Every order ships free.
+`takezelyte.com/crispy-mint.html`.
+
+**Shipping is not free**, and the site must never say it is. The claim was
+mirrored from the live site and was wrong there too; it was removed from 9
+files in one pass. Shipping is calculated at checkout from weight and
+destination, and the customer pays return postage on a change-of-mind return.
+Prices are quoted ex-shipping everywhere.
 
 | Pack | One Time | Subscribe & Save |
 |---|---|---|
@@ -365,7 +524,14 @@ Sports Drinks and Electrolyte Powders.
   which Vercel serves directly; `cleanUrls` would 308-redirect all of them,
   including `welcome.html?token_hash=…`. Clean URLs are a site-wide link
   rewrite, not a config flag.
-- Real social and legal URLs (currently `#`).
+- Real **social** URLs (currently `#`). The legal URLs are now real.
+- Confirm the business facts in the legal pages — state of incorporation,
+  registered address, governing law, and the two contact inboxes. They are
+  plausible placeholders, marked in an HTML comment at the top of each page,
+  and a lawyer should read the documents before launch.
+- The tin renders still show the **old** formula on the label
+  (`NA 45 / K 21 / MG 3.75 / CAF 50`). The site says 55 / 13 / 12 / 40, so the
+  artwork and the copy disagree. New renders are needed before launch.
 - **Short-viewport card fit.** A pinned `.stack__item` supplies exactly one
   screen of scroll, but `.stack__card` can be taller than that, and then the
   next card clips it. Cards that can never fit take `.stack__item--flow`
