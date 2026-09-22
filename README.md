@@ -526,9 +526,11 @@ Sports Drinks and Electrolyte Powders.
   rewrite, not a config flag.
 - Real **social** URLs (currently `#`). The legal URLs are now real.
 - Confirm the business facts in the legal pages — state of incorporation,
-  registered address, governing law, and the two contact inboxes. They are
-  plausible placeholders, marked in an HTML comment at the top of each page,
-  and a lawyer should read the documents before launch.
+  registered address, and governing law. They are plausible placeholders,
+  marked in an HTML comment at the top of each page, and a lawyer should read
+  the documents before launch. The contact address is real and settled: every
+  route on the site goes to hudsonjmurray11@gmail.com. Worth moving to an
+  inbox on the domain once one exists.
 - The tin renders still show the **old** formula on the label
   (`NA 45 / K 21 / MG 3.75 / CAF 50`). The site says 55 / 13 / 12 / 40, so the
   artwork and the copy disagree. New renders are needed before launch.
