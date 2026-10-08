@@ -15,7 +15,8 @@
      4. Reveals                      12b. One time / Subscribe & save
      5. Mobile menu                  13. Email capture
      6. The orbit                    13b. Waitlist popup
-     7. Card stack                   14. Pouch stacking
+     7. Card stack                   13c. Pack builder + checkout
+                                     14. Pouch stacking
                                      15. Reviews (reviews.js, flag-gated)
    ========================================================================== */
 (function () {
@@ -1129,6 +1130,7 @@
            #capture can scroll into view during the five seconds we waited. */
         if (menu && !menu.hidden) return;
         if (captureSection && inView(captureSection)) return;
+        if (document.body.classList.contains('popup-open')) return;   // a pack sheet is up
         fired = true;
         detach();
 
@@ -1149,6 +1151,9 @@
         document.body.classList.remove('popup-open');
         if (lastPopupFocus && lastPopupFocus.focus) lastPopupFocus.focus();
       }
+
+      // Give the pack builder sole focus if it opens while this ask is visible.
+      document.addEventListener('zelyte:open-pack', function () { closePopup(false); });
 
       function inView(node) {
         var r = node.getBoundingClientRect();
@@ -1205,6 +1210,424 @@
         document.addEventListener('mouseout', onExitIntent);
       } else {
         window.addEventListener('scroll', onFlick, { passive: true });
+      }
+    })();
+  }
+
+
+  /* 13c. PACK BUILDER + CHECKOUT ===========================================
+     "3 tins of your choice" means the flavor split has to be chosen before
+     paying, so a Buy button opens a small sheet instead of going straight to
+     Shopify: two steppers that always add up to the pack, the purchase option,
+     the price, and a Checkout button that creates a Shopify cart from
+     CFG.SHOP and opens its secure checkout. Each flavor mix is its own variant,
+     so the split arrives on the order as the line item itself.
+
+     GATED TWICE. On #bundles existing, like every other block here, and on
+     SHOP_LIVE in config.js — until launch the authored "Notify me" and its
+     href="#capture" stand untouched. Localhost and explicitly allowed preview hosts sell before launch, so
+     checkout can be tested without enabling a public Vercel production alias.
+
+     With JS off nothing here runs and the authored href is the fallback,
+     which is why the anchors keep it.
+
+     PRICES ARE DISPLAY ONLY. Shopify prices every order from the variant and
+     the selling plan. The cart request carries neither a price nor a discount.
+     These mirror the Shopify admin for the sheet's price line, the same
+     "authored twice" bargain the bundle cards already make — change one,
+     change both.
+
+     Built with the popup's .wlp shell (section 13b) and the same focus trap,
+     so it reads as the same object. The popup will not open over a sheet:
+     13b refuses whenever <body> already carries `popup-open`.
+     ---------------------------------------------------------------------- */
+  var SHOP_PRICES = {
+    pro:   { tins: 3, name: 'Pro Pack', one: 33, sub: 30 },
+    elite: { tins: 5, name: 'Elite Pack', one: 50, sub: 45 }
+  };
+
+  var host = location.hostname;
+  var shopLive = CFG.SHOP_LIVE === true || host === 'localhost' || host === '127.0.0.1' ||
+                 (Array.isArray(CFG.SHOP_PREVIEW_HOSTS) && CFG.SHOP_PREVIEW_HOSTS.indexOf(host) !== -1);
+  var bundles = $('#bundles');
+
+  if (bundles && shopLive) {
+    (function () {
+      var page = location.pathname.split('/').pop() || 'index.html';
+      /* A product page has already stated a flavor by being read, the same
+         reasoning #capture's preselected radio uses. */
+      var lean = page === 'crispy-mint.html' ? 'mint' : page === 'black-cherry.html' ? 'cherry' : null;
+
+      var sheet = null, panel = null, lastFocus = null;
+      var state = { pack: 'pro', mode: 'one', mint: 0, cherry: 0 };
+      var ui = {};
+      var activeCheckout = null;
+
+      function el(tag, cls, text) {
+        var n = document.createElement(tag);
+        if (cls) n.className = cls;
+        if (text !== undefined) n.textContent = text;
+        return n;
+      }
+
+      var note = $('[data-shop-note]', bundles);
+      if (note) note.textContent = 'Secure checkout by Shopify. Have a launch code? It goes in on the checkout page.';
+
+      $$('.buy__btn[data-pack]', bundles).forEach(function (a) {
+        a.textContent = 'Buy';
+        a.addEventListener('click', function (e) {
+          e.preventDefault();
+          var card = a.closest('.stack__card');
+          open(a.dataset.pack, card && card.classList.contains('is-mode-one') ? 'one' : 'sub', a);
+        });
+      });
+
+      function split(tins) {
+        if (lean === 'mint') return { mint: tins, cherry: 0 };
+        if (lean === 'cherry') return { mint: 0, cherry: tins };
+        return { mint: Math.ceil(tins / 2), cherry: Math.floor(tins / 2) };
+      }
+
+      function stepper(key, label) {
+        var row = el('div', 'step');
+        var name = el('span', 'step__k', label);
+        name.id = 'step-' + key;
+        var minus = el('button', 'step__btn', '−');
+        minus.type = 'button';
+        minus.setAttribute('aria-label', 'One less ' + label);
+        var n = el('output', 'step__n', '0');
+        n.setAttribute('aria-labelledby', 'step-' + key);
+        n.setAttribute('aria-live', 'polite');
+        var plus = el('button', 'step__btn', '+');
+        plus.type = 'button';
+        plus.setAttribute('aria-label', 'One more ' + label);
+        row.appendChild(name);
+        var ctl = el('div', 'step__ctl');
+        ctl.appendChild(minus); ctl.appendChild(n); ctl.appendChild(plus);
+        row.appendChild(ctl);
+        /* The two always add up to the pack: one more of this flavor is one
+           fewer of the other. There is no invalid state to explain. */
+        var other = key === 'mint' ? 'cherry' : 'mint';
+        minus.addEventListener('click', function () {
+          if (!activeCheckout && state[key] > 0) { state[key]--; state[other]++; paint(); }
+        });
+        plus.addEventListener('click', function () {
+          if (!activeCheckout && state[other] > 0) { state[key]++; state[other]--; paint(); }
+        });
+        ui[key] = { n: n, minus: minus, plus: plus };
+        return row;
+      }
+
+      function build() {
+        sheet = el('div', 'wlp');
+        sheet.id = 'pack-sheet';
+        sheet.hidden = true;
+
+        panel = el('div', 'wlp__panel is-dark');
+        panel.setAttribute('role', 'dialog');
+        panel.setAttribute('aria-modal', 'true');
+        panel.setAttribute('aria-labelledby', 'pack-h');
+        panel.setAttribute('tabindex', '-1');
+
+        var close = el('button', 'wlp__x', '×');
+        close.type = 'button';
+        close.setAttribute('aria-label', 'Close');
+        panel.appendChild(close);
+
+        panel.appendChild(el('p', 'eyebrow', 'Build your pack'));
+        ui.h = el('h2', 'display wlp__h');
+        ui.h.id = 'pack-h';
+        panel.appendChild(ui.h);
+        ui.lede = el('p', 'lede');
+        panel.appendChild(ui.lede);
+
+        var steps = el('div', 'steps');
+        steps.appendChild(stepper('mint', 'Crispy Mint'));
+        steps.appendChild(stepper('cherry', 'Black Cherry'));
+        panel.appendChild(steps);
+
+        var mode = el('div', 'mode');
+        mode.setAttribute('role', 'group');
+        mode.setAttribute('aria-label', 'Purchase option');
+        ui.modeBtns = [['sub', 'Subscribe & save'], ['one', 'One time']].map(function (m) {
+          var b = el('button', 'mode__btn', m[1]);
+          b.type = 'button';
+          b.dataset.mode = m[0];
+          b.addEventListener('click', function () {
+            if (activeCheckout || b.disabled) return;
+            state.mode = m[0]; paint(); say(ui.micro);
+          });
+          mode.appendChild(b);
+          return b;
+        });
+        panel.appendChild(mode);
+
+        ui.price = el('p', 'pack__price');
+        panel.appendChild(ui.price);
+        ui.terms = el('p', 'pack__terms');
+        panel.appendChild(ui.terms);
+
+        ui.go = el('button', 'btn pack__go', 'Checkout');
+        ui.go.type = 'button';
+        ui.go.addEventListener('click', checkout);
+        panel.appendChild(ui.go);
+
+        ui.status = el('p', 'capture__micro', 'Secure checkout by Shopify. Launch codes go in on the next page.');
+        ui.status.setAttribute('role', 'status');
+        ui.status.setAttribute('aria-live', 'polite');
+        ui.micro = ui.status.textContent;
+        panel.appendChild(ui.status);
+
+        sheet.appendChild(panel);
+        document.body.appendChild(sheet);
+
+        close.addEventListener('click', shut);
+        sheet.addEventListener('mousedown', function (e) { if (e.target === sheet) shut(); });
+        document.addEventListener('keydown', function (e) {
+          if (!sheet || sheet.hidden) return;
+          if (e.key === 'Escape') { shut(); return; }
+          if (e.key !== 'Tab') return;
+          var f = $$('a[href], button:not([disabled]), input, [tabindex]:not([tabindex="-1"])', panel);
+          if (!f.length) return;
+          var first = f[0], last = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        });
+      }
+
+      function paint() {
+        var p = SHOP_PRICES[state.pack];
+        var sub = state.mode === 'sub';
+        ui.h.textContent = p.name + ': ' + p.tins + ' tins.';
+        ui.lede.textContent = 'Split it however you like. Same formula in both.';
+        ['mint', 'cherry'].forEach(function (k) {
+          var other = k === 'mint' ? 'cherry' : 'mint';
+          ui[k].n.textContent = String(state[k]);
+          ui[k].minus.disabled = !!activeCheckout || state[k] === 0;
+          ui[k].plus.disabled = !!activeCheckout || state[other] === 0;
+        });
+        ui.modeBtns.forEach(function (b) {
+          var on = b.dataset.mode === state.mode;
+          b.classList.toggle('is-on', on);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+          b.disabled = !!activeCheckout || (b.dataset.mode === 'sub' && !sellingPlan(state.pack));
+          if (b.dataset.mode === 'sub') b.title = sellingPlan(state.pack) ? '' : 'Subscriptions are not available yet.';
+        });
+        ui.go.disabled = !!activeCheckout;
+        ui.go.setAttribute('aria-busy', activeCheckout ? 'true' : 'false');
+        ui.price.textContent = '$' + p[state.mode] + (sub ? ' / month' : '') + ' + shipping';
+        /* The auto-renewal disclosure sits next to the button that agrees to
+           it, in plain words, before any payment — which is what the FTC's
+           negative-option rule and the state auto-renewal laws ask for. */
+        ui.terms.textContent = sub
+          ? 'Renews every month at $' + p.sub + ' plus the recurring shipping charge shown at checkout and any tax, until you cancel. Cancel any time from your Shopify account, before your next renewal date.'
+          : 'One delivery. Shipping options and charges are shown at checkout before you pay.';
+        ui.go.textContent = sub ? 'Subscribe' : 'Checkout';
+      }
+
+      function open(pack, mode, from) {
+        if (!SHOP_PRICES[pack]) return;
+        document.dispatchEvent(new Event('zelyte:open-pack'));
+        if (!sheet) build();
+        cancelCheckout();
+        var requestedSubscription = mode === 'sub';
+        if (requestedSubscription && !sellingPlan(pack)) mode = 'one';
+        var s = split(SHOP_PRICES[pack].tins);
+        state = { pack: pack, mode: mode, mint: s.mint, cherry: s.cherry };
+        paint();
+        say(requestedSubscription && mode === 'one'
+          ? 'Subscriptions are not available yet. You can order this pack once.'
+          : ui.micro);
+        lastFocus = from || document.activeElement;
+        sheet.hidden = false;
+        requestAnimationFrame(function () { sheet.classList.add('is-on'); });
+        document.body.classList.add('popup-open');
+        panel.focus();
+      }
+
+      function shut() {
+        if (!sheet || sheet.hidden) return;
+        cancelCheckout();
+        sheet.classList.remove('is-on');
+        sheet.hidden = true;
+        document.body.classList.remove('popup-open');
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      }
+
+      function say(msg, kind) {
+        ui.status.textContent = msg;
+        ui.status.classList.toggle('is-error', kind === 'error');
+      }
+
+      /* The public Storefront Cart API supports one-time and subscription
+         purchases without a Buy Button or any Admin/private token. A fresh
+         cart prevents earlier visits from adding unintended items. */
+      function shopId(value, type) {
+        if (typeof value === 'number' && (!Number.isSafeInteger(value) || value <= 0)) return null;
+        var id = String(value || '').trim();
+        if (/^[1-9]\d*$/.test(id)) return 'gid://shopify/' + type + '/' + id;
+        return new RegExp('^gid://shopify/' + type + '/[1-9]\\d*$').test(id) ? id : null;
+      }
+
+      function sellingPlan(pack) {
+        var shop = CFG.SHOP || {};
+        return shopId(shop.SELLING_PLAN && shop.SELLING_PLAN[pack], 'SellingPlan');
+      }
+
+      function shopDomain(value) {
+        var raw = String(value || '').trim();
+        if (!raw) return null;
+        if (!/^https:\/\//i.test(raw)) raw = 'https://' + raw;
+        try {
+          var url = new URL(raw);
+          if (url.protocol !== 'https:' || url.username || url.password || url.port ||
+              url.pathname !== '/' || url.search || url.hash) return null;
+          var domain = url.hostname.toLowerCase();
+          if (domain.length > 253 || !/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/.test(domain) ||
+              !/\.[a-z]{2,}$/.test(domain) || domain.split('.').some(function (label) { return label.length > 63; })) return null;
+          return domain;
+        } catch (e) { return null; }
+      }
+
+      function checkoutError(message) {
+        var error = new Error(message);
+        error.checkoutMessage = message;
+        return error;
+      }
+
+      function cancelCheckout() {
+        var pending = activeCheckout;
+        activeCheckout = null;
+        if (pending) {
+          clearTimeout(pending.timer);
+          pending.controller.abort();
+        }
+        if (sheet) paint();
+      }
+
+      window.addEventListener('pageshow', function () {
+        cancelCheckout();
+        if (sheet) say(ui.micro);
+      });
+
+      async function checkout() {
+        if (activeCheckout) return;
+        var shop = CFG.SHOP || {};
+        var domain = shopDomain(shop.DOMAIN);
+        var variant = shopId(shop.VARIANTS && shop.VARIANTS[state.pack] &&
+          shop.VARIANTS[state.pack][state.mint + '-' + state.cherry], 'ProductVariant');
+        var plan = state.mode === 'sub' ? sellingPlan(state.pack) : null;
+        if (state.mode === 'sub' && !plan) {
+          say('Subscriptions are not available yet. Choose One time to order this pack.', 'error');
+          return;
+        }
+        if (!domain || !variant) {
+          say('This pack is not available for checkout yet. Please try again later.', 'error');
+          return;
+        }
+
+        var pending = { controller: new AbortController(), timedOut: false, timer: null };
+        activeCheckout = pending;
+        paint();
+        say('Opening secure checkout…');
+        pending.timer = setTimeout(function () {
+          pending.timedOut = true;
+          pending.controller.abort();
+        }, 15000);
+
+        // Optional PUBLIC Storefront token only. Never put an Admin access
+        // token, private Storefront token, or app client secret in config.js.
+        var publicToken = String(shop.STOREFRONT_TOKEN || '').trim();
+        var headers = { 'Content-Type': 'application/json' };
+        if (publicToken) {
+          if (/^shp[a-z]*_/i.test(publicToken) || /\s/.test(publicToken)) {
+            clearTimeout(pending.timer);
+            activeCheckout = null;
+            paint();
+            say('Storefront access is not configured correctly. Please try again later.', 'error');
+            return;
+          }
+          headers['X-Shopify-Storefront-Access-Token'] = publicToken;
+        }
+        var line = { merchandiseId: variant, quantity: 1 };
+        if (plan) line.sellingPlanId = plan;
+        try {
+          var response = await fetch('https://' + domain + '/api/2026-07/graphql.json', {
+            method: 'POST',
+            headers: headers,
+            credentials: 'omit',
+            signal: pending.controller.signal,
+            body: JSON.stringify({
+              query: 'mutation ZelyteCheckout($input: CartInput!) {' +
+                ' cartCreate(input: $input) {' +
+                ' cart { checkoutUrl totalQuantity lines(first: 2) { nodes {' +
+                ' quantity merchandise { ... on ProductVariant { id } }' +
+                ' sellingPlanAllocation { sellingPlan { id } }' +
+                ' } } } userErrors { field message code } warnings { code message } } }',
+              variables: { input: { lines: [line] } }
+            })
+          });
+          if (response.status === 429 || response.status === 430) {
+            throw checkoutError('Shopify is busy right now. Please wait a moment and try again.');
+          }
+          // Shopify can return useful GraphQL errors with HTTP 400, including
+          // a password-locked store. Read them before falling back to status.
+          var result = await response.json().catch(function () { return {}; });
+          if (!result || typeof result !== 'object') result = {};
+          if (Array.isArray(result.errors) && result.errors.length) {
+            var lockedStore = result.errors.some(function (error) {
+              return /online store channel is locked|store.*password|access denied|unauthorized/i.test(error.message || '');
+            });
+            throw checkoutError(lockedStore
+              ? 'Checkout is not open yet. Please come back when the store launches.'
+              : 'Secure checkout is temporarily unavailable. Please try again.');
+          }
+          if (!response.ok) {
+            throw checkoutError('Secure checkout is temporarily unavailable. Please try again.');
+          }
+          var created = result.data && result.data.cartCreate;
+          if (!created) throw checkoutError('Shopify could not prepare your checkout. Please try again.');
+          if (created.userErrors && created.userErrors.length) {
+            var planError = created.userErrors.some(function (error) {
+              return /selling.?plan/i.test((error.field || []).join('.') + ' ' + error.code);
+            });
+            throw checkoutError(planError
+              ? 'This subscription is not available right now. Choose One time or try again later.'
+              : 'This pack is not available right now. Please choose another mix or try again later.');
+          }
+          var cart = created.cart;
+          var lines = cart && cart.lines && cart.lines.nodes;
+          var added = lines && lines[0];
+          var actualPlan = added && added.sellingPlanAllocation && added.sellingPlanAllocation.sellingPlan.id;
+          if (!cart || cart.totalQuantity !== 1 || !lines || lines.length !== 1 ||
+              !added || added.quantity !== 1 || !added.merchandise || added.merchandise.id !== variant ||
+              (actualPlan || null) !== plan || (created.warnings && created.warnings.length)) {
+            throw checkoutError('Shopify could not confirm the pack you selected. Please try again.');
+          }
+          var checkoutUrl;
+          try { checkoutUrl = new URL(cart.checkoutUrl); } catch (e) {
+            throw checkoutError('Shopify did not return a valid checkout. Please try again.');
+          }
+          if (checkoutUrl.protocol !== 'https:' || checkoutUrl.username || checkoutUrl.password) {
+            throw checkoutError('Shopify did not return a valid checkout. Please try again.');
+          }
+          /* The store's primary checkout domain may differ from its API domain.
+             Use Shopify's returned URL without constructing or rewriting it. */
+          if (activeCheckout === pending && !pending.controller.signal.aborted) {
+            window.location.assign(checkoutUrl.href);
+          }
+        } catch (error) {
+          if (activeCheckout !== pending) return;
+          say(pending.timedOut
+            ? 'Checkout took too long to respond. Check your connection and try again.'
+            : error.checkoutMessage || 'Could not connect to Shopify. Check your connection and try again.', 'error');
+        } finally {
+          clearTimeout(pending.timer);
+          if (activeCheckout === pending) {
+            activeCheckout = null;
+            paint();
+          }
+        }
       }
     })();
   }

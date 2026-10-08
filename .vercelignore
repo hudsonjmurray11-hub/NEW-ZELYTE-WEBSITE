@@ -1,0 +1,4 @@
+scripts/
+sql/
+launch-list*.csv
+.env*

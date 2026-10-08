@@ -144,8 +144,8 @@ p{max-width:68ch}
 /* Links are styled through a WHITELIST of parents, never a bare `a{}`. Any new
    prose container has to be added here or its links render browser-default
    blue — a ninth color, straight through the eight-color rule. */
-.lede a,.qa__a a,.uses p a,.feat p a,.legal a,.promise p a,.facts__foot a{color:var(--voltage);text-underline-offset:3px;text-decoration-thickness:1px}
-.is-dark .lede a,.is-dark .qa__a a,.is-dark .uses p a,.is-dark .feat p a,.is-dark .legal a,.is-dark .promise p a{color:var(--chalk)}
+.lede a,.qa__a a,.uses p a,.feat p a,.legal a,.promise p a,.facts__foot a,.capture__micro a,.timeline p a,.field__hint a{color:var(--voltage);text-underline-offset:3px;text-decoration-thickness:1px}
+.is-dark .lede a,.is-dark .qa__a a,.is-dark .uses p a,.is-dark .feat p a,.is-dark .legal a,.is-dark .promise p a,.is-dark .capture__micro a,.is-dark .timeline p a,.is-dark .field__hint a,.wlp .capture__micro a{color:var(--chalk)}
 
 
 /* 04 BUTTONS ============================================================== */
@@ -795,12 +795,13 @@ body.menu-open .cta-bar{transform:translateY(calc(100% + 20px));opacity:0;visibi
 
 /* The panel's own heading, a step down from a section .display: this is an
    interruption, and it should not shout louder than the page it covers. */
-.wlp__h{font-size:clamp(28px,3.4vw,40px);margin:6px 0 0}
+.wlp h2.wlp__h{font-size:clamp(28px,3.4vw,40px);margin:6px 0 0}
 .wlp .lede{margin-top:12px}
 /* The grid is a child of the form here (see 13b), so the form carries the
    spacing and the grid keeps the flush margin the shared rule gives it. */
 .wlp .capture__form{margin-top:clamp(18px,2.2vw,24px);max-width:none}
 .wlp .capture__micro{margin-top:14px}
+.wlp .capture__micro.is-error{color:var(--chalk);border-left:2px solid var(--frost);padding-left:10px}
 
 /* Cards inside the panel sit on asphalt, so they take the dark treatment the
    .is-dark ancestor does not reach (.buy__card hard-codes --white). */
@@ -821,6 +822,31 @@ body.popup-open{overflow:hidden}
   .wlp,.wlp__panel{transition:none}
   .wlp__panel{transform:none}
 }
+
+
+/* 17d PACK BUILDER ========================================================
+   main.js section 13c. It is the popup's .wlp shell with two steppers in it,
+   so everything above applies and this adds only the rows. Same eight colors:
+   hairline rows on asphalt, mono numerals, voltage only on the action.
+   ========================================================================== */
+.steps{margin-top:clamp(20px,2.6vw,28px);border-top:1px solid var(--hair-dark)}
+.step{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--hair-dark)}
+.step__k{font-family:var(--data);font-weight:500;font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--chalk)}
+.step__ctl{display:flex;align-items:center;gap:6px}
+.step__btn{
+  width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;
+  background:transparent;color:var(--chalk);border:1px solid var(--hair-dark);border-radius:var(--r-btn);
+  font-family:var(--data);font-size:18px;line-height:1;cursor:pointer;
+  transition:border-color 180ms var(--ease);
+}
+.step__btn:hover:not(:disabled){border-color:var(--chalk)}
+.step__btn:disabled{color:var(--iron);cursor:default}
+.step__n{min-width:2.5ch;text-align:center;font-family:var(--data);font-size:18px;color:var(--chalk)}
+.wlp .mode{margin-top:clamp(18px,2.2vw,24px)}
+.pack__price{font-family:var(--display);font-size:clamp(1.6rem,3vw,2.2rem);letter-spacing:-.03em;line-height:1;margin:clamp(18px,2.2vw,24px) 0 0;color:var(--chalk)}
+.pack__terms{margin:10px 0 0;font-size:.95rem;color:var(--frost)}
+.pack__go{margin-top:clamp(18px,2.2vw,24px);width:100%}
+.pack__go:disabled{opacity:.6;cursor:default}
 
 
 /* 18 SHOP / BUNDLES / COMPARE / STORY ===================================== */

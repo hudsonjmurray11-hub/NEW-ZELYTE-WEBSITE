@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "type": "module",
+  "description": "No dependencies and no build. This file exists only so api/ and scripts/ are ES modules."
+}
