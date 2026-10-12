@@ -1,7 +1,7 @@
 # ZELYTE — marketing site
 
-Nineteen static pages. No framework, no build step, no dependencies — accounts
-included. Supabase is called with hand-written `fetch`; `supabase-js` is not
+Twenty static pages and five serverless endpoints. No framework, no build
+step, no dependencies — accounts and checkout included. Supabase is called with hand-written `fetch`; `supabase-js` is not
 loaded, here or anywhere.
 
 ```bash
@@ -29,11 +29,12 @@ terms.html          Terms of service (accessibility statement is section 13)
 shipping.html       Shipping and returns
 404.html            Not found — noindex, served by Vercel automatically
 waitlist-confirmed.html  Landing after a launch-list signup — noindex
+success.html        Landing after a paid Shopify checkout — noindex
 
 signin.html         Sign in
 signup.html         Create an account
-account.html        Protected — early access no., launch code, flavor,
-                    name, password, sign out
+account.html        Protected — early access no., launch code, link to
+                    Shopify orders, flavor, name, password, sign out
 forgot.html         Request a password reset link
 reset.html          Landing for the reset link, then set a new password
 welcome.html        Landing for the confirmation link
@@ -41,7 +42,7 @@ welcome.html        Landing for the confirmation link
 styles.css    shared, commented by section
 main.js       shared; every page-specific block is gated on its elements
 auth.js       accounts; loaded on the six account pages only
-config.js     the only file with credentials
+config.js     the only file with browser credentials, and SHOP_LIVE
 formula.js    the only file with formula numbers
 reviews.js    seeded reviews behind one LIVE flag; dark until October
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
@@ -49,17 +50,19 @@ assets/img/   two tins, pouch, two athlete photos
 sql/          run these before filling in config.js:
               launch_signups.sql, profiles.sql, and — on a project whose
               launch_signups table predates it — launch_signups_flavor.sql
+api/          the Klaviyo sync — see Commerce
+scripts/      launch codes, launch-list export (run locally)
 ```
 
 Nav and footer are duplicated into each page rather than injected by JS — no
 build step, and LCP and SEO stay intact without JavaScript. A footer change is
-therefore a **nineteen**-file change, and a nav change is nineteen files times
+therefore a **twenty**-file change, and a nav change is twenty files times
 two, because `.nav__links` and `.menu__links` are separate lists.
 
 The footer has exactly **two variants**, differing in one href: the Launch list
 link is `#capture` on the five pages that have their own capture section
 (`about`, `black-cherry`, `crispy-mint`, `faq`, `shop`) and `index.html#capture`
-on the other fourteen. Batch footer edits against those two strings rather than
+on the other fifteen. Batch footer edits against those two strings rather than
 going file by file — and remember that a new page generated from an `#capture`
 page inherits a link to an anchor it does not have.
 
@@ -237,7 +240,230 @@ empty table returns `[]` too. `anon` keeps the table-level SELECT grant, so
 this is a 200 with zero rows surviving RLS, not a 403. `profiles` fails
 differently: `42501 permission denied`, because the grant itself was revoked.
 
-No existing Stripe or checkout code was modified; there still is none.
+## Commerce
+
+The custom pack builder sends the selected flavor mix to Shopify's Storefront
+Cart API (`2026-07`), creates a new cart with `cartCreate`, and follows the
+returned `checkoutUrl`. There is no Shopify Buy Button embed. Shopify owns
+checkout, payment, order records, shipping charges and fulfillment. Monthly
+renewals require a separately configured subscription app and selling plans.
+
+```
+Custom pack builder → cartCreate → Shopify checkout → Shopify order
+                      variant + quantity
+                      + sellingPlanId for a monthly subscription
+Site account → separate Shopify customer account for order management
+Launch list → Supabase → configured Klaviyo webhook/integration
+```
+
+### Current setup status
+
+`SHOP_LIVE` remains `false` and the Shopify storefront password remains on, so
+public sales are closed (see **Deployment** for the two gates). Shopify
+products and subscription settings are saved.
+
+- Pro Pack (3 tins), product `15409372594543`, has four flavor-mix variants at
+  $33. Elite Pack (5 tins), product `15409374134639`, has six variants at $50.
+  All ten variants are published to Headless and available for sale.
+  Inventory is untracked, following the existing plan; physical inventory
+  and product weights still need operational verification before launch.
+- The owner approved and installed Shopify Headless and Subscriptions.
+  Headless storefront `394934` uses a public client-side token with product,
+  selling-plan and cart access only. Customer, content and other optional
+  permissions were disabled. No private token was added to browser code.
+- Monthly Pro plan `708485579119` applies $3 off ($30) to all four variants.
+  Monthly Elite plan `708485611887` applies $5 off ($45) to all six variants.
+  Both recur every month with no fixed end. Their IDs are in `config.js`.
+- Customer subscription management is enabled. The account menu has a
+  Subscriptions link, the thank-you page has a management link, and Orders
+  and Order status have a management action. On October 7 a real subscribed
+  test customer verified email-code login, the correct order/mix/price, and
+  skip, pause, resume and cancel. Address and payment-method changes were not
+  exercised.
+- All 20 live anonymous API carts passed checks for exact variant, quantity one,
+  selling plan, currency and subtotals ($33/$30 Pro; $50/$45 Elite). No buyer
+  identity, address, order or payment was submitted. Shopify marks subtotals
+  estimated; shipping and tax remain checkout-level checks.
+- Browser test orders, October 7, in Shopify Payments test mode with
+  Shopify's published test cards (no real card charged). The store password
+  was entered in the test browser; storefront protection stays on.
+  - Pro monthly, 2 Crispy Mint / 1 Black Cherry: order #1001, $30 + $8
+    Standard = $38. A declined card showed the expected error and the retry
+    completed the same checkout.
+  - Elite one-time, 3 Crispy Mint / 2 Black Cherry: order #1002, $50 + $15
+    Express = $65 (Standard was $58).
+  - Admin timelines show both confirmation emails sent; inbox receipt and
+    contents are not yet confirmed by the owner.
+  - Both orders and the test subscription were canceled; simulated refunds
+    last showed pending. Test mode was turned **off** again afterwards.
+  - The other combinations were verified as API carts, not completed orders.
+- Shopify Payments was verified on October 7, 2026 as **Accepting payments**
+  and **Receiving payouts**. Real settlement, launch discounts and Klaviyo
+  flows still need verification.
+- Saved Shopify shipping remains $8 Standard, free at $70+, and $15 Express.
+  No shipping rates were changed; the old unsaved flat-$5 draft was discarded.
+  Website copy now says shipping is shown at checkout and identifies the
+  recurring shipping charge for subscriptions without promising a fresh
+  carrier quote at every renewal.
+- The owner will fulfill orders and has no tin or packaging samples yet.
+  The observed default Sample box is 8.6 × 5.4 × 1.6 inches with a 0 lb empty
+  weight. The checked Pro 3-mint variant `67686179602799` has a 0.0 lb product
+  weight, no packed size, and uses that default box when shipped alone.
+  Those are placeholders, not measurements; other variant weights have not
+  been established by this check. Accurate carrier rates remain pending.
+- Validation: 23 project tests (11 checkout, 12 mocked email webhook), five
+  independent verifier tests, the 20 real carts and the two test orders above.
+  No real charge, scheduled renewal, fulfillment or live discount redemption
+  has been tested.
+
+### Configuration and ownership
+
+`config.js` contains the Shopify API domain, ten mix-to-variant mappings, and
+one monthly selling-plan ID per pack. `SHOP.STOREFRONT_TOKEN`, when supplied,
+must be a **public Storefront access token**. Never put an Admin access token,
+private Storefront token, app client secret or Supabase service-role key in
+browser files. Browser configuration is public.
+
+`main.js` section 13c owns the custom sheet and `cartCreate` request. The client
+sends only the selected product variant, quantity and optional selling plan;
+it does not automatically transfer the site member's email or Supabase user
+ID to Shopify. Shopify asks the buyer for the checkout information it needs.
+The site account and Shopify customer account remain separate.
+
+| Pack | One-time price | Configured monthly price | Monthly discount |
+|---|---:|---:|---:|
+| Pro — 3 tins | $33 | $30 | $3 from the one-time price |
+| Elite — 5 tins | $50 | $45 | $5 from the one-time price |
+
+Shopify is authoritative for charged prices. `SHOP_PRICES` and the four bundle
+sections are display copy and must agree with Shopify. Elite's existing $55
+comparison price represents five tins at the $11 per-tin reference rate;
+“save $10” is relative to that reference, not the $50 one-time pack price.
+
+Shipping charges are owned by Shopify; the website displays no fixed rate.
+The recommended final setup is Shopify's native USPS Ground Advantage and
+Priority Mail rates, with no markup or free-shipping threshold, after actual
+product weights and package dimensions/empty weights are measured. This is a
+recommendation, not an active configuration. Until then, saved Shopify rates
+remain unchanged. Verify checkout rates and subscription recurring shipping
+charges separately; do not assume carrier prices are requoted at each renewal.
+Confirm coverage, tax and dispatch timing before opening orders.
+
+### Remaining launch checks
+
+1. Re-run the buyer journey on www.takezelyte.com at launch (see
+   **Deployment**). Pro monthly and Elite one-time completed as test orders
+   locally; all 20 combinations passed API cart checks. Keep storefront
+   protection and `SHOP_LIVE: false` until launch is intended.
+2. Obtain samples and measure actual product weights, package dimensions and
+   empty package weights for the packs. Replace placeholder shipping data,
+   configure and verify the recommended USPS rates, and confirm coverage
+   and tax setup. The existing $8/free-at-$70 Standard and $15 Express rates
+   remain saved until that setup is ready; no flat-$5 change is pending.
+3. Test orders, shipping totals and portal skip/pause/resume/cancel passed on
+   October 7. Still open: inbox receipt contents, a real fulfillment with
+   label and tracking, a scheduled monthly renewal (and its payment-failure
+   path), real refund settlement, and address/payment-method changes in the
+   portal.
+4. Privacy copy now describes Shopify checkout/customer accounts, the
+   separate Supabase site account, storage and the conditional Klaviyo
+   integration. Verify deployed provider settings and existing policy
+   commitments before launch. Shopify order status is the source of truth
+   for payment; simply loading `success.html` does not verify a paid order.
+5. Configure and test advertised launch discounts. The intended
+   `scripts/sync-launch-codes.mjs` behavior is 10% off, one use per code and
+   subscription discount on the first payment only. Codes are not locked to
+   a Shopify customer (`context: ALL`): whoever enters a code first uses it.
+   On October 7 the owner chose to say so in `terms.html` §07 rather than
+   build account-specific codes. The script sets no end date yet; add
+   `endsAt` once the campaign end date is known, since §07 says codes expire
+   with the campaign. The site displays the code; buyers must enter it at
+   Shopify checkout. Keep Admin credentials in the local/server environment,
+   never in browser files.
+6. Verify any intended Shopify/Klaviyo integration, Supabase launch-list
+   webhook and transactional account-email provider. Source files alone do
+   not establish that order events or marketing messages are working.
+7. Verify production launch gating. Only localhost and exact entries in
+   `SHOP_PREVIEW_HOSTS` bypass `SHOP_LIVE: false`; a generic Vercel hostname
+   does not enable checkout. After the remaining checks pass and the owner
+   authorizes public launch, follow **Opening sales** below.
+
+The server-side Klaviyo webhook uses `SUPABASE_URL`,
+`SUPABASE_SERVICE_ROLE_KEY`, `KLAVIYO_PRIVATE_KEY`, `KLAVIYO_LIST_ID` and
+`SYNC_WEBHOOK_SECRET`. The launch-code script separately uses Shopify Admin
+credentials; none of those private values belong in `config.js`.
+
+### Deployment
+
+Vercel project `new-zelyte-website`. **Production deploys only from GitHub
+pushes to `new-site`**; any other pushed branch gets an SSO-protected preview
+at `new-zelyte-website-git-<branch>-hudsons-projects-3b80eb70.vercel.app`.
+`www.takezelyte.com` is the production domain and the apex 308-redirects to
+it, so a release never needs a DNS change. There is no build step;
+`.vercelignore` keeps `scripts/`, `sql/` and `.env*` off the site.
+
+Two independent gates keep sales closed:
+
+| Gate | Where | Closed means |
+|---|---|---|
+| Site | `SHOP_LIVE` in `config.js` | Buy buttons stay "Notify me" → `#capture` |
+| Shopify | Storefront password (Online Store → Preferences) | `cartCreate` works, but an anonymous buyer's checkout shows "Opening soon" |
+
+`SHOP_PREVIEW_HOSTS` lists only the login-protected `checkout` branch URL
+(`new-zelyte-website-git-checkout-hudsons-projects-3b80eb70.vercel.app`), so
+the pack builder can be tested there before launch; the production hostnames
+must never appear in it.
+
+Deploying the integration changes neither gate. To check a release with
+sales closed: `/config.js` serves the `SHOP` block with `SHOP_LIVE: false`,
+the bundle buttons still read "Notify me", a `cartCreate` run from the
+www console returns a `checkoutUrl` that shows "Opening soon" in a private
+window, and an unauthenticated `POST /api/klaviyo-sync` returns 403.
+
+**Opening sales**, only on the owner's go: remove the storefront password
+first (the site still says "Notify me"), then commit `SHOP_LIVE: true` to
+`new-site`. On www, in a private window, prove the journey: choose a mix,
+reach checkout with the exact variant and plan, complete one monthly and one
+one-time order, then manage both from the Shopify account link.
+
+**Rollback.** Before launch: Vercel Instant Rollback to the previous
+production deployment, then `git revert` on `new-site` and undo the rollback
+so domains auto-assign again. After launch, fastest first: turn the storefront
+password back on (closes checkout at once), then set `SHOP_LIVE: false` or roll
+back. Orders already placed stay in Shopify for manual cancellation or refund.
+
+### Local journey QA — October 7, 2026
+
+- `node --test scripts/test-shopify-checkout.mjs` passes all 11 checkout tests
+  against mocked Shopify responses, including all 20 pack/mode combinations,
+  duplicate clicks, timeouts, mismatched carts and back-navigation cleanup.
+- Syntax checks passed for all 12 JavaScript/ES-module files, including
+  the new webhook test file. Local references and cross-page fragments in 20
+  HTML pages passed; eight JSON-LD blocks parsed, including 14 FAQ questions.
+  These checks do not verify remote links, layout, payment or email delivery.
+- Isolated tests reproduced two webhook defects: a missing/failed account
+  profile lookup could subscribe without confirmed consent, and a Klaviyo
+  rejection could still receive HTTP 200 from the webhook. The local fixes
+  now require explicit account consent and return HTTP 503 on lookup,
+  provider or required-configuration failure. Error logs omit recipient
+  addresses, credentials and provider response bodies.
+- `node --test scripts/test-klaviyo-sync.mjs` passes 12 tests with every fetch
+  mocked and synthetic configuration. These cover consent, rejected/network
+  requests, missing configuration, webhook authentication and log redaction.
+  No live profile, subscription or email was created by these tests.
+- Account opt-out propagation remains unimplemented: the preference saves to
+  `profiles`, while the current documented webhook listens only to
+  `launch_signups` INSERT. Before enabling this marketing workflow, separately
+  configure and test a `profiles` UPDATE handler that re-reads current consent
+  and applies the intended unsubscribe action. Klaviyo's unsubscribe endpoint
+  can affect global email consent for profiles outside a specified list; verify
+  the desired scope/list membership instead of treating list removal as consent
+  withdrawal. Reference: [Klaviyo unsubscribe API](https://developers.klaviyo.com/en/reference/bulk_unsubscribe_profiles).
+- HTTP 503 makes failed deliveries visible; it does not itself establish a
+  Supabase retry queue. Configure monitoring and retry/replay, and verify the
+  deployed webhook, current Klaviyo API revision, actual opt-in/opt-out behavior,
+  signup confirmation, password recovery and Shopify transactional messages.
+  The source code and mocked tests do not prove those external systems work.
 
 ## Brand system
 
@@ -483,10 +709,11 @@ line below. This is the easiest way to silently break the brand system.
 Pricing mirrors the `PACK_PRICES` object on the live
 `takezelyte.com/crispy-mint.html`.
 
-**Shipping is not free**, and the site must never say it is. The claim was
-mirrored from the live site and was wrong there too; it was removed from 9
-files in one pass. Shipping is calculated at checkout from weight and
-destination, and the customer pays return postage on a change-of-mind return.
+Shipping options and charges are shown at checkout; the site does not promise
+fixed rates or a free-shipping threshold. Carrier-calculated rates are planned
+but await measured shipping data and Shopify configuration. Subscription copy
+refers to the recurring shipping charge shown at checkout, not a fresh carrier
+quote each month. The customer pays return postage on a change-of-mind return.
 Prices are quoted ex-shipping everywhere.
 
 | Pack | One Time | Subscribe & Save |
@@ -516,10 +743,13 @@ Sports Drinks and Electrolyte Powders.
 
 ## Still to do
 
-- Checkout. All buy buttons route to the launch-list form; no payment is wired.
-- Redeeming the launch codes. They are issued and reserved; nothing spends
-  them yet. Both Shopify and Stripe import unique promotion codes in bulk.
-- Custom SMTP, before any real volume — see above.
+- Commerce launch gates. The Shopify store, products, plans and the checkout
+  integration are done; launch codes, Resend SMTP, Klaviyo/consent, tax,
+  fulfillment and renewal remain. See "Commerce → Remaining launch checks"
+  and "Commerce → Deployment".
+- Measure real products and packaging, then configure and test USPS checkout
+  rates and subscription recurring shipping. See Commerce for the current
+  saved rates and the recommended setup; no measured weights are available yet.
 - No `vercel.json`, deliberately. Every internal link is written `shop.html`,
   which Vercel serves directly; `cleanUrls` would 308-redirect all of them,
   including `welcome.html?token_hash=…`. Clean URLs are a site-wide link

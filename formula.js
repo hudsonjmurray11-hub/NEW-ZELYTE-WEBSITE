@@ -72,6 +72,6 @@ window.ZELYTE_FORMULA = {
      control rather than being buried in the FAQ. */
   dose: { min: 1, max: 3, dailyMax: 6 },
 
-  perTin: 15,
+  perTin: 20,
   windowSeconds: 1500
 };

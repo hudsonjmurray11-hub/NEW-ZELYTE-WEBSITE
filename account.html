@@ -96,9 +96,28 @@
           <div class="stat__k">Launch code</div>
           <div class="code">
             <span class="code__v is-busy" id="acct-code">—</span>
-            <span class="capture__micro" style="margin:0">Applied at checkout when the first batch ships.</span>
+            <span class="capture__micro" style="margin:0">Enter this code at Shopify checkout when ordering opens.</span>
           </div>
         </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ============ ORDERS ============
+       Orders, tracking and subscriptions live in Shopify, behind its own
+       customer account (sign in with the checkout email and a one-time code).
+       auth.js points the button at CFG.SHOP.DOMAIN and shows it; until a
+       store is configured both it and its footnote stay hidden. -->
+  <div class="stack__item stack__item--flow">
+    <section class="stack__card is-dark" id="orders" aria-labelledby="orders-h">
+      <div class="wrap">
+        <p class="eyebrow reveal">Orders</p>
+        <h2 class="display reveal" id="orders-h">Your orders.</h2>
+        <p class="lede" style="margin-top:clamp(28px,3.6vw,48px)">Orders, tracking and subscriptions are kept with Shopify. Sign in there with the email you ordered with.</p>
+        <div class="account__row" id="orders-manage" hidden>
+          <a class="btn btn--ghost" id="orders-link" href="#" rel="noopener">Orders &amp; subscriptions</a>
+        </div>
+        <p class="capture__micro" id="orders-status" hidden>Available order and account options are shown by Shopify.</p>
       </div>
     </section>
   </div>
@@ -111,7 +130,7 @@
       <div class="wrap">
         <p class="eyebrow reveal">Preferences</p>
         <h2 class="display reveal" id="prefs-h">Your flavor.</h2>
-        <p class="lede reveal">We will pack the first batch against what people picked. Change it any time before it ships.</p>
+        <p class="lede reveal">Tell us your favorite flavor for launch planning. This does not change an order or subscription.</p>
 
         <form class="reveal" data-auth="profile" data-status="prefs-status" novalidate>
           <div class="pick__grid">
