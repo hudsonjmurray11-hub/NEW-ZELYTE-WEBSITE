@@ -42,7 +42,7 @@ welcome.html        Landing for the confirmation link
 styles.css    shared, commented by section
 main.js       shared; every page-specific block is gated on its elements
 auth.js       accounts; loaded on the six account pages only
-config.js     the only file with browser credentials, and SHOP_LIVE
+config.js     the only file with browser credentials, and SALES_OPEN
 formula.js    the only file with formula numbers
 reviews.js    seeded reviews behind one LIVE flag; dark until October
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
@@ -258,7 +258,7 @@ Launch list → Supabase → configured Klaviyo webhook/integration
 
 ### Current setup status
 
-`SHOP_LIVE` remains `false` and the Shopify storefront password remains on, so
+`SALES_OPEN` remains `false` and the Shopify storefront password remains on, so
 public sales are closed (see **Deployment** for the two gates). Shopify
 products and subscription settings are saved.
 
@@ -354,7 +354,7 @@ Confirm coverage, tax and dispatch timing before opening orders.
 1. Re-run the buyer journey on www.takezelyte.com at launch (see
    **Deployment**). Pro monthly and Elite one-time completed as test orders
    locally; all 20 combinations passed API cart checks. Keep storefront
-   protection and `SHOP_LIVE: false` until launch is intended.
+   protection and `SALES_OPEN: false` until launch is intended.
 2. Obtain samples and measure actual product weights, package dimensions and
    empty package weights for the packs. Replace placeholder shipping data,
    configure and verify the recommended USPS rates, and confirm coverage
@@ -383,9 +383,9 @@ Confirm coverage, tax and dispatch timing before opening orders.
 6. Verify any intended Shopify/Klaviyo integration, Supabase launch-list
    webhook and transactional account-email provider. Source files alone do
    not establish that order events or marketing messages are working.
-7. Verify production launch gating. Only localhost and exact entries in
-   `SHOP_PREVIEW_HOSTS` bypass `SHOP_LIVE: false`; a generic Vercel hostname
-   does not enable checkout. After the remaining checks pass and the owner
+7. Verify production launch gating. `SALES_OPEN: false` closes the pack
+   builder and checkout on every host, localhost and previews included;
+   there are no host overrides. After the remaining checks pass and the owner
    authorizes public launch, follow **Opening sales** below.
 
 The server-side Klaviyo webhook uses `SUPABASE_URL`,
@@ -406,22 +406,20 @@ Two independent gates keep sales closed:
 
 | Gate | Where | Closed means |
 |---|---|---|
-| Site | `SHOP_LIVE` in `config.js` | Buy buttons stay "Notify me" → `#capture` |
+| Site | `SALES_OPEN` in `config.js` | Buy buttons stay "Notify me" → `#capture` |
 | Shopify | Storefront password (Online Store → Preferences) | `cartCreate` works, but an anonymous buyer's checkout shows "Opening soon" |
 
-`SHOP_PREVIEW_HOSTS` lists only the login-protected `checkout` branch URL
-(`new-zelyte-website-git-checkout-hudsons-projects-3b80eb70.vercel.app`), so
-the pack builder can be tested there before launch; the production hostnames
-must never appear in it.
+`SALES_OPEN` is the only site switch. To test the pack builder before
+launch, flip it to `true` in a local working copy only — never commit it.
 
 Deploying the integration changes neither gate. To check a release with
-sales closed: `/config.js` serves the `SHOP` block with `SHOP_LIVE: false`,
+sales closed: `/config.js` serves the `SHOP` block with `SALES_OPEN: false`,
 the bundle buttons still read "Notify me", a `cartCreate` run from the
 www console returns a `checkoutUrl` that shows "Opening soon" in a private
 window, and an unauthenticated `POST /api/klaviyo-sync` returns 403.
 
 **Opening sales**, only on the owner's go: remove the storefront password
-first (the site still says "Notify me"), then commit `SHOP_LIVE: true` to
+first (the site still says "Notify me"), then commit `SALES_OPEN: true` to
 `new-site`. On www, in a private window, prove the journey: choose a mix,
 reach checkout with the exact variant and plan, complete one monthly and one
 one-time order, then manage both from the Shopify account link.
@@ -429,7 +427,7 @@ one-time order, then manage both from the Shopify account link.
 **Rollback.** Before launch: Vercel Instant Rollback to the previous
 production deployment, then `git revert` on `new-site` and undo the rollback
 so domains auto-assign again. After launch, fastest first: turn the storefront
-password back on (closes checkout at once), then set `SHOP_LIVE: false` or roll
+password back on (closes checkout at once), then set `SALES_OPEN: false` or roll
 back. Orders already placed stay in Shopify for manual cancellation or refund.
 
 ### Local journey QA — October 7, 2026
@@ -735,7 +733,7 @@ Two figures differ from takezelyte.com and were resolved toward the packaging:
 | | Live site | Here | Why |
 |---|---|---|---|
 | Duration | 20–40 min | **25:00** | printed on the tin; drives The Split |
-| Launch | Summer 2026 | **Fall 2026** | brand board says Fall; Summer has passed |
+| Launch | Fall 2026 | **January 2027** | launch moved; first batch ships January 2027 |
 
 The live comparison table lists *Nicotine Pouches* as a competitor column.
 **That column is deliberately not ported** — competitors are Energy Drinks,

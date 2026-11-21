@@ -4,4 +4,4 @@ Allow: /
 # The account pages carry noindex of their own; disallowing them as well would
 # stop crawlers reaching the tag and reading it.
 
-Sitemap: https://takezelyte.com/sitemap.xml
+Sitemap: https://www.takezelyte.com/sitemap.xml

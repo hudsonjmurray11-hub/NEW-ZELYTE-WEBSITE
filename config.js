@@ -20,10 +20,12 @@
 
    Where to find them: Supabase dashboard > Settings > API.
 
-   SHOP_LIVE opens purchasing on the public site. Localhost always enables the
-   pack builder; deployed test hosts must be listed in SHOP_PREVIEW_HOSTS.
-   The one entry is the `checkout` branch's Vercel preview URL, which needs a
-   Vercel login. Never list www.takezelyte.com or takezelyte.com there.
+   SALES_OPEN is the ONE switch for purchasing, on every host including
+   localhost. While it is false no page can build a pack, create a Shopify
+   cart or reach checkout: every buy button keeps its authored "Notify me"
+   and href="#capture", and the account page hides its Shopify orders card.
+   Flip it to true at launch and the pack builder and checkout come back
+   exactly as they were. The Shopify code and the SHOP block below stay.
 
    SHOP configures the custom Storefront Cart API checkout, without a Buy
    Button embed. DOMAIN is the Shopify host; VARIANTS maps mint-cherry tin
@@ -36,8 +38,7 @@
    ========================================================================== */
 window.ZELYTE_CONFIG = {
   SUPABASE_URL: 'https://yyutliqftvhmkvxgwpxz.supabase.co',
-  SHOP_LIVE: false,
-  SHOP_PREVIEW_HOSTS: ['new-zelyte-website-git-checkout-hudsons-projects-3b80eb70.vercel.app'],
+  SALES_OPEN: false,
   SHOP: {
     DOMAIN: 'zrzdws-4z.myshopify.com',
     STOREFRONT_TOKEN: '216ba8007f5bd7a51d6d70e29a604938', // Public client-side token, limited Storefront scopes

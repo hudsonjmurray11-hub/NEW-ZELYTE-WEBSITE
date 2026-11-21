@@ -45,11 +45,11 @@ function success(body) {
   } } };
 }
 function response(body) { return { ok: true, status: 200, json: async () => body }; }
-function setup({ config = shop(), fetchImpl } = {}) {
+function setup({ config = shop(), fetchImpl, salesOpen = true } = {}) {
   const calls = [], redirects = [], timers = new Map(), listeners = {}, events = [];
   let timerId = 0;
   const context = {
-    CFG: { SHOP: config }, SHOP_PRICES: prices, SHOP_SHIP: { standard: 5, express: 15 },
+    CFG: { SALES_OPEN: salesOpen, SHOP: config }, SHOP_PRICES: prices, SHOP_SHIP: { standard: 5, express: 15 },
     bundles: element(), location: { pathname: '/index.html' }, URL, AbortController, Event,
     document: { createElement: element, body: element(), activeElement: element(), addEventListener() {},
       dispatchEvent(event) { events.push(event.type); } },
@@ -231,4 +231,12 @@ test('opening a pack closes the waitlist through its event before claiming focus
   });
   handlers['zelyte:open-pack']();
   assert.equal(answered, false);
+});
+
+test('SALES_OPEN false: checkout never creates a cart or redirects', async () => {
+  const env = setup({ salesOpen: false });
+  env.api.open('pro', 'one');
+  await env.api.checkout();
+  assert.equal(env.calls.length, 0);
+  assert.equal(env.redirects.length, 0);
 });

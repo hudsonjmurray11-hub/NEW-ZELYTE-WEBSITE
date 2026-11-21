@@ -102,7 +102,12 @@
       if (field === 'dailyCaffeine') return String(F.perPouch.caffeine.mg * F.dose.dailyMax);
       return null;
     }
-    if (key === 'perTin') return String(F.perTin);
+    /* perTin, or perTin.xN for an N-tin pack's pouch total. */
+    if (key === 'perTin') {
+      if (!field) return String(F.perTin);
+      var mult = /^x([1-9]\d*)$/.exec(field);
+      return mult ? String(F.perTin * Number(mult[1])) : null;
+    }
     if (!F.perPouch[key]) return null;
     if (field === 'mg') return mgText(key, 1, compact);
     if (field === 'dv') return dvPct(key, 1);
@@ -162,6 +167,9 @@
       var props = doc.additionalProperty;
       if (!props || !props.length) return;
       props.forEach(function (p) {
+        if (p.name === 'Pouches per tin' && p.value !== F.perTin) {
+          warn('JSON-LD says ' + p.value + ' pouches per tin but formula.js says ' + F.perTin + '.');
+        }
         var key = null;
         F.order.forEach(function (k) { if (F.perPouch[k].label === p.name) key = k; });
         if (!key) return;
@@ -208,6 +216,14 @@
        left alone here — section 9 owns it from this point. */
     $$('[data-formula-count]').forEach(function (el) {
       var key = el.dataset.formulaCount;
+      if (key === 'perTin') {
+        var tin = String(F.perTin);
+        if (el.dataset.count && el.dataset.count !== tin) {
+          drift.push({ token: 'perTin (data-count)', was: el.dataset.count, now: tin });
+        }
+        el.dataset.count = tin;
+        return;
+      }
       if (!F.perPouch[key]) { warn('unknown data-formula-count key "' + key + '"'); return; }
       var mg = String(mgOf(key, 1));
       if (el.dataset.count && el.dataset.count !== mg) {
@@ -1057,7 +1073,7 @@
         panel.appendChild(close);
 
         panel.appendChild(el('p', 'eyebrow', 'Launch list'));
-        var h = el('h2', 'display wlp__h', 'First batch, fall 2026.');
+        var h = el('h2', 'display wlp__h', 'First batch, January 2027.');
         h.id = 'wlp-h';
         panel.appendChild(h);
         panel.appendChild(el('p', 'lede', 'Early access and launch details. One email, when it ships.'));
@@ -1073,9 +1089,9 @@
            signup would quietly record no preference. */
         var grid = el('div', 'pick__grid');
         grid.appendChild(flavorCard('popup-flavor-mint', 'crispy-mint', 'Crispy Mint',
-          'Cool and clean. Stays sharp through a hard effort.'));
+          'Cool and clean.'));
         grid.appendChild(flavorCard('popup-flavor-cherry', 'black-cherry', 'Black Cherry',
-          'Dark and tart. Rounder, with less bite.'));
+          'Dark and tart, not sweet.'));
         form.appendChild(grid);
 
         var lab = el('label', 'visually-hidden', 'Email address');
@@ -1224,9 +1240,10 @@
      so the split arrives on the order as the line item itself.
 
      GATED TWICE. On #bundles existing, like every other block here, and on
-     SHOP_LIVE in config.js — until launch the authored "Notify me" and its
-     href="#capture" stand untouched. Localhost and explicitly allowed preview hosts sell before launch, so
-     checkout can be tested without enabling a public Vercel production alias.
+     SALES_OPEN in config.js — until launch the authored "Notify me" and its
+     href="#capture" stand untouched on every host, localhost included.
+     checkout() re-checks the flag itself, so nothing can create a cart
+     while sales are closed.
 
      With JS off nothing here runs and the authored href is the fallback,
      which is why the anchors keep it.
@@ -1246,12 +1263,10 @@
     elite: { tins: 5, name: 'Elite Pack', one: 50, sub: 45 }
   };
 
-  var host = location.hostname;
-  var shopLive = CFG.SHOP_LIVE === true || host === 'localhost' || host === '127.0.0.1' ||
-                 (Array.isArray(CFG.SHOP_PREVIEW_HOSTS) && CFG.SHOP_PREVIEW_HOSTS.indexOf(host) !== -1);
+  var salesOpen = CFG.SALES_OPEN === true;
   var bundles = $('#bundles');
 
-  if (bundles && shopLive) {
+  if (bundles && salesOpen) {
     (function () {
       var page = location.pathname.split('/').pop() || 'index.html';
       /* A product page has already stated a flavor by being read, the same
@@ -1511,6 +1526,7 @@
       });
 
       async function checkout() {
+        if (CFG.SALES_OPEN !== true) return;   // sales closed: never create a cart
         if (activeCheckout) return;
         var shop = CFG.SHOP || {};
         var domain = shopDomain(shop.DOMAIN);
