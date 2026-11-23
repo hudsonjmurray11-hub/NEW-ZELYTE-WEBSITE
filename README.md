@@ -46,7 +46,8 @@ config.js     the only file with browser credentials, and SALES_OPEN
 formula.js    the only file with formula numbers
 reviews.js    seeded reviews behind one LIVE flag; dark until October
 assets/fonts/ 6 WOFF2 faces, subsetted locally (925KB TTF -> 58KB)
-assets/img/   two tins, pouch, two athlete photos
+assets/img/   two tins (cut from CRISPYMINT.png / BLACKCHERRY.png), pouch,
+              two athlete photos, three share images
 sql/          run these before filling in config.js:
               launch_signups.sql, profiles.sql, and — on a project whose
               launch_signups table predates it — launch_signups_flavor.sql
@@ -759,9 +760,6 @@ Sports Drinks and Electrolyte Powders.
   the documents before launch. The contact address is real and settled: every
   route on the site goes to hudsonjmurray11@gmail.com. Worth moving to an
   inbox on the domain once one exists.
-- The tin renders still show the **old** formula on the label
-  (`NA 45 / K 21 / MG 3.75 / CAF 50`). The site says 55 / 13 / 12 / 40, so the
-  artwork and the copy disagree. New renders are needed before launch.
 - **Short-viewport card fit.** A pinned `.stack__item` supplies exactly one
   screen of scroll, but `.stack__card` can be taller than that, and then the
   next card clips it. Cards that can never fit take `.stack__item--flow`
