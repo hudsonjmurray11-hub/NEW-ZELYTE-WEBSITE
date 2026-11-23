@@ -783,6 +783,22 @@
   })();
 
 
+  /* ORDERS ------------------------------------------------------------------
+     Orders and subscriptions are kept by Shopify, so this card only links to
+     the store's customer account. Shown once a store is configured AND
+     SALES_OPEN is true in config.js; before launch there is nothing to show. */
+  (function () {
+    var link = $('#orders-link');
+    var domain = String((CFG.SHOP && CFG.SHOP.DOMAIN) || '').replace(/^https?:\/\//, '').replace(/\/+$/, '');
+    if (!link || !domain || CFG.SALES_OPEN !== true) return;
+    link.href = 'https://' + domain + '/account';
+    var manage = $('#orders-manage');
+    var note = $('#orders-status');
+    if (manage) manage.hidden = false;
+    if (note) note.hidden = false;
+  })();
+
+
   /* SIGN OUT — anywhere on any page ---------------------------------------- */
   $$('[data-auth-action="signout"]').forEach(function (btn) {
     btn.addEventListener('click', function (e) {

@@ -1,0 +1,7 @@
+scripts/
+sql/
+launch-list*.csv
+.env*
+# Source masters for assets/img/tin-*.webp; the site never loads them.
+CRISPYMINT.png
+BLACKCHERRY.png

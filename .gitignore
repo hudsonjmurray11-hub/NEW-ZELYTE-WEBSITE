@@ -1,2 +1,5 @@
 .DS_Store
 shots/
+.env*
+.vercel
+launch-list*.csv
