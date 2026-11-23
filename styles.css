@@ -459,18 +459,19 @@ body.menu-open .cta-bar{transform:translateY(calc(100% + 20px));opacity:0;visibi
 /* No UA h1 margin here — the span owns all the spacing. */
 .hero__h1{margin:0}
 /* Sized to keep BOTH headline lines on ONE line each. Measured at this
-   letter-spacing: "NO BREAKS." renders 6.49x its font-size wide (the longer of
-   the two; "NO BOTTLE." is 6.33x), so the longer line is what every term below
-   is derived from. The lines are near-equal width by design, so the block sets
-   as a tight rectangle rather than a ragged pair. This rule fits the 62%
+   letter-spacing: "IT KEEPS WORKING." renders 10.57x its font-size wide (the
+   longer of the two; "KEEP MOVING." is 7.74x), so the longer line is what every
+   term below is derived from. This rule fits the 62%
    column above, i.e. right up to the tin. The column is narrowest (~575px) at
    a 1025px viewport — just above the breakpoint where it goes full width — so
    that point, not 1440, is what caps the vw term. The stacked layout under
    1024 has no tin beside it and is sized separately in section 21. Measured to
    hold one line from 360px up; it wraps somewhere under that, which is
    deliberate: no white-space:nowrap, since clipping beats wrapping there.
-   Every term is the previous headline's scaled by 1.557 — the ratio of that
-   headline's longest line to this one — INCLUDING the vh term. Holding vh
+   Every term is the previous headline's ("NO BREAKS.", 6.49x) divided by
+   1.627 — the ratio of this headline's longest line to that one's — INCLUDING
+   the vh term, and including the rem floor, which would otherwise force a wrap
+   on small phones. Holding vh
    while the width terms grew was tried and is wrong: vh then binds at every
    ordinary desktop size and the headline sets at 51-79% of the column instead
    of the 93-96% the old one measured. Scaled, it reproduces that fill curve
@@ -482,7 +483,7 @@ body.menu-open .cta-bar{transform:translateY(calc(100% + 20px));opacity:0;visibi
 .hero__fuel{
   display:block;                 /* inline spans ran onto one line at 375 */
   font-family:var(--display);text-transform:uppercase;
-  font-size:clamp(2.87rem,min(8.25vw,12vh),6.15rem);
+  font-size:clamp(1.76rem,min(5.07vw,7.38vh),3.78rem);
   letter-spacing:-.045em;line-height:.82;margin:0;
 }
 /* .eyebrow's margin assumes it sits above the headline; under it, it flips.
@@ -1239,17 +1240,17 @@ body.popup-open{overflow:hidden}
   .hero__copy{max-width:none;padding-top:min(52vw,300px)}
   /* The copy is full width here — no tin beside it — so the headline is fitted
      to the wrap instead of to the 62% column, which is worth far more size than
-     the base rule allows. Full-width fit for this headline is 14.23vw from
-     500px up and ~13.78vw at 360; 12.7vw clears both with the same margin the
-     previous headline carried (both figures, and the 12.7, are that headline's
-     measured values scaled by 1.557 — the ratio of its longest line to
-     "NO BREAKS."). The vh term is scaled by the same 1.557 for the same reason
+     the base rule allows. Full-width fit for this headline is 8.75vw from
+     500px up and ~8.47vw at 360; 7.81vw clears both with the same margin the
+     previous headline carried (these figures are the "NO BREAKS." headline's
+     values divided by 1.627 — the ratio of "IT KEEPS WORKING." to
+     "NO BREAKS."). The vh term is scaled by the same 1.627 for the same reason
      as the base rule — left at 10vh it binds early and undersizes the headline.
      It is still doing real work in this range, since the stacked hero also
      carries up to 300px of padding-top to clear the orbit, so a short landscape
      window is the one case where the card runs out of height before it runs out
      of width; measured at 896x414 and 812x375, the taller block still clears. */
-  .hero__fuel{font-size:clamp(2.87rem,min(12.7vw,15.6vh),8.4rem)}
+  .hero__fuel{font-size:clamp(1.76rem,min(7.81vw,9.59vh),5.16rem)}
   .feats{grid-template-columns:1fr}
   .how__stages{grid-template-columns:repeat(2,1fr)}
   .story{grid-template-columns:1fr}
