@@ -224,6 +224,56 @@
     </section>
   </div>
 
+  <!-- ============ THE REEL — the tin opens as you scroll ==================
+       A frame sequence cut from zelyte-scroll.mp4 (frames 0–96), drawn to a
+       canvas from this item's own scroll progress by main.js section 8b.
+       --reel supplies the scroll distance. The video's last second carried
+       baked-in callouts whose numbers had drifted from formula.js, so the
+       sequence stops on the clean pouch and the callouts are rebuilt here as
+       markup with data-formula tokens — they cannot disagree with the Facts.
+
+       With JS off or reduced motion, the poster (frame 96) and the finished
+       callouts are what shows. -->
+  <div class="stack__item stack__item--reel" id="reel-item">
+    <section class="stack__card reel" id="reel" aria-labelledby="reel-h" data-frames="assets/scroll/cherry" data-last="96">
+      <div class="reel__frame" id="reel-frame">
+        <img class="reel__poster" src="assets/scroll/cherry/poster.jpg" width="1600" height="900" alt="One ZELYTE pouch, lifted out of an open Black Cherry tin." loading="lazy" decoding="async">
+        <canvas class="reel__canvas" id="reel-canvas" aria-hidden="true"></canvas>
+        <svg class="reel__lines" viewBox="0 0 1600 900" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+          <g class="reel__line" style="--k:var(--k1)"><path d="M690 375 L640 255 L470 255" pathLength="1"/><circle cx="690" cy="375" r="5"/></g>
+          <g class="reel__line" style="--k:var(--k2)"><path d="M905 375 L955 255 L1125 255" pathLength="1"/><circle cx="905" cy="375" r="5"/></g>
+          <g class="reel__line" style="--k:var(--k3)"><path d="M690 490 L640 610 L470 610" pathLength="1"/><circle cx="690" cy="490" r="5"/></g>
+          <g class="reel__line" style="--k:var(--k4)"><path d="M905 490 L955 610 L1125 610" pathLength="1"/><circle cx="905" cy="490" r="5"/></g>
+        </svg>
+        <ul class="reel__calls" aria-label="In one pouch">
+          <li class="reel__call reel__call--tl" style="--k:var(--k1)"><span class="reel__k" data-formula="caffeine.label">Caffeine</span> <span data-formula="caffeine.mg">40 mg</span></li>
+          <li class="reel__call reel__call--tr" style="--k:var(--k2)"><span class="reel__k" data-formula="sodium.label">Sodium</span> <span data-formula="sodium.mg">55 mg</span></li>
+          <li class="reel__call reel__call--bl" style="--k:var(--k3)"><span class="reel__k" data-formula="chloride.label">Chloride</span> <span data-formula="chloride.mg">85 mg</span></li>
+          <li class="reel__call reel__call--br" style="--k:var(--k4)"><span class="reel__k" data-formula="magnesium.label">Magnesium</span> <span data-formula="magnesium.mg">12 mg</span></li>
+        </ul>
+      </div>
+
+      <div class="wrap reel__copy">
+        <p class="eyebrow reel__eyebrow">Open it up</p>
+        <h2 class="display reel__h" id="reel-h">
+          <span class="reel__beat" data-at="0">One tin.</span>
+          <span class="reel__beat" data-at=".3"><span data-formula="perTin">18</span> pouches.</span>
+          <span class="reel__beat" data-at=".58">Take one.</span>
+          <span class="reel__beat is-on" data-at=".8">Here's what's in it.</span>
+        </h2>
+      </div>
+
+      <div class="reel__foot" aria-hidden="true">
+        <div class="wrap">
+          <div class="split split--track">
+            <div class="split__rule"><span class="split__fill" id="reel-fill"></span><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="split__labels"><span id="reel-step">04</span><span class="split__label">Black Cherry, opened</span><span>04</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <!-- ============ MARQUEE ============ -->
   <div class="stack__item stack__item--flow">
     <div class="marquee" aria-hidden="true">

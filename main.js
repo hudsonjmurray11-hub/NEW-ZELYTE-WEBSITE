@@ -550,6 +550,107 @@
   }
 
 
+  /* 8b. THE REEL — a frame sequence scrubbed by scroll ---------------------
+     Both product pages; every line below is gated on #reel-item. Each page
+     says where its frames live and how many there are on #reel itself
+     (data-frames, data-last), because the two clips stop on different frames
+     — each one ends on the last frame before its baked-in callouts begin.
+
+     Frames, not <video>. Setting currentTime on scroll is choppy on desktop
+     and close to broken on iOS Safari, so the clip ships as 97 JPEGs and is
+     drawn to a canvas. Two sets: lg (1600w) and sm (1100w), chosen by how
+     many device pixels the frame actually covers.
+
+     Loading never touches the hero. It starts after window load, coarse to
+     fine (every 8th frame, then 4th, 2nd, the rest), and drawReel falls back
+     to the nearest frame that HAS loaded — so a fast scroll on a slow line
+     steps through a lower frame rate instead of flashing blank.
+
+     The card's background is re-sampled per frame from the footage's own
+     top corners, because the studio pink drifts across the clip (#E5D2D3 to
+     #FBE9E9) and a fixed color would show the frame edge as a seam. Sampled
+     once per image on load, never per draw. */
+  var reelItem = $('#reel-item');
+  var reel = $('#reel');
+  var reelCanvas = $('#reel-canvas');
+  var reelFill = $('#reel-fill');
+  var reelStep = $('#reel-step');
+  var reelBeats = $$('#reel .reel__beat');
+  var REEL_LAST = reel ? parseInt(reel.dataset.last, 10) || 0 : 0;
+  var REEL_PATH = reel ? reel.dataset.frames : '';
+  var REEL_END = 0.8;            // the clip ends here; the rest draws callouts
+  var reelImgs = [], reelBg = [], reelCtx = null, reelDrawn = -1, reelWant = 0;
+  var lastReelBeat = -1;
+
+  function drawReel(i) {
+    reelWant = i;
+    if (!reelCtx) return;
+    var j = i;
+    while (j >= 0 && !reelImgs[j]) j--;               // nearest loaded, below
+    if (j < 0) { j = i; while (j <= REEL_LAST && !reelImgs[j]) j++; }  // or above
+    if (j > REEL_LAST || j === reelDrawn) return;
+    reelCtx.drawImage(reelImgs[j], 0, 0, reelCanvas.width, reelCanvas.height);
+    if (reelBg[j]) reel.style.setProperty('--reel-bg', reelBg[j]);
+    reelDrawn = j;
+  }
+
+  function startReel() {
+    if (reelCtx) return;
+    var frame = $('#reel-frame');
+    var px = (frame ? frame.getBoundingClientRect().width : window.innerWidth) *
+             Math.min(window.devicePixelRatio || 1, 1.5);
+    var set = px > 1200 ? 'lg' : 'sm';
+    reelCanvas.width = set === 'lg' ? 1600 : 1100;
+    reelCanvas.height = set === 'lg' ? 900 : 618;
+    reelCtx = reelCanvas.getContext('2d');
+
+    var probe = document.createElement('canvas');
+    probe.width = probe.height = 1;
+    var pctx = probe.getContext('2d', { willReadFrequently: true });
+    function sample(img) {
+      // Average of the two top corners, 5% x 6% each, into one pixel.
+      var w = img.naturalWidth, h = img.naturalHeight, c = [0, 0, 0];
+      [0, w * 0.95].forEach(function (x) {
+        pctx.clearRect(0, 0, 1, 1);
+        pctx.drawImage(img, x, 0, w * 0.05, h * 0.06, 0, 0, 1, 1);
+        var d = pctx.getImageData(0, 0, 1, 1).data;
+        c[0] += d[0]; c[1] += d[1]; c[2] += d[2];
+      });
+      return 'rgb(' + (c[0] >> 1) + ',' + (c[1] >> 1) + ',' + (c[2] >> 1) + ')';
+    }
+
+    var order = [], seen = {};
+    [8, 4, 2, 1].forEach(function (step) {
+      for (var n = 0; n <= REEL_LAST; n += step) if (!seen[n]) { seen[n] = 1; order.push(n); }
+    });
+    if (!seen[REEL_LAST]) order.push(REEL_LAST);
+    order.forEach(function (n) {
+      var img = new Image();
+      img.decoding = 'async';
+      img.onload = function () {
+        try { reelBg[n] = sample(img); } catch (e) { /* tainted canvas: keep the fallback */ }
+        reelImgs[n] = img;
+        reelDrawn = -1;               // a closer frame may now exist
+        drawReel(reelWant);
+        reel.classList.add('is-drawn');
+      };
+      img.src = REEL_PATH + '/' + set + '/f' + ('00' + n).slice(-3) + '.jpg';
+    });
+    // The reader may already be inside the reel when load fires.
+    updateScroll();
+  }
+
+  if (reelItem && reel && reelCanvas && REEL_PATH && REEL_LAST && !reduced) {
+    reel.classList.add('is-live');
+    // Callouts start undrawn and the first beat leads; updateScroll takes it
+    // from there. With JS off both stay at their authored end state.
+    for (var rk = 1; rk <= 4; rk++) reel.style.setProperty('--k' + rk, 0);
+    reelBeats.forEach(function (b, i) { b.classList.toggle('is-on', i === 0); });
+    if (document.readyState === 'complete') startReel();
+    else window.addEventListener('load', startReel);
+  }
+
+
   /* 8. SCROLL — PAGE PROGRESS, 25:00 TIMELINE, THE PAN, THE PRODUCT TIN ---- */
   var progressFill = $('#scroll-progress .split__fill');
   var progressEl = $('#scroll-progress');
@@ -617,6 +718,30 @@
           panStep.textContent = (step < 10 ? '0' : '') + step;
           lastStep = step;
         }
+      }
+    }
+
+    /* THE REEL — same progress math as the pan. The clip plays across the
+       first REEL_END of the item's travel and holds on the settled pouch;
+       the remainder draws the four callouts in, staggered, through --k1..4. */
+    if (reelItem && reelCtx) {
+      var rr = reelItem.getBoundingClientRect();
+      var rspan = reelItem.offsetHeight - window.innerHeight;
+      var rp = rspan > 0 ? clamp(-rr.top / rspan, 0, 1) : 0;
+      drawReel(Math.round(clamp(rp / REEL_END, 0, 1) * REEL_LAST));
+      var cp = clamp((rp - REEL_END) / (1 - REEL_END - 0.04), 0, 1);
+      for (var c = 0; c < 4; c++) {
+        reel.style.setProperty('--k' + (c + 1), clamp(cp * 2.2 - c * 0.4, 0, 1).toFixed(3));
+      }
+      if (reelFill) reelFill.style.setProperty('--p', rp.toFixed(4));
+      var beat = 0;
+      for (var b = 0; b < reelBeats.length; b++) {
+        if (rp >= parseFloat(reelBeats[b].dataset.at)) beat = b;
+      }
+      if (beat !== lastReelBeat) {
+        for (b = 0; b < reelBeats.length; b++) reelBeats[b].classList.toggle('is-on', b === beat);
+        if (reelStep) reelStep.textContent = '0' + (beat + 1);
+        lastReelBeat = beat;
       }
     }
 
